@@ -1,6 +1,2 @@
-export { default } from "next-auth/middleware";
-
-export const config = {
-  // Protect all /admin routes except login
-  matcher: ["/admin/((?!login).*)"],
-};
+// No route protection — admin pages are publicly accessible
+export {};
