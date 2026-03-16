@@ -16,7 +16,7 @@ interface MobileTextPanelProps {
 export default function MobileTextPanel({ page, bookId, currentPage, totalPages }: MobileTextPanelProps) {
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
-  const { selectedSurface } = useReadingStore();
+  const { selectedSurface, clearSelection } = useReadingStore();
 
   return (
     <div className="flex flex-col min-h-[calc(100vh-64px)]">
@@ -85,6 +85,13 @@ export default function MobileTextPanel({ page, bookId, currentPage, totalPages 
         <div className="mx-3 mt-3 mb-4 bg-[#1e140a] rounded-2xl border border-[#5a3e28] overflow-hidden">
           <div className="px-4 pt-3 pb-1 border-b border-[#5a3e28] flex items-center justify-between">
             <h2 className="text-xs font-bold text-[#c8a96e] uppercase tracking-wider">📖 じしょ</h2>
+            <button
+              onClick={clearSelection}
+              className="text-[#c8a96e]/60 hover:text-[#c8a96e] text-xl leading-none transition-colors"
+              title="Close dictionary"
+            >
+              ×
+            </button>
           </div>
           <DictionaryPanel />
         </div>

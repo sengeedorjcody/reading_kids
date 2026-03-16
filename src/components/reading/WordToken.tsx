@@ -40,14 +40,14 @@ export default function WordToken({ word }: WordTokenProps) {
       )}
     >
       {hasFurigana ? (
-        <ruby className="text-5xl font-bold leading-none">
+        <ruby className="text-3xl font-bold leading-none">
           {word.surface}
-          <rt className="text-sm font-bold" style={{ color: isSelected ? "#c05621" : "#e879a0" }}>
+          <rt className="text-xs font-bold" style={{ color: isSelected ? "#c05621" : "#e879a0" }}>
             {word.reading}
           </rt>
         </ruby>
       ) : (
-        <span className="text-5xl font-bold leading-none">{word.surface}</span>
+        <span className="text-3xl font-bold leading-none">{word.surface}</span>
       )}
     </button>
   );
