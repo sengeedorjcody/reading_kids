@@ -104,3 +104,27 @@ img { max-width: 100%; height: auto; }
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ── Flashcard flip animation ── */
+.flashcard-container {
+  perspective: 1200px;
+}
+
+.flashcard-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.45s ease;
+}
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+}

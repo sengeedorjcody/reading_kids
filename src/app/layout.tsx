@@ -66,6 +66,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span className="hidden sm:inline">Dictionary</span>
               </Link>
               <Link
+                href="/flashcards"
+                className="flex items-center gap-1 px-3 py-2 rounded-xl text-gray-600 hover:text-pink-600 hover:bg-pink-50 transition-all font-bold text-sm md:text-base"
+              >
+                <span>🃏</span>
+                <span className="hidden sm:inline">Flashcards</span>
+              </Link>
+              <Link
                 href="/admin"
                 className="flex items-center gap-1 px-3 py-2 rounded-xl bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all font-bold text-sm"
               >

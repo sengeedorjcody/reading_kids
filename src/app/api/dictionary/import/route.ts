@@ -51,6 +51,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Only .xlsx, .xls, .csv files accepted" }, { status: 400 });
   }
 
+  // Optional book association
+  const bookId = formData.get("bookId") as string | null;
+
   const buffer = Buffer.from(await file.arrayBuffer());
   const workbook = XLSX.read(buffer, { type: "buffer" });
 
@@ -98,11 +101,17 @@ export async function POST(req: NextRequest) {
 
   for (const entry of valid) {
     try {
-      // Check if existing before upsert to count correctly
       const existing = await DictionaryWord.exists({ japanese_word: entry.japanese_word });
+
+      // If bookId provided, add to book_ids array (no duplicates via $addToSet)
+      const updateOp: Record<string, unknown> = { $set: entry };
+      if (bookId && bookId !== "none") {
+        updateOp.$addToSet = { book_ids: bookId };
+      }
+
       await DictionaryWord.findOneAndUpdate(
         { japanese_word: entry.japanese_word },
-        { $set: entry },
+        updateOp,
         { upsert: true, new: true }
       );
       if (existing) updated++;

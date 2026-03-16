@@ -60,6 +60,7 @@ export interface IDictionaryWord {
   jlpt_level?: string;
   part_of_speech?: string;
   tags?: string[];
+  book_ids?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
