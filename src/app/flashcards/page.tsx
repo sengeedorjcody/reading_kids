@@ -161,15 +161,14 @@ export default function FlashcardsPage() {
                 <div className="flex flex-col h-full">
                   {/* Image */}
                   {current.example_image_url && (
-                    <div className="relative w-full h-44 flex-shrink-0">
+                    <div className="relative w-full h-48 flex-shrink-0 bg-white">
                       <Image
                         src={current.example_image_url}
                         alt={current.japanese_word}
                         fill
-                        className="object-cover"
+                        className="object-contain"
                         sizes="640px"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-pink-50/60" />
                     </div>
                   )}
 
