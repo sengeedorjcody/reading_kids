@@ -28,8 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ja" className={`${notoSansJP.variable} ${notoSerifJP.variable}`}>
       <body className="bg-gradient-to-br from-pink-50 via-white to-blue-50 min-h-screen">
         <DevInspector>
-        {/* Main content — leave room for bottom nav */}
-        <main className="min-h-screen pb-24">{children}</main>
+        <main className="min-h-screen">{children}</main>
 
         <BottomNav />
         </DevInspector>

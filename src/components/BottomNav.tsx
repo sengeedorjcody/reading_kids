@@ -10,16 +10,20 @@ export default function BottomNav() {
   if (HIDDEN_PATTERNS.some((re) => re.test(pathname))) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
-      <div className="flex items-center gap-1 px-2 py-2 overflow-x-auto scrollbar-none">
-        <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
-        <BottomNavLink href="/books" icon="📖" label="Books" />
-        <BottomNavLink href="/conversations" icon="💬" label="会話" />
-        <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
-        <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
-        <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
-      </div>
-    </nav>
+    <>
+      {/* Spacer so page content isn't hidden behind the fixed nav */}
+      <div className="h-24" />
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
+        <div className="flex items-center gap-1 px-2 py-2 overflow-x-auto scrollbar-none">
+          <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
+          <BottomNavLink href="/books" icon="📖" label="Books" />
+          <BottomNavLink href="/conversations" icon="💬" label="会話" />
+          <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
+          <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
+          <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
+        </div>
+      </nav>
+    </>
   );
 }
 
