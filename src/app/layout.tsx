@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         {/* Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
-          <div className="max-w-lg mx-auto flex items-center justify-around px-2 py-2">
+          <div className="flex items-center gap-1 px-2 py-2 overflow-x-auto scrollbar-none">
             <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
             <BottomNavLink href="/books" icon="📖" label="Books" />
             <BottomNavLink href="/conversations" icon="💬" label="会話" />
@@ -52,7 +52,7 @@ function BottomNavLink({ href, icon, label, isAdmin }: { href: string; icon: str
   return (
     <Link
       href={href}
-      className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all active:scale-95 ${
+      className={`flex-shrink-0 flex flex-col items-center gap-1 px-3 py-2 rounded-2xl transition-all active:scale-95 ${
         isAdmin
           ? "text-gray-400 hover:text-gray-600 hover:bg-gray-50"
           : "text-gray-500 hover:text-pink-600 hover:bg-pink-50"

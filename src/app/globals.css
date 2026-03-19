@@ -105,6 +105,10 @@ img { max-width: 100%; height: auto; }
   overflow: hidden;
 }
 
+/* ── Hide scrollbar utility ── */
+.scrollbar-none { scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
 /* ── Flashcard flip animation ── */
 .flashcard-container { perspective: 1200px; }
 .flashcard-inner {
