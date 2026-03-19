@@ -1,16 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { ISentence } from "@/types";
 import SentenceDisplay from "./SentenceDisplay";
 
 interface SentenceReaderProps {
   sentences: ISentence[];
   rawText: string;
+  index: number;
+  onIndexChange: (index: number) => void;
 }
 
-export default function SentenceReader({ sentences, rawText }: SentenceReaderProps) {
-  const [index, setIndex] = useState(0);
+export default function SentenceReader({ sentences, rawText, index, onIndexChange }: SentenceReaderProps) {
+  const setIndex = onIndexChange;
 
   if (sentences.length === 0) {
     return (
