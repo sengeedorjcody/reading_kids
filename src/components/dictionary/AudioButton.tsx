@@ -19,7 +19,7 @@ export default function AudioButton({ text, audioUrl, size = "md" }: AudioButton
 
   return (
     <button
-      onClick={(e) => { e.stopPropagation(); speak(text, audioUrl); }}
+      onClick={() => speak(text, audioUrl)}
       className={`${sizeMap[size]} bg-yellow-400 hover:bg-yellow-500 rounded-2xl font-bold transition-all duration-200 active:scale-90 shadow-md`}
       title="Click to hear pronunciation"
     >

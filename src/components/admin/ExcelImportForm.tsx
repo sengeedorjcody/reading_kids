@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IBook } from "@/types";
 
 interface ImportResult {
   success: boolean;
@@ -14,13 +13,8 @@ interface ImportResult {
   error?: string;
 }
 
-interface ExcelImportFormProps {
-  books?: IBook[];
-}
-
-export default function ExcelImportForm({ books = [] }: ExcelImportFormProps) {
+export default function ExcelImportForm() {
   const [file, setFile] = useState<File | null>(null);
-  const [bookId, setBookId] = useState("none");
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
@@ -48,7 +42,6 @@ export default function ExcelImportForm({ books = [] }: ExcelImportFormProps) {
 
     const fd = new FormData();
     fd.append("file", file);
-    if (bookId && bookId !== "none") fd.append("bookId", bookId);
 
     try {
       const res = await fetch("/api/dictionary/import", { method: "POST", body: fd });
@@ -76,25 +69,6 @@ export default function ExcelImportForm({ books = [] }: ExcelImportFormProps) {
           ⬇ Download template
         </a>
       </div>
-
-      {/* Book selector */}
-      {books.length > 0 && (
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-1.5">Assign to book (optional)</label>
-          <select
-            value={bookId}
-            onChange={(e) => setBookId(e.target.value)}
-            className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-purple-400"
-          >
-            <option value="none">— No specific book (general dictionary) —</option>
-            {books.map((b) => (
-              <option key={b._id} value={b._id}>
-                {b.title}{b.titleJapanese ? ` · ${b.titleJapanese}` : ""}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Column guide */}
       <div className="bg-gray-50 rounded-2xl p-4 text-xs text-gray-500 space-y-1">

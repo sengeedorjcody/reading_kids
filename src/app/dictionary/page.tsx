@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { IDictionaryWord, IBook } from "@/types";
+import { IDictionaryWord } from "@/types";
 import WordCard from "@/components/dictionary/WordCard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -11,16 +11,6 @@ export default function DictionaryPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [total, setTotal] = useState(0);
-  const [books, setBooks] = useState<IBook[]>([]);
-  const [selectedBook, setSelectedBook] = useState("all");
-
-  // Fetch books on mount
-  useEffect(() => {
-    fetch("/api/books?limit=50")
-      .then((r) => r.json())
-      .then((data) => setBooks(data.books ?? []))
-      .catch(() => {});
-  }, []);
 
   // Debounce search input
   useEffect(() => {
@@ -33,8 +23,7 @@ export default function DictionaryPage() {
     try {
       const params = new URLSearchParams();
       if (debouncedSearch) params.set("q", debouncedSearch);
-      if (selectedBook && selectedBook !== "all") params.set("bookId", selectedBook);
-      params.set("limit", "60");
+      params.set("limit", "30");
       const res = await fetch(`/api/dictionary?${params}`);
       const data = await res.json();
       setWords(data.words ?? []);
@@ -44,52 +33,35 @@ export default function DictionaryPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, selectedBook]);
+  }, [debouncedSearch]);
 
   useEffect(() => { fetchWords(); }, [fetchWords]);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-8">
         <h1 className="text-4xl font-black text-gray-800 mb-2">📝 Dictionary</h1>
         <p className="text-xl text-gray-500">じしょ を みよう！</p>
       </div>
 
-      {/* Search + Book filter row */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1 max-w-xl">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl">🔍</span>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search in Japanese, romaji, or English..."
-            className="w-full pl-12 pr-4 py-3 text-base border-2 border-gray-200 rounded-2xl focus:border-purple-400 focus:outline-none"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl"
-            >
-              ✕
-            </button>
-          )}
-        </div>
-
-        {books.length > 0 && (
-          <select
-            value={selectedBook}
-            onChange={(e) => setSelectedBook(e.target.value)}
-            className="border-2 border-gray-200 rounded-2xl px-4 py-3 text-sm font-bold text-gray-600 focus:outline-none focus:border-purple-400 bg-white"
+      {/* Search */}
+      <div className="relative mb-8 max-w-xl">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl">🔍</span>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Search in Japanese, romaji, or English..."
+          className="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:border-purple-400 focus:outline-none"
+        />
+        {search && (
+          <button
+            onClick={() => setSearch("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xl"
           >
-            <option value="all">📚 All books</option>
-            {books.map((b) => (
-              <option key={b._id} value={b._id}>
-                {b.title}
-              </option>
-            ))}
-          </select>
+            ✕
+          </button>
         )}
       </div>
 
@@ -107,9 +79,9 @@ export default function DictionaryPage() {
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
           <div className="text-8xl">🔍</div>
           <p className="text-2xl font-bold text-gray-400">No words found</p>
-          {(search || selectedBook !== "all") && (
-            <button onClick={() => { setSearch(""); setSelectedBook("all"); }} className="text-purple-500 font-bold hover:underline">
-              Clear filters
+          {search && (
+            <button onClick={() => setSearch("")} className="text-purple-500 font-bold hover:underline">
+              Clear search
             </button>
           )}
         </div>

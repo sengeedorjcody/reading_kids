@@ -2,37 +2,20 @@ export const dynamic = "force-dynamic";
 
 import { connectDB } from "@/lib/db/mongoose";
 import DictionaryWord from "@/lib/db/models/DictionaryWord";
-import Book from "@/lib/db/models/Book";
 import Link from "next/link";
-import { IDictionaryWord, IBook } from "@/types";
+import { IDictionaryWord } from "@/types";
 import DeleteButton from "@/components/admin/DeleteButton";
 import { deleteWord } from "./actions";
 import ExcelImportForm from "@/components/admin/ExcelImportForm";
 
-async function getData(bookId?: string): Promise<{ words: IDictionaryWord[]; books: IBook[] }> {
+async function getWords(): Promise<IDictionaryWord[]> {
   await connectDB();
-
-  const query: Record<string, unknown> = {};
-  if (bookId && bookId !== "all") query.book_ids = bookId;
-
-  const [words, books] = await Promise.all([
-    DictionaryWord.find(query).sort({ japanese_word: 1 }).limit(100).lean(),
-    Book.find().sort({ title: 1 }).lean(),
-  ]);
-
-  return {
-    words: JSON.parse(JSON.stringify(words)),
-    books: JSON.parse(JSON.stringify(books)),
-  };
+  const words = await DictionaryWord.find().sort({ japanese_word: 1 }).limit(100).lean();
+  return JSON.parse(JSON.stringify(words));
 }
 
-interface PageProps {
-  searchParams: Promise<{ bookId?: string }>;
-}
-
-export default async function AdminDictionaryPage({ searchParams }: PageProps) {
-  const { bookId } = await searchParams;
-  const { words, books } = await getData(bookId);
+export default async function AdminDictionaryPage() {
+  const words = await getWords();
 
   return (
     <div className="space-y-6">
@@ -49,35 +32,7 @@ export default async function AdminDictionaryPage({ searchParams }: PageProps) {
       </div>
 
       {/* Excel Import Section */}
-      <ExcelImportForm books={books} />
-
-      {/* Book filter */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-sm font-bold text-gray-500">Filter by book:</span>
-        <Link
-          href="/admin/dictionary"
-          className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${
-            !bookId || bookId === "all"
-              ? "bg-purple-500 text-white"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          All words
-        </Link>
-        {books.map((b) => (
-          <Link
-            key={b._id}
-            href={`/admin/dictionary?bookId=${b._id}`}
-            className={`px-4 py-1.5 rounded-full text-sm font-bold transition-colors ${
-              bookId === b._id
-                ? "bg-purple-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {b.title}
-          </Link>
-        ))}
-      </div>
+      <ExcelImportForm />
 
       <p className="text-gray-400 text-sm">{words.length} words (showing up to 100)</p>
 

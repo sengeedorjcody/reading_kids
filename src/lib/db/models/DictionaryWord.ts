@@ -14,7 +14,6 @@ const DictionaryWordSchema = new Schema(
     jlpt_level: { type: String },
     part_of_speech: { type: String },
     tags: [{ type: String }],
-    book_ids: [{ type: Schema.Types.ObjectId, ref: "Book" }],
   },
   { timestamps: true }
 );

@@ -60,7 +60,6 @@ export interface IDictionaryWord {
   jlpt_level?: string;
   part_of_speech?: string;
   tags?: string[];
-  book_ids?: string[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -78,4 +77,43 @@ export interface AlphabetTab {
   id: "hiragana" | "katakana";
   label: string;
   labelJa: string;
+}
+
+export interface IPosition {
+  x: number; // 0-100 percentage
+  y: number; // 0-100 percentage
+}
+
+export interface ICharacter {
+  _id: string;
+  name: string;
+  imageUrl: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IConversationCharacterSlot {
+  characterId: string | ICharacter; // populated
+  text: string;
+  characterPosition: IPosition;
+  textPosition: IPosition;
+}
+
+export interface IConversationPage {
+  _id: string;
+  conversationId: string;
+  pageNumber: number;
+  characters: IConversationCharacterSlot[];
+}
+
+export interface IConversation {
+  _id: string;
+  title: string;
+  description?: string;
+  backgroundImageUrl?: string;
+  displayMode: 'mobile' | 'desktop';
+  totalPages: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
