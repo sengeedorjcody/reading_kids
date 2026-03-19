@@ -3,6 +3,7 @@
 import { IPage } from "@/types";
 import DictionaryPanel from "./DictionaryPanel";
 import TextPanel from "./TextPanel";
+import { useReadingStore } from "@/store/readingStore";
 
 interface ReadingLayoutProps {
   page: IPage;
@@ -45,9 +46,20 @@ export default function ReadingLayout({ page, bookId, currentPage, totalPages }:
 }
 
 function MobileDictionaryDrawer() {
+  const { selectedSurface, clearSelection } = useReadingStore();
+  if (!selectedSurface) return null;
+
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#1e140a] border-t-2 border-[#c8a96e] rounded-t-3xl shadow-2xl z-10 max-h-72 overflow-y-auto">
-      <div className="w-12 h-1 bg-[#5a3e28] rounded-full mx-auto mt-3 mb-2" />
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#1e140a] border-t-2 border-[#c8a96e] rounded-t-3xl shadow-2xl z-30 max-h-72 overflow-y-auto">
+      <div className="flex items-center justify-between px-4 pt-3 pb-1">
+        <div className="w-12 h-1 bg-[#5a3e28] rounded-full" />
+        <button
+          onClick={clearSelection}
+          className="text-[#c8a96e]/60 hover:text-[#c8a96e] text-lg font-bold leading-none"
+        >
+          ✕
+        </button>
+      </div>
       <DictionaryPanel />
     </div>
   );

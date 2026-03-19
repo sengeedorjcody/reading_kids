@@ -16,7 +16,7 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
   const sceneWidth = isMobile ? "max-w-sm" : "max-w-4xl";
 
   return (
-    <div className="flex h-[calc(100vh-80px)] bg-[#1a0a2e]">
+    <div className="flex h-screen bg-[#1a0a2e]">
       {/* Left: Dictionary Panel — desktop only */}
       <div className="w-80 flex-shrink-0 hidden md:flex flex-col bg-[#1e140a] border-r border-[#5a3e28]">
         <div className="px-5 py-4 border-b border-[#5a3e28]">
@@ -52,7 +52,7 @@ function MobileDictionary() {
   if (!selectedSurface) return null;
 
   return (
-    <div className="md:hidden fixed bottom-20 left-0 right-0 z-30 bg-[#1e140a] border-t-2 border-[#c8a96e] rounded-t-3xl shadow-2xl max-h-72 overflow-y-auto">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-[#1e140a] border-t-2 border-[#c8a96e] rounded-t-3xl shadow-2xl max-h-72 overflow-y-auto">
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
         <div className="w-12 h-1 bg-[#5a3e28] rounded-full" />
         <button
