@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { IConversation, IConversationPage, IConversationCharacterSlot, ICharacter } from "@/types";
 import { useReadingStore } from "@/store/readingStore";
 import { useSpeech } from "@/hooks/useSpeech";
@@ -22,13 +21,11 @@ export default function ConversationScene({ conversation, page, currentPage }: C
     <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 flex flex-col">
       {/* Background */}
       {conversation.backgroundImageUrl ? (
-        <Image
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
           src={conversation.backgroundImageUrl}
           alt="background"
-          fill
-          className="object-cover"
-          sizes="800px"
-          priority
+          className="absolute inset-0 w-full h-full object-cover"
         />
       ) : (
         <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-indigo-900 to-pink-900" />
@@ -131,7 +128,8 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
           <img
             src={char.imageUrl}
             alt={char.name ?? "character"}
-            className="h-32 w-auto object-contain drop-shadow-2xl"
+            className="h-36 w-auto object-contain"
+            style={{ mixBlendMode: "multiply", filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.5))" }}
           />
         ) : (
           <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl">
@@ -139,7 +137,7 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
           </div>
         )}
         {char?.name && (
-          <p className="text-center text-white text-xs font-bold mt-1 bg-black/40 rounded-full px-2 py-0.5">
+          <p className="text-center text-white text-xs font-bold mt-1 bg-black/50 rounded-full px-2 py-0.5 backdrop-blur-sm">
             {char.name}
           </p>
         )}
