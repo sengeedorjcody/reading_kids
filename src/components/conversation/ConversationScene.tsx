@@ -35,14 +35,37 @@ export default function ConversationScene({ conversation, page, currentPage }: C
       <div className="absolute inset-0 bg-black/30" />
 
       {/* Header */}
-      <div className="relative z-10 flex items-center justify-between px-4 py-3 bg-black/40 backdrop-blur-sm">
-        <Link href="/conversations" className="text-white/80 hover:text-white font-bold text-sm flex items-center gap-1">
+      <div className="relative z-10 flex items-center justify-between px-4 py-3 bg-black/40 backdrop-blur-sm gap-2">
+        <Link href="/conversations" className="text-white/80 hover:text-white font-bold text-sm flex items-center gap-1 flex-shrink-0">
           ← Back
         </Link>
-        <div className="text-center">
-          <p className="text-white font-black text-sm">{conversation.title}</p>
+        <p className="text-white font-black text-sm truncate flex-1 text-center">{conversation.title}</p>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {!isFirst && (
+            <Link
+              href={`${baseUrl}/${currentPage - 1}`}
+              className="bg-white/20 hover:bg-white/30 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
+            >
+              ←
+            </Link>
+          )}
+          <span className="text-white/60 text-xs font-bold">{currentPage}/{totalPages}</span>
+          {!isLast ? (
+            <Link
+              href={`${baseUrl}/${currentPage + 1}`}
+              className="bg-pink-500 hover:bg-pink-600 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
+            >
+              →
+            </Link>
+          ) : (
+            <Link
+              href="/conversations"
+              className="bg-green-500 hover:bg-green-600 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
+            >
+              ✓
+            </Link>
+          )}
         </div>
-        <div className="text-white/60 text-xs font-bold">{currentPage}/{totalPages}</div>
       </div>
 
       {/* Page dots */}
@@ -75,35 +98,6 @@ export default function ConversationScene({ conversation, page, currentPage }: C
         )}
       </div>
 
-      {/* Bottom navigation */}
-      <div className="relative z-10 flex items-center justify-between px-6 py-4 bg-black/40 backdrop-blur-sm">
-        {isFirst ? (
-          <div />
-        ) : (
-          <Link
-            href={`${baseUrl}/${currentPage - 1}`}
-            className="bg-white/20 hover:bg-white/30 text-white font-black px-5 py-2.5 rounded-2xl text-sm transition-all"
-          >
-            ← まえ
-          </Link>
-        )}
-
-        {isLast ? (
-          <Link
-            href="/conversations"
-            className="bg-green-500 hover:bg-green-600 text-white font-black px-5 py-2.5 rounded-2xl text-sm transition-all"
-          >
-            ✅ おわり
-          </Link>
-        ) : (
-          <Link
-            href={`${baseUrl}/${currentPage + 1}`}
-            className="bg-pink-500 hover:bg-pink-600 text-white font-black px-5 py-2.5 rounded-2xl text-sm transition-all"
-          >
-            つぎ →
-          </Link>
-        )}
-      </div>
     </div>
   );
 }

@@ -44,13 +44,16 @@ export default function DictionaryPanel() {
         }
       });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [selectedSurface, selectedWord, setSelectedWord]);
 
   // ── Fetch Mongolian via Google Translate ─────────────────────────────────
   // Runs for both: words in dictionary (uses japanese_word) and not-found words (uses selectedSurface)
   useEffect(() => {
-    const wordToTranslate = selectedWord?.japanese_word || (notFound ? selectedSurface : null);
+    const wordToTranslate =
+      selectedWord?.japanese_word || (notFound ? selectedSurface : null);
     if (!wordToTranslate) {
       setLiveMn("");
       return;
@@ -65,9 +68,13 @@ export default function DictionaryPanel() {
         if (!cancelled) setLiveMn(data.mongolian ?? "");
       })
       .catch(() => {})
-      .finally(() => { if (!cancelled) setMnLoading(false); });
+      .finally(() => {
+        if (!cancelled) setMnLoading(false);
+      });
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [selectedWord, notFound, selectedSurface]);
 
   /* ── Empty state ── */
@@ -75,7 +82,9 @@ export default function DictionaryPanel() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-6">
         <div className="text-6xl animate-pulse-slow">👆</div>
-        <p className="text-base font-bold text-[#c8a96e]/80">ことばをクリックしてね</p>
+        <p className="text-base font-bold text-[#c8a96e]/80">
+          ことばをクリックしてね
+        </p>
         <p className="text-xs text-[#c8a96e]/40">Click any word to look up</p>
       </div>
     );
@@ -85,11 +94,16 @@ export default function DictionaryPanel() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-6">
-        <div className="text-4xl font-bold text-[#c8a96e] book-font">{selectedSurface}</div>
+        <div className="text-4xl font-bold text-[#c8a96e]">
+          {selectedSurface}
+        </div>
         <div className="flex gap-2">
           {[0, 150, 300].map((d) => (
-            <div key={d} className="w-2.5 h-2.5 rounded-full bg-[#c8783c] animate-bounce"
-              style={{ animationDelay: `${d}ms` }} />
+            <div
+              key={d}
+              className="w-2.5 h-2.5 rounded-full bg-[#c8783c] animate-bounce"
+              style={{ animationDelay: `${d}ms` }}
+            />
           ))}
         </div>
         <p className="text-xs text-[#c8a96e]/50">じしょをさがしています…</p>
@@ -101,11 +115,17 @@ export default function DictionaryPanel() {
   if (notFound && !selectedWord) {
     return (
       <div className="flex flex-col gap-4 p-5 animate-fade-in">
-        <div className="text-4xl font-bold text-[#c8a96e] book-font">{selectedSurface}</div>
+        <div className="text-4xl font-bold text-[#c8a96e] ">
+          {selectedSurface}
+        </div>
 
         <div className="bg-[#2d1f0e] rounded-2xl p-3 border border-[#5a3e28]">
-          <p className="text-xs text-[#c8a96e]/70 font-bold">まだ じしょに ありません</p>
-          <p className="text-xs text-[#c8a96e]/40 mt-0.5">Not in dictionary yet</p>
+          <p className="text-xs text-[#c8a96e]/70 font-bold">
+            まだ じしょに ありません
+          </p>
+          <p className="text-xs text-[#c8a96e]/40 mt-0.5">
+            Not in dictionary yet
+          </p>
         </div>
 
         {/* Still show Mongolian from Google Translate */}
@@ -114,8 +134,11 @@ export default function DictionaryPanel() {
             <span className="text-lg">🇲🇳</span>
             <div className="flex gap-1.5 items-center">
               {[0, 100, 200].map((d) => (
-                <div key={d} className="w-2 h-2 rounded-full bg-[#c8783c]/60 animate-bounce"
-                  style={{ animationDelay: `${d}ms` }} />
+                <div
+                  key={d}
+                  className="w-2 h-2 rounded-full bg-[#c8783c]/60 animate-bounce"
+                  style={{ animationDelay: `${d}ms` }}
+                />
               ))}
             </div>
           </div>
@@ -154,16 +177,21 @@ export default function DictionaryPanel() {
       )}
 
       {/* Word header */}
-      <div className="flex items-start justify-between gap-2">
+      <div className="bg-[#2d1f0e] rounded-2xl p-3 border border-[#5a3e28] flex items-center justify-between gap-2">
         <div>
-          <div className="text-4xl font-black text-[#fdf6e8] book-font leading-tight">
+          <p className="text-base font-black text-[#fdf6e8]">
             {selectedWord.japanese_word}
-          </div>
-          {selectedWord.hiragana && selectedWord.hiragana !== selectedWord.japanese_word && (
-            <div className="text-xl text-[#e879a0] mt-1 font-bold">{selectedWord.hiragana}</div>
-          )}
+          </p>
+          {selectedWord.hiragana &&
+            selectedWord.hiragana !== selectedWord.japanese_word && (
+              <p className="text-sm text-[#e879a0] font-bold">
+                {selectedWord.hiragana}
+              </p>
+            )}
           {selectedWord.romaji && (
-            <div className="text-base text-[#c8a96e] italic font-bold">{selectedWord.romaji}</div>
+            <p className="text-xs text-[#c8a96e] italic font-bold">
+              {selectedWord.romaji}
+            </p>
           )}
         </div>
         <AudioButton
@@ -177,7 +205,9 @@ export default function DictionaryPanel() {
       {selectedSurface && selectedSurface !== selectedWord.japanese_word && (
         <div className="bg-[#2d1f0e] rounded-xl px-3 py-1.5 flex items-center gap-2 border border-[#5a3e28]">
           <span className="text-xs text-[#c8a96e]/60">Original:</span>
-          <span className="text-base font-bold text-[#c8a96e]">{selectedSurface}</span>
+          <span className="text-base font-bold text-[#c8a96e]">
+            {selectedSurface}
+          </span>
         </div>
       )}
 
@@ -188,7 +218,9 @@ export default function DictionaryPanel() {
             <span className="text-lg">🇬🇧</span>
             <div>
               <p className="text-xs text-[#c8a96e]/60 font-medium">English</p>
-              <p className="text-base font-bold text-[#fdf6e8]">{selectedWord.english_meaning}</p>
+              <p className="text-base font-bold text-[#fdf6e8]">
+                {selectedWord.english_meaning}
+              </p>
             </div>
           </div>
         )}
@@ -199,8 +231,11 @@ export default function DictionaryPanel() {
             <span className="text-lg">🇲🇳</span>
             <div className="flex gap-1.5 items-center">
               {[0, 100, 200].map((d) => (
-                <div key={d} className="w-2 h-2 rounded-full bg-[#c8783c]/60 animate-bounce"
-                  style={{ animationDelay: `${d}ms` }} />
+                <div
+                  key={d}
+                  className="w-2 h-2 rounded-full bg-[#c8783c]/60 animate-bounce"
+                  style={{ animationDelay: `${d}ms` }}
+                />
               ))}
             </div>
           </div>
@@ -219,9 +254,13 @@ export default function DictionaryPanel() {
       {selectedWord.example_sentence && (
         <div className="bg-[#2d1f0e] rounded-xl p-3 border border-[#5a3e28]">
           <p className="text-xs text-[#c8a96e]/60 mb-1">Example:</p>
-          <p className="text-sm text-[#fdf6e8]">{selectedWord.example_sentence}</p>
+          <p className="text-sm text-[#fdf6e8]">
+            {selectedWord.example_sentence}
+          </p>
           {selectedWord.example_sentence_reading && (
-            <p className="text-xs text-[#c8a96e]/60 mt-1">{selectedWord.example_sentence_reading}</p>
+            <p className="text-xs text-[#c8a96e]/60 mt-1">
+              {selectedWord.example_sentence_reading}
+            </p>
           )}
         </div>
       )}

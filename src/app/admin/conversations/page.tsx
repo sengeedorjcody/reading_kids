@@ -4,6 +4,7 @@ import Link from "next/link";
 import { connectDB } from "@/lib/db/mongoose";
 import Conversation from "@/lib/db/models/Conversation";
 import { IConversation } from "@/types";
+import DeleteConversationButton from "@/components/admin/DeleteConversationButton";
 
 async function getConversations(): Promise<IConversation[]> {
   try {
@@ -60,6 +61,7 @@ export default async function AdminConversationsPage() {
               >
                 Edit →
               </Link>
+              <DeleteConversationButton conversationId={conv._id} />
             </div>
           ))}
         </div>

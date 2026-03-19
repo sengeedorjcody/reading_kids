@@ -54,14 +54,14 @@ function MobileDictionary() {
   return (
     <div className="md:hidden fixed bottom-20 left-0 right-0 z-30 bg-[#1e140a] border-t-2 border-[#c8a96e] rounded-t-3xl shadow-2xl max-h-72 overflow-y-auto">
       <div className="flex items-center justify-between px-4 pt-3 pb-1">
-        <div className="w-12 h-1 bg-[#5a3e28] rounded-full mx-auto" />
+        <div className="w-12 h-1 bg-[#5a3e28] rounded-full" />
+        <button
+          onClick={clearSelection}
+          className="text-[#c8a96e]/60 hover:text-[#c8a96e] text-lg font-bold leading-none"
+        >
+          ✕
+        </button>
       </div>
-      <button
-        onClick={clearSelection}
-        className="absolute top-3 right-4 text-[#c8a96e]/60 hover:text-[#c8a96e] text-lg font-bold"
-      >
-        ✕
-      </button>
       <DictionaryPanel />
     </div>
   );

@@ -14,7 +14,7 @@ export default function ConversationPageEditor({ page, characters, conversationI
   const router = useRouter();
   const [slots, setSlots] = useState<IConversationCharacterSlot[]>(() =>
     (page.characters ?? []).map((slot) => ({
-      characterId: typeof slot.characterId === "object" ? (slot.characterId as ICharacter)._id : slot.characterId,
+      characterId: slot.characterId && typeof slot.characterId === "object" ? (slot.characterId as ICharacter)._id : slot.characterId,
       text: slot.text ?? "",
       characterPosition: slot.characterPosition ?? { x: 50, y: 50 },
       textPosition: slot.textPosition ?? { x: 50, y: 80 },
