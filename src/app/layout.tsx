@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import { DevInspector } from "@/components/DevInspector";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja" className={`${notoSansJP.variable} ${notoSerifJP.variable}`}>
       <body className="bg-gradient-to-br from-pink-50 via-white to-blue-50 min-h-screen">
+        <DevInspector>
         {/* Main content — leave room for bottom nav */}
         <main className="min-h-screen pb-24">{children}</main>
 
@@ -40,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
           </div>
         </nav>
+        </DevInspector>
       </body>
     </html>
   );
