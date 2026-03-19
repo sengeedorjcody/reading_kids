@@ -40,32 +40,7 @@ export default function ConversationScene({ conversation, page, currentPage }: C
           ← Back
         </Link>
         <p className="text-white font-black text-sm truncate flex-1 text-center">{conversation.title}</p>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {!isFirst && (
-            <Link
-              href={`${baseUrl}/${currentPage - 1}`}
-              className="bg-white/20 hover:bg-white/30 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
-            >
-              ←
-            </Link>
-          )}
-          <span className="text-white/60 text-xs font-bold">{currentPage}/{totalPages}</span>
-          {!isLast ? (
-            <Link
-              href={`${baseUrl}/${currentPage + 1}`}
-              className="bg-pink-500 hover:bg-pink-600 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
-            >
-              →
-            </Link>
-          ) : (
-            <Link
-              href="/conversations"
-              className="bg-green-500 hover:bg-green-600 text-white font-black px-3 py-1 rounded-xl text-xs transition-all"
-            >
-              ✓
-            </Link>
-          )}
-        </div>
+        <span className="text-white/60 text-xs font-bold flex-shrink-0">{currentPage}/{totalPages}</span>
       </div>
 
       {/* Page dots */}
@@ -96,6 +71,35 @@ export default function ConversationScene({ conversation, page, currentPage }: C
             <p className="text-white/40 font-bold text-lg">ページ {currentPage}</p>
           </div>
         )}
+
+        {/* Left / Prev button */}
+        {!isFirst && (
+          <Link
+            href={`${baseUrl}/${currentPage - 1}`}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-16 bg-white/20 hover:bg-white/40 text-white font-black text-xl rounded-r-2xl backdrop-blur-sm transition-all active:scale-95"
+          >
+            ←
+          </Link>
+        )}
+
+        {/* Right / Next button */}
+        <div className="absolute right-0 top-1/2 -translate-y-1/2 z-20">
+          {!isLast ? (
+            <Link
+              href={`${baseUrl}/${currentPage + 1}`}
+              className="flex items-center justify-center w-10 h-16 bg-pink-500 hover:bg-pink-600 text-white font-black text-xl rounded-l-2xl transition-all active:scale-95 shadow-lg"
+            >
+              →
+            </Link>
+          ) : (
+            <Link
+              href="/conversations"
+              className="flex items-center justify-center w-10 h-16 bg-green-500 hover:bg-green-600 text-white font-black text-xl rounded-l-2xl transition-all active:scale-95 shadow-lg"
+            >
+              ✓
+            </Link>
+          )}
+        </div>
       </div>
 
     </div>
