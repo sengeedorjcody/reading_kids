@@ -169,6 +169,14 @@ export default function FlashcardsPage() {
                         className="object-contain"
                         sizes="640px"
                       />
+                      {/* Audio button top-right of image */}
+                      <div className="absolute top-2 right-2">
+                        <AudioButton
+                          text={current.japanese_word}
+                          audioUrl={current.pronunciation_audio_url}
+                          size="xs"
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -192,14 +200,16 @@ export default function FlashcardsPage() {
                       </div>
                     )}
 
-                    {/* Audio */}
-                    <div className="mt-1">
-                      <AudioButton
-                        text={current.japanese_word}
-                        audioUrl={current.pronunciation_audio_url}
-                        size="sm"
-                      />
-                    </div>
+                    {/* Audio (no image fallback) */}
+                    {!current.example_image_url && (
+                      <div className="mt-1">
+                        <AudioButton
+                          text={current.japanese_word}
+                          audioUrl={current.pronunciation_audio_url}
+                          size="sm"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

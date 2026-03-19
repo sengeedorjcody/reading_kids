@@ -5,10 +5,11 @@ import { useSpeech } from "@/hooks/useSpeech";
 interface AudioButtonProps {
   text: string;
   audioUrl?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 const sizeMap = {
+  xs: "text-base px-2 py-1",
   sm: "text-xl px-3 py-2",
   md: "text-2xl px-4 py-3",
   lg: "text-4xl px-6 py-4",
