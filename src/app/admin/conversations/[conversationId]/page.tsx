@@ -9,6 +9,7 @@ import Character from "@/lib/db/models/Character";
 import { IConversation, IConversationPage, ICharacter } from "@/types";
 import ConversationPageEditor from "@/components/admin/ConversationPageEditor";
 import ConversationExcelImport from "@/components/admin/ConversationExcelImport";
+import ConversationEditPanel from "@/components/admin/ConversationEditPanel";
 
 async function getData(id: string) {
   try {
@@ -52,13 +53,16 @@ export default async function AdminConversationDetailPage({ params }: { params: 
             <span className="text-xs text-gray-400">{convPages.length} pages</span>
           </div>
         </div>
-        <Link
-          href={`/conversations/${conversation._id}/read/1`}
-          target="_blank"
-          className="bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold px-4 py-2 rounded-xl text-sm transition-colors"
-        >
-          👁 Preview →
-        </Link>
+        <div className="flex items-center gap-2">
+          <ConversationEditPanel conversation={conversation} />
+          <Link
+            href={`/conversations/${conversation._id}/read/1`}
+            target="_blank"
+            className="bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold px-4 py-2 rounded-xl text-sm transition-colors"
+          >
+            👁 Preview →
+          </Link>
+        </div>
       </div>
 
       {/* Excel Import */}
