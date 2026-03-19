@@ -67,21 +67,12 @@ export default function TextPanel({ page, bookId, currentPage, totalPages }: Tex
 
         {/* Right / Next button */}
         <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center">
-          {hasNext ? (
-            <Link
-              href={`/books/${bookId}/read/${currentPage + 1}`}
-              className="flex items-center justify-center w-10 h-16 bg-[#c8783c] hover:bg-[#b5652b] text-white font-black text-xl rounded-l-2xl transition-colors active:scale-95 shadow-md shadow-[#c8783c]/30"
-            >
-              ▶
-            </Link>
-          ) : (
-            <Link
-              href="/books"
-              className="flex items-center justify-center w-10 h-16 bg-[#4a7c59] hover:bg-[#3d6649] text-white font-black text-lg rounded-l-2xl transition-colors shadow-md shadow-[#4a7c59]/30"
-            >
-              🎉
-            </Link>
-          )}
+          <Link
+            href={hasNext ? `/books/${bookId}/read/${currentPage + 1}` : "/books"}
+            className="flex items-center justify-center w-10 h-16 bg-[#c8783c] hover:bg-[#b5652b] text-white font-black text-xl rounded-l-2xl transition-colors active:scale-95 shadow-md shadow-[#c8783c]/30"
+          >
+            ▶
+          </Link>
         </div>
       </div>
     </div>
