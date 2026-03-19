@@ -14,7 +14,7 @@ interface ReadingLayoutProps {
 
 export default function ReadingLayout({ page, bookId, currentPage, totalPages }: ReadingLayoutProps) {
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-[#2d1f0e]">
+    <div className="flex flex-1 bg-[#2d1f0e] overflow-hidden">
       {/* Left: Dictionary Panel — dark warm sidebar */}
       <div className="w-80 flex-shrink-0 hidden md:flex flex-col bg-[#1e140a] border-r border-[#5a3e28]">
         <div className="px-5 py-4 border-b border-[#5a3e28]">

@@ -44,7 +44,7 @@ export default async function ReadingPage({
   const { book, page, totalPages } = data;
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col">
+    <div className="h-screen flex flex-col">
       {/* Book title bar */}
       <div className="flex items-center gap-3 px-4 py-2 bg-pink-50 border-b border-pink-100">
         <Link href={`/books/${book._id}`} className="text-pink-400 hover:text-pink-600 font-bold text-sm">
