@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Bottom Navigation */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
           <div className="max-w-lg mx-auto flex items-center justify-around px-2 py-2">
-            <BottomNavLink href="/" icon="🏠" label="ホーム" />
+            <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
             <BottomNavLink href="/books" icon="📖" label="Books" />
             <BottomNavLink href="/conversations" icon="💬" label="会話" />
             <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
