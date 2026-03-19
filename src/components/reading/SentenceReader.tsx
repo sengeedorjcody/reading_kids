@@ -54,7 +54,7 @@ export default function SentenceReader({ sentences, rawText, index, onIndexChang
       {/* Sentence navigation */}
       <div className="flex items-center justify-between pt-4 mt-2 border-t border-[#d4b87a]/30">
         <button
-          onClick={() => setIndex((i) => Math.max(0, i - 1))}
+          onClick={() => setIndex(Math.max(0, index - 1))}
           disabled={!hasPrev}
           className="flex items-center gap-1.5 bg-[#f5ecd4] hover:bg-[#ead5a8] disabled:opacity-20 disabled:cursor-not-allowed text-[#6b4423] font-bold py-2 px-4 rounded-xl text-sm transition-colors border border-[#d4b87a]/50 active:scale-95"
         >
@@ -78,7 +78,7 @@ export default function SentenceReader({ sentences, rawText, index, onIndexChang
         </div>
 
         <button
-          onClick={() => setIndex((i) => Math.min(total - 1, i + 1))}
+          onClick={() => setIndex(Math.min(total - 1, index + 1))}
           disabled={!hasNext}
           className="flex items-center gap-1.5 bg-[#c8783c] hover:bg-[#b5652b] disabled:opacity-20 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors active:scale-95 shadow shadow-[#c8783c]/30"
         >
