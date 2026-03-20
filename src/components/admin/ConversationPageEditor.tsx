@@ -234,6 +234,8 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
 
   // mobile = 9:16 portrait, desktop = 16:9 landscape
   const aspectRatio = displayMode === "desktop" ? "16 / 9" : "9 / 16";
+  const MAX_H = 320;
+  const maxWidth = displayMode === "desktop" ? Math.round(MAX_H * 16 / 9) : Math.round(MAX_H * 9 / 16);
 
   return (
     <div className="space-y-1">
@@ -253,7 +255,9 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
         className="relative w-full rounded-xl overflow-hidden border-2 border-gray-200 select-none"
         style={{
           aspectRatio,
-          maxHeight: 320,
+          maxHeight: MAX_H,
+          maxWidth,
+          margin: "0 auto",
           backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
