@@ -9,6 +9,8 @@ const nextConfig = {
     remotePatterns: [
       { hostname: 'res.cloudinary.com' },
       { hostname: 'images.unsplash.com' },
+      { hostname: 'plus.unsplash.com' },
+      { hostname: '*.unsplash.com' },
       { hostname: 'png.pngtree.com' },
       { hostname: '*.pngtree.com' },
     ],
