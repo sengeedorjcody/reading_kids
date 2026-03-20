@@ -21,6 +21,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <NavLink href="/admin/images" icon="🖼️" label="Images" />
           </div>
           <div className="pt-2">
+            <NavLink href="/admin/backgrounds" icon="🌅" label="Backgrounds" />
             <NavLink href="/admin/conversations" icon="💬" label="Conversations" />
             <NavLink href="/admin/conversations/create" icon="💬" label="New Conversation" />
           </div>
@@ -41,6 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { href: "/admin/dictionary", icon: "📝", label: "Dict" },
             { href: "/admin/characters", icon: "🎭", label: "Chars" },
             { href: "/admin/images", icon: "🖼️", label: "Images" },
+            { href: "/admin/backgrounds", icon: "🌅", label: "BGs" },
             { href: "/admin/conversations", icon: "💬", label: "Convos" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-gray-700 text-xs font-bold whitespace-nowrap">

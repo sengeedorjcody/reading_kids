@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+
+interface Background {
+  _id: string;
+  name: string;
+  imageUrl: string;
+}
 
 export default function ConversationForm() {
   const [title, setTitle] = useState("");
@@ -11,7 +17,15 @@ export default function ConversationForm() {
   const [isPublished, setIsPublished] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [backgrounds, setBackgrounds] = useState<Background[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/backgrounds")
+      .then((r) => r.json())
+      .then((d) => setBackgrounds(d.backgrounds ?? []))
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +63,50 @@ export default function ConversationForm() {
         )}
       </div>
 
+      {/* Background picker */}
+      <div>
+        <label className="block text-sm font-bold text-gray-600 mb-2">Background</label>
+        {backgrounds.length > 0 && (
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {backgrounds.map((bg) => (
+              <button
+                key={bg._id}
+                type="button"
+                onClick={() => setBackgroundImageUrl(bg.imageUrl)}
+                className={`relative aspect-video rounded-xl overflow-hidden border-2 transition-all ${
+                  backgroundImageUrl === bg.imageUrl
+                    ? "border-purple-500 ring-2 ring-purple-300"
+                    : "border-gray-200 hover:border-purple-300"
+                }`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
+                {backgroundImageUrl === bg.imageUrl && (
+                  <div className="absolute inset-0 bg-purple-500/20 flex items-center justify-center">
+                    <span className="text-white text-lg">✓</span>
+                  </div>
+                )}
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 px-1 py-0.5">
+                  <p className="text-white text-xs font-bold truncate">{bg.name}</p>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+        <input
+          type="text"
+          value={backgroundImageUrl}
+          onChange={(e) => setBackgroundImageUrl(e.target.value)}
+          placeholder="Or paste image URL…"
+          className="w-full border-2 border-gray-200 focus:border-rose-400 rounded-2xl px-4 py-2 text-sm text-gray-700 outline-none transition-colors"
+        />
+        {backgrounds.length === 0 && (
+          <p className="text-xs text-gray-400 mt-1">
+            No saved backgrounds — <a href="/admin/backgrounds" className="text-purple-500 font-bold hover:underline">add some here</a>
+          </p>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-bold text-gray-600 mb-1.5">Title *</label>
@@ -70,18 +128,6 @@ export default function ConversationForm() {
             placeholder="Short description…"
             className="w-full border-2 border-gray-200 focus:border-rose-400 rounded-2xl px-4 py-3 text-gray-700 outline-none transition-colors resize-none"
           />
-        </div>
-
-        <div>
-          <label className="block text-sm font-bold text-gray-600 mb-1.5">Background Image URL</label>
-          <input
-            type="url"
-            value={backgroundImageUrl}
-            onChange={(e) => setBackgroundImageUrl(e.target.value)}
-            placeholder="https://res.cloudinary.com/..."
-            className="w-full border-2 border-gray-200 focus:border-rose-400 rounded-2xl px-4 py-3 text-gray-700 outline-none transition-colors"
-          />
-          <p className="text-xs text-gray-400 mt-1">One background image used for the whole conversation</p>
         </div>
 
         <div>
