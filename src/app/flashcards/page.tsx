@@ -5,30 +5,43 @@ import Image from "next/image";
 import { IDictionaryWord, IBook } from "@/types";
 import AudioButton from "@/components/dictionary/AudioButton";
 
+interface IConversationSimple {
+  _id: string;
+  title: string;
+}
+
 export default function FlashcardsPage() {
   const [books, setBooks] = useState<IBook[]>([]);
-  const [selectedBook, setSelectedBook] = useState("all");
+  const [conversations, setConversations] = useState<IConversationSimple[]>([]);
+  const [filterType, setFilterType] = useState<"all" | "book" | "conversation">("all");
+  const [selectedBook, setSelectedBook] = useState("");
+  const [selectedConversation, setSelectedConversation] = useState("");
   const [words, setWords] = useState<IDictionaryWord[]>([]);
   const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
-  // Fetch books on mount
+  // Fetch books + conversations on mount
   useEffect(() => {
     fetch("/api/books?limit=50")
       .then((r) => r.json())
       .then((data) => setBooks(data.books ?? []))
       .catch(() => {});
+    fetch("/api/conversations/all")
+      .then((r) => r.json())
+      .then((data) => setConversations(data.conversations ?? []))
+      .catch(() => {});
   }, []);
 
-  // Fetch words when book changes
+  // Fetch words when filter changes
   const fetchWords = useCallback(async () => {
     setLoading(true);
     setIndex(0);
     setFlipped(false);
     try {
       const params = new URLSearchParams({ limit: "200" });
-      if (selectedBook !== "all") params.set("bookId", selectedBook);
+      if (filterType === "book" && selectedBook) params.set("bookId", selectedBook);
+      if (filterType === "conversation" && selectedConversation) params.set("conversationId", selectedConversation);
       const res = await fetch(`/api/dictionary?${params}`);
       const data = await res.json();
       // Shuffle the words
@@ -43,7 +56,7 @@ export default function FlashcardsPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedBook]);
+  }, [filterType, selectedBook, selectedConversation]);
 
   useEffect(() => { fetchWords(); }, [fetchWords]);
 
@@ -71,6 +84,22 @@ export default function FlashcardsPage() {
     setFlipped(false);
   };
 
+  const selectBook = (id: string) => {
+    setSelectedBook(id);
+    setFilterType("book");
+  };
+
+  const selectConversation = (id: string) => {
+    setSelectedConversation(id);
+    setFilterType("conversation");
+  };
+
+  const selectAll = () => {
+    setFilterType("all");
+    setSelectedBook("");
+    setSelectedConversation("");
+  };
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
       {/* Header */}
@@ -79,31 +108,61 @@ export default function FlashcardsPage() {
         <p className="text-lg text-gray-500">フラッシュカード で おぼえよう！</p>
       </div>
 
-      {/* Book filter */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          onClick={() => setSelectedBook("all")}
-          className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
-            selectedBook === "all"
-              ? "bg-pink-500 text-white shadow-md shadow-pink-200"
-              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          📚 All words
-        </button>
-        {books.map((b) => (
+      {/* Filter pills */}
+      <div className="mb-6 space-y-3">
+        {/* All */}
+        <div className="flex flex-wrap gap-2">
           <button
-            key={b._id}
-            onClick={() => setSelectedBook(b._id)}
+            onClick={selectAll}
             className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
-              selectedBook === b._id
+              filterType === "all"
                 ? "bg-pink-500 text-white shadow-md shadow-pink-200"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
-            {b.title}
+            📚 All words
           </button>
-        ))}
+        </div>
+
+        {/* Books */}
+        {books.length > 0 && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide mr-1">Books</span>
+            {books.map((b) => (
+              <button
+                key={b._id}
+                onClick={() => selectBook(b._id)}
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                  filterType === "book" && selectedBook === b._id
+                    ? "bg-blue-500 text-white shadow-md shadow-blue-200"
+                    : "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                }`}
+              >
+                📖 {b.title}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Conversations */}
+        {conversations.length > 0 && (
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wide mr-1">Conversations</span>
+            {conversations.map((c) => (
+              <button
+                key={c._id}
+                onClick={() => selectConversation(c._id)}
+                className={`px-4 py-2 rounded-full text-sm font-bold transition-colors ${
+                  filterType === "conversation" && selectedConversation === c._id
+                    ? "bg-purple-500 text-white shadow-md shadow-purple-200"
+                    : "bg-purple-50 text-purple-600 hover:bg-purple-100"
+                }`}
+              >
+                💬 {c.title}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {loading ? (
