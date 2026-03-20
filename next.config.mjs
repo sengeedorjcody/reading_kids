@@ -7,12 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const nextConfig = {
   images: {
     remotePatterns: [
-      { hostname: 'res.cloudinary.com' },
-      { hostname: 'images.unsplash.com' },
-      { hostname: 'plus.unsplash.com' },
-      { hostname: '*.unsplash.com' },
-      { hostname: 'png.pngtree.com' },
-      { hostname: '*.pngtree.com' },
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: '**' },
     ],
   },
   experimental: {
