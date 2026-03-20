@@ -56,6 +56,12 @@ export default async function AdminConversationDetailPage({ params }: { params: 
         <div className="flex items-center gap-2">
           <ConversationEditPanel conversation={conversation} />
           <Link
+            href={`/admin/conversations/${conversation._id}/dictionary`}
+            className="bg-purple-50 hover:bg-purple-100 text-purple-600 font-bold px-4 py-2 rounded-xl text-sm transition-colors"
+          >
+            📝 Dictionary
+          </Link>
+          <Link
             href={`/conversations/${conversation._id}/read/1`}
             target="_blank"
             className="bg-pink-50 hover:bg-pink-100 text-pink-600 font-bold px-4 py-2 rounded-xl text-sm transition-colors"

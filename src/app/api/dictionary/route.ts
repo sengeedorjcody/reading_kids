@@ -34,6 +34,9 @@ export async function GET(request: NextRequest) {
 
     if (level && level !== "all") query.jlpt_level = level;
 
+    const conversationIdParam = searchParams.get("conversationId");
+    if (conversationIdParam) query.conversationId = conversationIdParam;
+
     const [words, total] = await Promise.all([
       DictionaryWord.find(query)
         .sort({ japanese_word: 1 })
