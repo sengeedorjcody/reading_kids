@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IConversationPage, IConversationCharacterSlot, ICharacter } from "@/types";
 
@@ -178,79 +178,106 @@ function SlotEditor({ idx, slot, characters, onChange, onRemove }: {
         />
       </div>
 
-      {/* Position sliders */}
-      <div className="grid grid-cols-2 gap-3">
-        <PositionSliders
-          label="🧑 Character Position"
-          position={slot.characterPosition}
-          onChange={(pos) => onChange({ characterPosition: pos })}
-        />
-        <PositionSliders
-          label="💬 Text Position"
-          position={slot.textPosition}
-          onChange={(pos) => onChange({ textPosition: pos })}
-        />
-      </div>
-
-      {/* Mini preview */}
-      <PositionPreview slot={slot} character={selectedChar} />
+      {/* Drag canvas */}
+      <DragCanvas
+        slot={slot}
+        character={selectedChar}
+        onCharacterMove={(pos) => onChange({ characterPosition: pos })}
+        onTextMove={(pos) => onChange({ textPosition: pos })}
+      />
     </div>
   );
 }
 
-function PositionSliders({ label, position, onChange }: {
-  label: string;
-  position: { x: number; y: number };
-  onChange: (pos: { x: number; y: number }) => void;
+function DragCanvas({ slot, character, onCharacterMove, onTextMove }: {
+  slot: IConversationCharacterSlot;
+  character: ICharacter | undefined;
+  onCharacterMove: (pos: { x: number; y: number }) => void;
+  onTextMove: (pos: { x: number; y: number }) => void;
 }) {
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef<"char" | "text" | null>(null);
+
+  const toPercent = (e: React.MouseEvent | MouseEvent | React.TouchEvent | TouchEvent) => {
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return null;
+    const clientX = "touches" in e ? e.touches[0].clientX : (e as MouseEvent).clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : (e as MouseEvent).clientY;
+    return {
+      x: Math.round(Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100))),
+      y: Math.round(Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100))),
+    };
+  };
+
+  const onMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!dragging.current) return;
+    e.preventDefault();
+    const pos = toPercent(e);
+    if (!pos) return;
+    if (dragging.current === "char") onCharacterMove(pos);
+    else onTextMove(pos);
+  };
+
+  const stopDrag = () => { dragging.current = null; };
+
+  const charHeight = (character as ICharacter & { height?: number })?.height ?? 80;
+
   return (
     <div className="space-y-1">
-      <p className="text-xs font-bold text-gray-500">{label}</p>
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 w-3">X</span>
-          <input
-            type="range" min="0" max="100" value={position.x}
-            onChange={(e) => onChange({ ...position, x: Number(e.target.value) })}
-            className="flex-1 accent-pink-500"
-          />
-          <span className="text-xs text-gray-400 w-6">{position.x}</span>
+      <p className="text-xs font-bold text-gray-500">Drag to position</p>
+      <div
+        ref={canvasRef}
+        onMouseMove={onMove}
+        onMouseUp={stopDrag}
+        onMouseLeave={stopDrag}
+        onTouchMove={onMove}
+        onTouchEnd={stopDrag}
+        className="relative w-full bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl overflow-hidden border-2 border-gray-200 select-none"
+        style={{ height: 200 }}
+      >
+        {/* Character — draggable */}
+        <div
+          className="absolute cursor-grab active:cursor-grabbing"
+          style={{
+            left: `${slot.characterPosition.x}%`,
+            top: `${slot.characterPosition.y}%`,
+            transform: "translate(-50%, -50%)",
+            height: Math.round(charHeight * 0.5),
+            touchAction: "none",
+          }}
+          onMouseDown={(e) => { e.preventDefault(); dragging.current = "char"; }}
+          onTouchStart={(e) => { e.preventDefault(); dragging.current = "char"; }}
+        >
+          {character?.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={character.imageUrl}
+              alt=""
+              draggable={false}
+              style={{ height: Math.round(charHeight * 0.5), width: "auto" }}
+              className="object-contain pointer-events-none"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-pink-400 flex items-center justify-center text-white text-sm">🧑</div>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400 w-3">Y</span>
-          <input
-            type="range" min="0" max="100" value={position.y}
-            onChange={(e) => onChange({ ...position, y: Number(e.target.value) })}
-            className="flex-1 accent-pink-500"
-          />
-          <span className="text-xs text-gray-400 w-6">{position.y}</span>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function PositionPreview({ slot, character }: { slot: IConversationCharacterSlot; character: ICharacter | undefined }) {
-  return (
-    <div className="relative w-full h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl overflow-hidden border border-gray-200">
-      {/* Character dot */}
-      <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2"
-        style={{ left: `${slot.characterPosition.x}%`, top: `${slot.characterPosition.y}%` }}
-      >
-        {character?.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={character.imageUrl} alt="" className="h-10 w-auto object-contain" />
-        ) : (
-          <div className="w-6 h-6 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs">🧑</div>
-        )}
-      </div>
-      {/* Text bubble dot */}
-      <div
-        className="absolute transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg px-2 py-0.5 shadow border border-pink-200 text-xs font-bold text-gray-700 max-w-[80px] truncate"
-        style={{ left: `${slot.textPosition.x}%`, top: `${slot.textPosition.y}%` }}
-      >
-        {slot.text || "💬"}
+        {/* Text bubble — draggable */}
+        <div
+          className="absolute cursor-grab active:cursor-grabbing bg-white rounded-lg px-2 py-1 shadow border border-pink-200 text-xs font-bold text-gray-700 max-w-[120px] truncate"
+          style={{
+            left: `${slot.textPosition.x}%`,
+            top: `${slot.textPosition.y}%`,
+            transform: "translate(-50%, -50%)",
+            touchAction: "none",
+          }}
+          onMouseDown={(e) => { e.preventDefault(); dragging.current = "text"; }}
+          onTouchStart={(e) => { e.preventDefault(); dragging.current = "text"; }}
+        >
+          {slot.text || "💬"}
+        </div>
+
+        <p className="absolute bottom-1 right-2 text-xs text-gray-400 font-bold pointer-events-none">drag to move</p>
       </div>
     </div>
   );
