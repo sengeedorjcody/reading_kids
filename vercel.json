@@ -3,5 +3,10 @@
     "src/app/api/upload/route.ts": {
       "maxDuration": 60
     }
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
   }
 }
