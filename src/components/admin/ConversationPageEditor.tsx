@@ -271,7 +271,7 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
             left: `${slot.characterPosition.x}%`,
             top: `${slot.characterPosition.y}%`,
             transform: "translate(-50%, -50%)",
-            height: Math.round(charHeight * 0.5),
+            height: charHeight,
             touchAction: "none",
           }}
           onMouseDown={(e) => { e.preventDefault(); dragging.current = "char"; }}
@@ -283,7 +283,7 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
               src={character.imageUrl}
               alt=""
               draggable={false}
-              style={{ height: Math.round(charHeight * 0.5), width: "auto" }}
+              style={{ height: charHeight, width: "auto" }}
               className="object-contain pointer-events-none"
             />
           ) : (
