@@ -68,6 +68,7 @@ export interface KanaChar {
   char: string;
   romaji: string;
   row: string;
+  phonetic?: string; // TTS-friendly pronunciation override (e.g. "ee" for Mongolian И)
   exampleWord?: string;
   exampleMeaning?: string;
   exampleImage?: string;
