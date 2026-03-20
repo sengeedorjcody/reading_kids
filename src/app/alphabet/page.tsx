@@ -3,10 +3,14 @@
 import { useState } from "react";
 import { HIRAGANA } from "@/constants/hiragana";
 import { KATAKANA } from "@/constants/katakana";
+import { MONGOLIAN } from "@/constants/mongolian";
 import AlphabetGrid from "@/components/alphabet/AlphabetGrid";
+import MongolianGrid from "@/components/alphabet/MongolianGrid";
+
+type Tab = "hiragana" | "katakana" | "mongolian";
 
 export default function AlphabetPage() {
-  const [tab, setTab] = useState<"hiragana" | "katakana">("hiragana");
+  const [tab, setTab] = useState<Tab>("hiragana");
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -19,7 +23,7 @@ export default function AlphabetPage() {
       </div>
 
       {/* Tab switcher */}
-      <div className="flex gap-3 justify-center mb-10">
+      <div className="flex flex-wrap gap-3 justify-center mb-10">
         <button
           onClick={() => setTab("hiragana")}
           className={`px-8 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
@@ -40,6 +44,16 @@ export default function AlphabetPage() {
         >
           ア Katakana
         </button>
+        <button
+          onClick={() => setTab("mongolian")}
+          className={`px-8 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
+            tab === "mongolian"
+              ? "bg-green-500 text-white shadow-lg shadow-green-200 scale-105"
+              : "bg-white text-gray-500 border-2 border-gray-200 hover:border-green-300"
+          }`}
+        >
+          А Монгол
+        </button>
       </div>
 
       {/* Tip */}
@@ -50,11 +64,9 @@ export default function AlphabetPage() {
       </div>
 
       {/* Grid */}
-      {tab === "hiragana" ? (
-        <AlphabetGrid kana={HIRAGANA} title="ひらがな (Hiragana)" />
-      ) : (
-        <AlphabetGrid kana={KATAKANA} title="カタカナ (Katakana)" />
-      )}
+      {tab === "hiragana" && <AlphabetGrid kana={HIRAGANA} title="ひらがな (Hiragana)" />}
+      {tab === "katakana" && <AlphabetGrid kana={KATAKANA} title="カタカナ (Katakana)" />}
+      {tab === "mongolian" && <MongolianGrid chars={MONGOLIAN} />}
     </div>
   );
 }
