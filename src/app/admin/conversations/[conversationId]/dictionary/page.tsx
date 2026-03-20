@@ -58,7 +58,7 @@ export default async function ConversationDictionaryPage({ params }: { params: {
               </tr>
             </thead>
             <tbody>
-              {words.map((word, i) => (
+              {words.map((word: Record<string, any>, i: number) => (
                 <tr key={word._id} className={i !== words.length - 1 ? "border-b border-gray-50" : ""}>
                   <td className="p-4">
                     <div className="text-2xl font-bold text-gray-800">{word.japanese_word}</div>
