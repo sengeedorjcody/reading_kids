@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface ImportResult {
@@ -13,13 +13,24 @@ interface ImportResult {
   error?: string;
 }
 
+interface Conversation { _id: string; title: string; }
+
 export default function ExcelImportForm() {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [conversationId, setConversationId] = useState("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch("/api/conversations/all")
+      .then((r) => r.json())
+      .then((d) => setConversations(d.conversations ?? []))
+      .catch(() => {});
+  }, []);
 
   const handleFile = (f: File) => {
     setFile(f);
@@ -42,6 +53,7 @@ export default function ExcelImportForm() {
 
     const fd = new FormData();
     fd.append("file", file);
+    if (conversationId) fd.append("conversationId", conversationId);
 
     try {
       const res = await fetch("/api/dictionary/import", { method: "POST", body: fd });
@@ -88,6 +100,28 @@ export default function ExcelImportForm() {
         <p className="mt-2 text-gray-400">
           💡 <span className="font-bold text-blue-500">example_image_url</span> — paste a Cloudinary or public image URL in this column
         </p>
+      </div>
+
+      {/* Conversation picker */}
+      <div>
+        <label className="block text-sm font-bold text-gray-600 mb-1.5">
+          Link to Conversation <span className="text-gray-400 font-normal">(optional)</span>
+        </label>
+        <select
+          value={conversationId}
+          onChange={(e) => setConversationId(e.target.value)}
+          className="w-full border-2 border-gray-200 focus:border-purple-400 rounded-2xl px-4 py-2.5 text-gray-700 outline-none bg-white"
+        >
+          <option value="">— No conversation —</option>
+          {conversations.map((c) => (
+            <option key={c._id} value={c._id}>{c.title}</option>
+          ))}
+        </select>
+        {conversationId && (
+          <p className="text-xs text-purple-500 font-bold mt-1">
+            Words will be tagged with this conversation
+          </p>
+        )}
       </div>
 
       {/* Drop zone */}

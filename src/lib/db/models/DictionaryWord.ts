@@ -1,4 +1,4 @@
-import { Schema, model, models } from "mongoose";
+import mongoose, { Schema, model, models } from "mongoose";
 
 const DictionaryWordSchema = new Schema(
   {
@@ -14,6 +14,7 @@ const DictionaryWordSchema = new Schema(
     jlpt_level: { type: String },
     part_of_speech: { type: String },
     tags: [{ type: String }],
+    conversationId: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation", default: null },
   },
   { timestamps: true }
 );
