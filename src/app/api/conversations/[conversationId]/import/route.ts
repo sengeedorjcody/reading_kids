@@ -17,9 +17,9 @@ export async function POST(req: NextRequest, { params }: { params: { conversatio
     const ws = wb.Sheets[wb.SheetNames[0]];
     const rows = XLSX.utils.sheet_to_json(ws) as Record<string, unknown>[];
 
-    // Excel columns: page_number, character_name, text, char_x, char_y, text_x, text_y
+    // Excel columns: page_number, character_name, text, char_x, char_y, text_x, text_y, height
     // Group rows by page_number
-    const pageMap = new Map<number, Array<{ characterName: string; text: string; charX: number; charY: number; textX: number; textY: number }>>();
+    const pageMap = new Map<number, Array<{ characterName: string; text: string; charX: number; charY: number; textX: number; textY: number; height: number }>>();
 
     for (const row of rows) {
       const pageNum = Number(row["page_number"] || row["page"] || 1);
@@ -29,9 +29,10 @@ export async function POST(req: NextRequest, { params }: { params: { conversatio
       const charY = Number(row["char_y"] ?? 50);
       const textX = Number(row["text_x"] ?? 50);
       const textY = Number(row["text_y"] ?? 80);
+      const height = Number(row["height"] ?? 200);
 
       if (!pageMap.has(pageNum)) pageMap.set(pageNum, []);
-      pageMap.get(pageNum)!.push({ characterName, text, charX, charY, textX, textY });
+      pageMap.get(pageNum)!.push({ characterName, text, charX, charY, textX, textY, height });
     }
 
     let inserted = 0;
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: { conversatio
             text: slot.text,
             characterPosition: { x: slot.charX, y: slot.charY },
             textPosition: { x: slot.textX, y: slot.textY },
+            height: slot.height,
           });
         }
 

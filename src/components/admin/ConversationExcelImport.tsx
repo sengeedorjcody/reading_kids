@@ -18,6 +18,19 @@ export default function ConversationExcelImport({ conversationId }: { conversati
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
+  const downloadTemplate = async () => {
+    const XLSX = await import("xlsx");
+    const rows = [
+      { page_number: 1, character_name: "さくら", text: "こんにちは！", height: 200, char_x: 30, char_y: 60, text_x: 30, text_y: 30 },
+      { page_number: 1, character_name: "けんた", text: "はじめまして！", height: 200, char_x: 70, char_y: 60, text_x: 70, text_y: 30 },
+      { page_number: 2, character_name: "さくら", text: "いいてんきですね。", height: 200, char_x: 50, char_y: 60, text_x: 50, text_y: 25 },
+    ];
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Pages");
+    XLSX.writeFile(wb, "conversation_template.xlsx");
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file) return;
@@ -56,11 +69,21 @@ export default function ConversationExcelImport({ conversationId }: { conversati
       </div>
 
       <div className="bg-gray-50 rounded-xl p-3 text-xs text-gray-500 space-y-1">
-        <p className="font-bold text-gray-600">Excel columns:</p>
+        <div className="flex items-center justify-between mb-1">
+          <p className="font-bold text-gray-600">Excel columns:</p>
+          <button
+            type="button"
+            onClick={downloadTemplate}
+            className="text-green-600 hover:text-green-800 font-bold text-xs underline"
+          >
+            ⬇ Download template
+          </button>
+        </div>
         <div className="grid grid-cols-2 gap-1">
           <span><span className="text-pink-500 font-bold">page_number</span> *</span>
-          <span><span className="text-pink-500 font-bold">character_name</span> * (must match character name)</span>
+          <span><span className="text-pink-500 font-bold">character_name</span> * (must match)</span>
           <span><span className="text-pink-500 font-bold">text</span> (dialogue)</span>
+          <span><span className="text-blue-500 font-bold">height</span> (px, default 200)</span>
           <span>char_x, char_y (0-100, default 50)</span>
           <span>text_x, text_y (0-100, default 50/80)</span>
         </div>
