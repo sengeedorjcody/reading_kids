@@ -15,6 +15,7 @@ const DictionaryWordSchema = new Schema(
     part_of_speech: { type: String },
     tags: [{ type: String }],
     conversationId: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation", default: null },
+    bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", default: null },
   },
   { timestamps: true }
 );

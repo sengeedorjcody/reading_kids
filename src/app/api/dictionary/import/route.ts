@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   const conversationId = (formData.get("conversationId") as string | null) || null;
+  const bookId = (formData.get("bookId") as string | null) || null;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
   const ext = file.name.split(".").pop()?.toLowerCase();
@@ -103,7 +104,7 @@ export async function POST(req: NextRequest) {
       const existing = await DictionaryWord.exists({ japanese_word: entry.japanese_word });
       await DictionaryWord.findOneAndUpdate(
         { japanese_word: entry.japanese_word },
-        { $set: { ...entry, ...(conversationId ? { conversationId } : {}) } },
+        { $set: { ...entry, ...(conversationId ? { conversationId } : {}), ...(bookId ? { bookId } : {}) } },
         { upsert: true, new: true }
       );
       if (existing) updated++;

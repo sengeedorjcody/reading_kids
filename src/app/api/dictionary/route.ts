@@ -37,6 +37,9 @@ export async function GET(request: NextRequest) {
     const conversationIdParam = searchParams.get("conversationId");
     if (conversationIdParam) query.conversationId = conversationIdParam;
 
+    const bookIdParam = searchParams.get("bookId");
+    if (bookIdParam) query.bookId = bookIdParam;
+
     const [words, total] = await Promise.all([
       DictionaryWord.find(query)
         .sort({ japanese_word: 1 })

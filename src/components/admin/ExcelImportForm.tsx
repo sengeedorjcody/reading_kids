@@ -14,6 +14,7 @@ interface ImportResult {
 }
 
 interface Conversation { _id: string; title: string; }
+interface Book { _id: string; title: string; }
 
 export default function ExcelImportForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -21,7 +22,9 @@ export default function ExcelImportForm() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [conversationId, setConversationId] = useState("");
+  const [bookId, setBookId] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -29,6 +32,10 @@ export default function ExcelImportForm() {
     fetch("/api/conversations/all")
       .then((r) => r.json())
       .then((d) => setConversations(d.conversations ?? []))
+      .catch(() => {});
+    fetch("/api/books")
+      .then((r) => r.json())
+      .then((d) => setBooks(d.books ?? []))
       .catch(() => {});
   }, []);
 
@@ -54,6 +61,7 @@ export default function ExcelImportForm() {
     const fd = new FormData();
     fd.append("file", file);
     if (conversationId) fd.append("conversationId", conversationId);
+    if (bookId) fd.append("bookId", bookId);
 
     try {
       const res = await fetch("/api/dictionary/import", { method: "POST", body: fd });
@@ -118,9 +126,27 @@ export default function ExcelImportForm() {
           ))}
         </select>
         {conversationId && (
-          <p className="text-xs text-purple-500 font-bold mt-1">
-            Words will be tagged with this conversation
-          </p>
+          <p className="text-xs text-purple-500 font-bold mt-1">Words will be tagged with this conversation</p>
+        )}
+      </div>
+
+      {/* Book picker */}
+      <div>
+        <label className="block text-sm font-bold text-gray-600 mb-1.5">
+          Link to Book <span className="text-gray-400 font-normal">(optional)</span>
+        </label>
+        <select
+          value={bookId}
+          onChange={(e) => setBookId(e.target.value)}
+          className="w-full border-2 border-gray-200 focus:border-blue-400 rounded-2xl px-4 py-2.5 text-gray-700 outline-none bg-white"
+        >
+          <option value="">— No book —</option>
+          {books.map((b) => (
+            <option key={b._id} value={b._id}>{b.title}</option>
+          ))}
+        </select>
+        {bookId && (
+          <p className="text-xs text-blue-500 font-bold mt-1">Words will be tagged with this book</p>
         )}
       </div>
 
