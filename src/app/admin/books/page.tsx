@@ -81,6 +81,12 @@ export default async function AdminBooksPage() {
                       >
                         Read
                       </Link>
+                      <Link
+                        href={`/admin/books/${book._id}/edit`}
+                        className="text-blue-500 font-bold text-sm hover:underline"
+                      >
+                        Edit
+                      </Link>
                       <DeleteButton
                         action={deleteBook.bind(null, book._id)}
                         confirmMessage="Delete this book?"
