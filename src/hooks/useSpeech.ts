@@ -44,29 +44,29 @@ function detectLang(text: string): "ja-JP" | "mn-MN" {
 
 function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
-  // Exact lang match first
-  let voice = voices.find((v) => v.lang === lang);
-  if (voice) return voice;
 
-  // Prefix match (e.g. "mn" for "mn-MN")
-  const prefix = lang.split("-")[0];
-  voice = voices.find((v) => v.lang.startsWith(prefix));
-  if (voice) return voice;
-
-  // For Mongolian, fall back to Russian (same Cyrillic script, widely available)
+  // For Mongolian: prefer Russian voice directly — same Cyrillic script, sounds natural
   if (lang === "mn-MN") {
-    voice = voices.find((v) => v.lang.startsWith("ru"));
-    if (voice) return voice;
+    return (
+      voices.find((v) => v.lang.startsWith("ru")) ??
+      voices.find((v) => v.lang.startsWith("mn"))
+    );
   }
 
-  return undefined;
+  // For other languages: exact match → prefix match
+  return (
+    voices.find((v) => v.lang === lang) ??
+    voices.find((v) => v.lang.startsWith(lang.split("-")[0]))
+  );
 }
 
 function doSpeak(text: string) {
   window.speechSynthesis.cancel();
   const lang = detectLang(text);
+  // Use ru-RU as the utterance lang for Cyrillic — Russian TTS reads it correctly
+  const utteranceLang = lang === "mn-MN" ? "ru-RU" : lang;
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
+  utterance.lang = utteranceLang;
   utterance.rate = lang === "mn-MN" ? 0.75 : 0.8;
   utterance.pitch = 1.1;
 
