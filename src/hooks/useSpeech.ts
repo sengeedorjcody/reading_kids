@@ -36,22 +36,42 @@ export function useSpeech() {
   return { speak, stop };
 }
 
-function getJapaneseVoice(): SpeechSynthesisVoice | undefined {
+/** Detect language from character unicode range */
+function detectLang(text: string): "ja-JP" | "mn-MN" {
+  // Cyrillic block: U+0400–U+04FF
+  return /[\u0400-\u04FF]/.test(text) ? "mn-MN" : "ja-JP";
+}
+
+function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
-  return voices.find(
-    (v) => v.lang.startsWith("ja") || v.name.toLowerCase().includes("japanese")
-  );
+  // Exact lang match first
+  let voice = voices.find((v) => v.lang === lang);
+  if (voice) return voice;
+
+  // Prefix match (e.g. "mn" for "mn-MN")
+  const prefix = lang.split("-")[0];
+  voice = voices.find((v) => v.lang.startsWith(prefix));
+  if (voice) return voice;
+
+  // For Mongolian, fall back to Russian (same Cyrillic script, widely available)
+  if (lang === "mn-MN") {
+    voice = voices.find((v) => v.lang.startsWith("ru"));
+    if (voice) return voice;
+  }
+
+  return undefined;
 }
 
 function doSpeak(text: string) {
   window.speechSynthesis.cancel();
+  const lang = detectLang(text);
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ja-JP";
-  utterance.rate = 0.8;
+  utterance.lang = lang;
+  utterance.rate = lang === "mn-MN" ? 0.75 : 0.8;
   utterance.pitch = 1.1;
 
-  const jaVoice = getJapaneseVoice();
-  if (jaVoice) utterance.voice = jaVoice;
+  const voice = getBestVoice(lang);
+  if (voice) utterance.voice = voice;
 
   window.speechSynthesis.speak(utterance);
 }
