@@ -20,6 +20,7 @@ export default function ConversationPageEditor({ page, characters, conversationI
       text: slot.text ?? "",
       characterPosition: slot.characterPosition ?? { x: 50, y: 50 },
       textPosition: slot.textPosition ?? { x: 50, y: 80 },
+      height: slot.height,
     }))
   );
   const [saving, setSaving] = useState(false);
@@ -184,6 +185,42 @@ function SlotEditor({ idx, slot, characters, backgroundImageUrl, displayMode, on
         />
       </div>
 
+      {/* Height override */}
+      {(() => {
+        const defaultH = (selectedChar as (ICharacter & { height?: number }) | undefined)?.height ?? 160;
+        const current = slot.height ?? defaultH;
+        return (
+          <div>
+            <label className="block text-xs font-bold text-gray-500 mb-1">
+              Height: <span className="text-pink-500">{current}px</span>
+              {slot.height === undefined && <span className="text-gray-400 ml-1">(from character)</span>}
+            </label>
+            <input
+              type="range"
+              min={40}
+              max={500}
+              step={10}
+              value={current}
+              onChange={(e) => onChange({ height: Number(e.target.value) })}
+              className="w-full accent-pink-500"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-0.5">
+              <span>40px</span>
+              {slot.height !== undefined && (
+                <button
+                  type="button"
+                  onClick={() => onChange({ height: undefined })}
+                  className="text-blue-400 hover:text-blue-600 font-bold"
+                >
+                  Reset to character default
+                </button>
+              )}
+              <span>500px</span>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Drag canvas */}
       <DragCanvas
         slot={slot}
@@ -230,7 +267,7 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
 
   const stopDrag = () => { dragging.current = null; };
 
-  const charHeight = (character as ICharacter & { height?: number })?.height ?? 80;
+  const charHeight = slot.height ?? (character as ICharacter & { height?: number })?.height ?? 80;
 
   // mobile = 9:16 portrait, desktop = 16:9 landscape
   const aspectRatio = displayMode === "desktop" ? "16 / 9" : "9 / 16";

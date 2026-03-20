@@ -98,6 +98,7 @@ export interface IConversationCharacterSlot {
   text: string;
   characterPosition: IPosition;
   textPosition: IPosition;
+  height?: number; // per-page height override
 }
 
 export interface IConversationPage {

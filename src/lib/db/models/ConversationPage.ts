@@ -7,6 +7,7 @@ const CharacterSlotSchema = new Schema({
   text: { type: String, trim: true, default: "" },
   characterPosition: { type: PositionSchema, default: () => ({ x: 50, y: 50 }) },
   textPosition: { type: PositionSchema, default: () => ({ x: 50, y: 80 }) },
+  height: { type: Number },
 }, { _id: false });
 
 export interface IConversationPageDoc extends Document {
