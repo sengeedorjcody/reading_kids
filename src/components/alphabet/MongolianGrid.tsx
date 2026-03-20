@@ -67,7 +67,7 @@ export default function MongolianGrid({ chars }: MongolianGridProps) {
           {/* Cards */}
           <div className={`grid ${section.cols} gap-3`}>
             {grouped[section.key].map((c) => (
-              <CharacterCard key={c.char} kana={c} />
+              <CharacterCard key={c.char} kana={c} speakText={c.char.toLowerCase()} />
             ))}
           </div>
         </div>
