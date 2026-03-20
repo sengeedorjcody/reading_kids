@@ -234,7 +234,7 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
 
   // mobile = 9:16 portrait, desktop = 16:9 landscape
   const aspectRatio = displayMode === "desktop" ? "16 / 9" : "9 / 16";
-  const MAX_H = 320;
+  const MAX_H = 500;
   const maxWidth = displayMode === "desktop" ? Math.round(MAX_H * 16 / 9) : Math.round(MAX_H * 9 / 16);
 
   return (

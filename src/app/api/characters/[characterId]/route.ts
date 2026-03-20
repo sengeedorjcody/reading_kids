@@ -13,6 +13,18 @@ export async function GET(_: NextRequest, { params }: { params: { characterId: s
   }
 }
 
+export async function PATCH(req: NextRequest, { params }: { params: { characterId: string } }) {
+  try {
+    await connectDB();
+    const body = await req.json();
+    const character = await Character.findByIdAndUpdate(params.characterId, body, { new: true }).lean();
+    if (!character) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ character });
+  } catch {
+    return NextResponse.json({ error: "Failed to update character" }, { status: 500 });
+  }
+}
+
 export async function DELETE(_: NextRequest, { params }: { params: { characterId: string } }) {
   try {
     await connectDB();

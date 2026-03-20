@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ICharacter } from "@/types";
 
@@ -33,14 +34,22 @@ export default function CharacterGrid({ characters }: { characters: ICharacter[]
               <span className="text-5xl">🧑</span>
             )}
           </div>
-          <div className="p-3 flex items-center justify-between">
+          <div className="p-3 space-y-1">
             <p className="font-black text-gray-700 text-sm truncate">{char.name}</p>
-            <button
-              onClick={() => handleDelete(char._id)}
-              className="text-xs text-red-400 hover:text-red-600 font-bold ml-2 flex-shrink-0"
-            >
-              ✕
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                href={`/admin/characters/${char._id}/edit`}
+                className="text-xs text-blue-500 hover:underline font-bold"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDelete(char._id)}
+                className="text-xs text-red-400 hover:text-red-600 font-bold"
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </div>
       ))}
