@@ -81,6 +81,8 @@ export default async function AdminConversationDetailPage({ params }: { params: 
             page={page}
             characters={charList}
             conversationId={params.conversationId}
+            backgroundImageUrl={conversation.backgroundImageUrl}
+            displayMode={conversation.displayMode}
           />
         ))}
 

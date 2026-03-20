@@ -8,9 +8,11 @@ interface Props {
   page: IConversationPage;
   characters: ICharacter[];
   conversationId: string;
+  backgroundImageUrl?: string;
+  displayMode?: "mobile" | "desktop";
 }
 
-export default function ConversationPageEditor({ page, characters, conversationId }: Props) {
+export default function ConversationPageEditor({ page, characters, conversationId, backgroundImageUrl, displayMode = "mobile" }: Props) {
   const router = useRouter();
   const [slots, setSlots] = useState<IConversationCharacterSlot[]>(() =>
     (page.characters ?? []).map((slot) => ({
@@ -94,6 +96,8 @@ export default function ConversationPageEditor({ page, characters, conversationI
               idx={idx}
               slot={slot}
               characters={characters}
+              backgroundImageUrl={backgroundImageUrl}
+              displayMode={displayMode}
               onChange={(updates) => updateSlot(idx, updates)}
               onRemove={() => removeSlot(idx)}
             />
@@ -129,10 +133,12 @@ export default function ConversationPageEditor({ page, characters, conversationI
   );
 }
 
-function SlotEditor({ idx, slot, characters, onChange, onRemove }: {
+function SlotEditor({ idx, slot, characters, backgroundImageUrl, displayMode, onChange, onRemove }: {
   idx: number;
   slot: IConversationCharacterSlot;
   characters: ICharacter[];
+  backgroundImageUrl?: string;
+  displayMode?: "mobile" | "desktop";
   onChange: (updates: Partial<IConversationCharacterSlot>) => void;
   onRemove: () => void;
 }) {
@@ -182,6 +188,8 @@ function SlotEditor({ idx, slot, characters, onChange, onRemove }: {
       <DragCanvas
         slot={slot}
         character={selectedChar}
+        backgroundImageUrl={backgroundImageUrl}
+        displayMode={displayMode}
         onCharacterMove={(pos) => onChange({ characterPosition: pos })}
         onTextMove={(pos) => onChange({ textPosition: pos })}
       />
@@ -189,9 +197,11 @@ function SlotEditor({ idx, slot, characters, onChange, onRemove }: {
   );
 }
 
-function DragCanvas({ slot, character, onCharacterMove, onTextMove }: {
+function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile", onCharacterMove, onTextMove }: {
   slot: IConversationCharacterSlot;
   character: ICharacter | undefined;
+  backgroundImageUrl?: string;
+  displayMode?: "mobile" | "desktop";
   onCharacterMove: (pos: { x: number; y: number }) => void;
   onTextMove: (pos: { x: number; y: number }) => void;
 }) {
@@ -222,9 +232,17 @@ function DragCanvas({ slot, character, onCharacterMove, onTextMove }: {
 
   const charHeight = (character as ICharacter & { height?: number })?.height ?? 80;
 
+  // mobile = 9:16 portrait, desktop = 16:9 landscape
+  const aspectRatio = displayMode === "desktop" ? "16 / 9" : "9 / 16";
+
   return (
     <div className="space-y-1">
-      <p className="text-xs font-bold text-gray-500">Drag to position</p>
+      <div className="flex items-center gap-2">
+        <p className="text-xs font-bold text-gray-500">Drag to position</p>
+        <span className="text-xs bg-gray-100 text-gray-500 font-bold px-2 py-0.5 rounded-full">
+          {displayMode === "desktop" ? "🖥️ Desktop" : "📱 Mobile"}
+        </span>
+      </div>
       <div
         ref={canvasRef}
         onMouseMove={onMove}
@@ -232,8 +250,14 @@ function DragCanvas({ slot, character, onCharacterMove, onTextMove }: {
         onMouseLeave={stopDrag}
         onTouchMove={onMove}
         onTouchEnd={stopDrag}
-        className="relative w-full bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl overflow-hidden border-2 border-gray-200 select-none"
-        style={{ height: 200 }}
+        className="relative w-full rounded-xl overflow-hidden border-2 border-gray-200 select-none"
+        style={{
+          aspectRatio,
+          backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundColor: backgroundImageUrl ? undefined : "#ede9fe",
+        }}
       >
         {/* Character — draggable */}
         <div
