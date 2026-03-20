@@ -36,21 +36,38 @@ export function useSpeech() {
   return { speak, stop };
 }
 
-function speakWithWebAPI(text: string) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+function getJapaneseVoice(): SpeechSynthesisVoice | undefined {
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find(
+    (v) => v.lang.startsWith("ja") || v.name.toLowerCase().includes("japanese")
+  );
+}
 
+function doSpeak(text: string) {
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = "ja-JP";
   utterance.rate = 0.8;
   utterance.pitch = 1.1;
 
-  // Try to find a Japanese voice
-  const voices = window.speechSynthesis.getVoices();
-  const jaVoice = voices.find(
-    (v) => v.lang.startsWith("ja") || v.name.toLowerCase().includes("japanese")
-  );
+  const jaVoice = getJapaneseVoice();
   if (jaVoice) utterance.voice = jaVoice;
 
   window.speechSynthesis.speak(utterance);
+}
+
+function speakWithWebAPI(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+  // Voices may not be loaded yet on first call — wait for voiceschanged if needed
+  const voices = window.speechSynthesis.getVoices();
+  if (voices.length === 0) {
+    const handler = () => {
+      window.speechSynthesis.removeEventListener("voiceschanged", handler);
+      doSpeak(text);
+    };
+    window.speechSynthesis.addEventListener("voiceschanged", handler);
+  } else {
+    doSpeak(text);
+  }
 }

@@ -11,6 +11,7 @@ export default function DictionaryPage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [total, setTotal] = useState(0);
+  const [exporting, setExporting] = useState(false);
 
   // Debounce search input
   useEffect(() => {
@@ -37,12 +38,40 @@ export default function DictionaryPage() {
 
   useEffect(() => { fetchWords(); }, [fetchWords]);
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch("/api/dictionary/export");
+      if (!res.ok) throw new Error("Export failed");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "dictionary_export.xlsx";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Export failed. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-black text-gray-800 mb-2">📝 Dictionary</h1>
-        <p className="text-xl text-gray-500">じしょ を みよう！</p>
+      <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <h1 className="text-4xl font-black text-gray-800 mb-2">📝 Dictionary</h1>
+          <p className="text-xl text-gray-500">じしょ を みよう！</p>
+        </div>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-500 hover:bg-green-600 disabled:opacity-60 text-white font-bold text-sm transition-colors"
+        >
+          {exporting ? "⏳ Exporting..." : "📥 Export Excel"}
+        </button>
       </div>
 
       {/* Search */}

@@ -25,7 +25,7 @@ export default function DictionaryPanel() {
     setNotFound(false);
     setLiveMn("");
 
-    fetch(`/api/dictionary?q=${encodeURIComponent(selectedSurface)}&limit=1`)
+    fetch(`/api/dictionary?q=${encodeURIComponent(selectedSurface)}&exact=true&limit=1`)
       .then((r) => r.json())
       .then((data: { words: IDictionaryWord[] }) => {
         if (cancelled) return;

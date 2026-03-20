@@ -8,19 +8,28 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const q = searchParams.get("q");
     const level = searchParams.get("level");
+    const exact = searchParams.get("exact") === "true";
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "30");
 
     const query: Record<string, unknown> = {};
 
     if (q && q.trim()) {
-      // Text search or regex match
-      query.$or = [
-        { japanese_word: { $regex: q, $options: "i" } },
-        { hiragana: { $regex: q, $options: "i" } },
-        { romaji: { $regex: q, $options: "i" } },
-        { english_meaning: { $regex: q, $options: "i" } },
-      ];
+      if (exact) {
+        // Exact match on japanese_word or hiragana only (used by DictionaryPanel)
+        query.$or = [
+          { japanese_word: q.trim() },
+          { hiragana: q.trim() },
+        ];
+      } else {
+        // Partial / regex match for search UI
+        query.$or = [
+          { japanese_word: { $regex: q, $options: "i" } },
+          { hiragana: { $regex: q, $options: "i" } },
+          { romaji: { $regex: q, $options: "i" } },
+          { english_meaning: { $regex: q, $options: "i" } },
+        ];
+      }
     }
 
     if (level && level !== "all") query.jlpt_level = level;
