@@ -3,6 +3,7 @@ export const dynamic = "force-dynamic";
 import { connectDB } from "@/lib/db/mongoose";
 import Image from "@/lib/db/models/Image";
 import { IImageDoc } from "@/lib/db/models/Image";
+import DeleteImageButton from "@/components/admin/DeleteImageButton";
 
 async function getImages(): Promise<IImageDoc[]> {
   await connectDB();
@@ -52,6 +53,7 @@ export default async function AdminImagesPage() {
                 >
                   Open ↗
                 </a>
+                <DeleteImageButton imageId={String(img._id)} />
               </div>
             </div>
           ))}
