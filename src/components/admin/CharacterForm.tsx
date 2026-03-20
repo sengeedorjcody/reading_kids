@@ -7,6 +7,7 @@ export default function CharacterForm() {
   const [name, setName] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [preview, setPreview] = useState("");
+  const [height, setHeight] = useState(160);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -50,7 +51,7 @@ export default function CharacterForm() {
       const res = await fetch("/api/characters", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), imageUrl: imageUrl.trim() }),
+        body: JSON.stringify({ name: name.trim(), imageUrl: imageUrl.trim(), height }),
       });
       if (!res.ok) throw new Error("Failed");
       router.push("/admin/characters");
@@ -70,7 +71,8 @@ export default function CharacterForm() {
       <div className="flex justify-center">
         <div
           onClick={() => fileRef.current?.click()}
-          className="w-32 h-32 rounded-3xl bg-gradient-to-br from-pink-50 to-purple-100 border-2 border-dashed border-pink-300 overflow-hidden flex items-center justify-center cursor-pointer hover:border-pink-500 transition-colors relative group"
+          className="rounded-3xl bg-gradient-to-br from-pink-50 to-purple-100 border-2 border-dashed border-pink-300 overflow-hidden flex items-center justify-center cursor-pointer hover:border-pink-500 transition-colors relative group"
+          style={{ width: height, height: height }}
         >
           {displayImage ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -118,6 +120,26 @@ export default function CharacterForm() {
             placeholder="e.g. さくら"
             className="w-full border-2 border-gray-200 focus:border-pink-400 rounded-2xl px-4 py-3 text-gray-700 font-bold outline-none transition-colors"
           />
+        </div>
+
+        {/* Height chooser */}
+        <div>
+          <label className="block text-sm font-bold text-gray-600 mb-2">
+            Height: <span className="text-pink-500">{height}px</span>
+          </label>
+          <input
+            type="range"
+            min={60}
+            max={400}
+            step={10}
+            value={height}
+            onChange={(e) => setHeight(Number(e.target.value))}
+            className="w-full accent-pink-500"
+          />
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
+            <span>60px</span>
+            <span>400px</span>
+          </div>
         </div>
 
         {error && <p className="text-red-500 text-sm font-bold">{error}</p>}
