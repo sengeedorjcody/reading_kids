@@ -253,6 +253,7 @@ function DragCanvas({ slot, character, backgroundImageUrl, displayMode = "mobile
         className="relative w-full rounded-xl overflow-hidden border-2 border-gray-200 select-none"
         style={{
           aspectRatio,
+          maxHeight: 320,
           backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
