@@ -7,14 +7,15 @@ import { cn } from "@/lib/utils";
 
 interface CharacterCardProps {
   kana: KanaChar;
+  speakText?: string; // override what gets spoken (e.g. romaji for Mongolian)
 }
 
-export default function CharacterCard({ kana }: CharacterCardProps) {
+export default function CharacterCard({ kana, speakText }: CharacterCardProps) {
   const [clicked, setClicked] = useState(false);
   const { speak } = useSpeech();
 
   const handleClick = () => {
-    speak(kana.char);
+    speak(speakText ?? kana.char);
     setClicked(true);
     setTimeout(() => setClicked(false), 500);
   };
