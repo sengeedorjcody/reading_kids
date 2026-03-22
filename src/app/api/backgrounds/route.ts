@@ -21,9 +21,19 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
     const name = (formData.get("name") as string | null)?.trim();
+    const imageUrl = (formData.get("imageUrl") as string | null)?.trim();
 
-    if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
     if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
+
+    await connectDB();
+
+    // URL-only path — save without uploading
+    if (imageUrl) {
+      const background = await Background.create({ name, imageUrl, key: `url/${Date.now()}` });
+      return NextResponse.json({ background }, { status: 201 });
+    }
+
+    if (!file) return NextResponse.json({ error: "No file or URL provided" }, { status: 400 });
     if (!ALLOWED_TYPES.includes(file.type))
       return NextResponse.json({ error: "Only JPEG, PNG, WebP, GIF allowed" }, { status: 400 });
     if (file.size > MAX_SIZE)
@@ -34,7 +44,6 @@ export async function POST(req: NextRequest) {
     const key = `backgrounds/${Date.now()}_${safeName}`;
     const url = await uploadToS3(buffer, key, file.type);
 
-    await connectDB();
     const background = await Background.create({ name, imageUrl: url, key });
 
     return NextResponse.json({ background }, { status: 201 });
