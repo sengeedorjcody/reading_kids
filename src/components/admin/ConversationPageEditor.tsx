@@ -82,7 +82,7 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
           {/* Background picker */}
           <div className="space-y-2">
             <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
-            <div className={`grid gap-2 ${displayMode === "desktop" ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-3 sm:grid-cols-4"}`}>
+            <div className={`grid gap-1.5 ${displayMode === "desktop" ? "grid-cols-4 sm:grid-cols-5" : "grid-cols-5 sm:grid-cols-6"}`}>
               {/* Default button — shows actual fallback image if available */}
               <button
                 type="button"
