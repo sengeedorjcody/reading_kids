@@ -29,19 +29,18 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
       </div>
 
       {/* Right: Scene */}
-      <div className="flex-1 overflow-hidden flex flex-col items-center justify-start p-4">
+      <div className="flex-1 overflow-y-auto flex flex-col items-center justify-start p-4 gap-2">
         <div
-          className="w-full"
-          style={{
-            aspectRatio: isMobile ? "3 / 4" : "16 / 9",
-            maxHeight: "calc(100vh - 2rem)",
-          }}
+          className="w-full relative"
+          style={{ aspectRatio: isMobile ? "3 / 4" : "16 / 9" }}
         >
-          <ConversationScene
-            conversation={conversation}
-            page={page}
-            currentPage={currentPage}
-          />
+          <div className="absolute inset-0">
+            <ConversationScene
+              conversation={conversation}
+              page={page}
+              currentPage={currentPage}
+            />
+          </div>
         </div>
       </div>
 
