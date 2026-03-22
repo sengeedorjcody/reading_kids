@@ -29,7 +29,7 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
       </div>
 
       {/* Right: Scene */}
-      <div className="flex-1 overflow-hidden flex flex-col items-center justify-center p-4">
+      <div className="flex-1 overflow-hidden flex flex-col items-center justify-start p-4">
         <div
           className="w-full"
           style={{
