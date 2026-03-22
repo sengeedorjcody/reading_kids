@@ -29,20 +29,12 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
       </div>
 
       {/* Right: Scene */}
-      <div className="flex-1 overflow-hidden flex items-start justify-center">
-        <div
-          className="h-full"
-          style={{
-            aspectRatio: isMobile ? "3 / 4" : "16 / 9",
-            maxWidth: "100%",
-          }}
-        >
-          <ConversationScene
-            conversation={conversation}
-            page={page}
-            currentPage={currentPage}
-          />
-        </div>
+      <div className="flex-1 overflow-hidden">
+        <ConversationScene
+          conversation={conversation}
+          page={page}
+          currentPage={currentPage}
+        />
       </div>
 
       {/* Mobile: collapsible dictionary — only visible when a word is selected */}
