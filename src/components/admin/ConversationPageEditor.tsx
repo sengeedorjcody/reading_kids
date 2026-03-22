@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IConversationPage, ITextSlot } from "@/types";
 
-interface IBackground { _id: string; name: string; imageUrl: string; }
+interface IBackground { _id: unknown; name: string; imageUrl: string; }
 
 interface Props {
   page: IConversationPage;
@@ -95,7 +95,7 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
               </button>
               {backgrounds.map((bg) => (
                 <button
-                  key={bg._id}
+                  key={String(bg._id)}
                   type="button"
                   onClick={() => setPageBackground(bg.imageUrl)}
                   title={bg.name}
