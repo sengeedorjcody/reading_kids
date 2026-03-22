@@ -81,15 +81,16 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
           {/* Background picker */}
           <div className="space-y-2">
             <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+            <div className={`grid gap-2 ${displayMode === "desktop" ? "grid-cols-2 sm:grid-cols-3" : "grid-cols-3 sm:grid-cols-4"}`}>
               <button
                 type="button"
                 onClick={() => setPageBackground(undefined)}
-                className={`aspect-video rounded-xl border-2 flex items-center justify-center text-xs font-bold transition-all ${
+                className={`rounded-xl border-2 flex items-center justify-center text-xs font-bold transition-all ${
                   pageBackground === undefined
                     ? "border-rose-400 bg-rose-50 text-rose-600"
                     : "border-gray-200 text-gray-400 hover:border-gray-300"
                 }`}
+                style={{ aspectRatio: displayMode === "desktop" ? "16 / 9" : "9 / 16" }}
               >
                 {fallbackBackgroundImageUrl ? "Default" : "None"}
               </button>
@@ -99,11 +100,12 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
                   type="button"
                   onClick={() => setPageBackground(bg.imageUrl)}
                   title={bg.name}
-                  className={`aspect-video rounded-xl border-2 overflow-hidden transition-all ${
+                  className={`rounded-xl border-2 overflow-hidden transition-all ${
                     pageBackground === bg.imageUrl
                       ? "border-rose-400 ring-2 ring-rose-300"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
+                  style={{ aspectRatio: displayMode === "desktop" ? "16 / 9" : "9 / 16" }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
