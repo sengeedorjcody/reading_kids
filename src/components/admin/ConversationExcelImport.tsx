@@ -21,9 +21,10 @@ export default function ConversationExcelImport({ conversationId }: { conversati
   const downloadTemplate = async () => {
     const XLSX = await import("xlsx");
     const rows = [
-      { page_number: 1, character_name: "さくら", text: "こんにちは！", height: 200, char_x: 30, char_y: 60, text_x: 30, text_y: 30 },
-      { page_number: 1, character_name: "けんた", text: "はじめまして！", height: 200, char_x: 70, char_y: 60, text_x: 70, text_y: 30 },
-      { page_number: 2, character_name: "さくら", text: "いいてんきですね。", height: 200, char_x: 50, char_y: 60, text_x: 50, text_y: 25 },
+      { page_number: 1, text: "こんにちは！", text_x: 30, text_y: 30, background_url: "" },
+      { page_number: 1, text: "はじめまして！", text_x: 70, text_y: 60, background_url: "" },
+      { page_number: 2, text: "いいてんきですね。", text_x: 50, text_y: 40, background_url: "" },
+      { page_number: 2, text: "そうですね！", text_x: 50, text_y: 70, background_url: "" },
     ];
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -80,14 +81,13 @@ export default function ConversationExcelImport({ conversationId }: { conversati
           </button>
         </div>
         <div className="grid grid-cols-2 gap-1">
-          <span><span className="text-pink-500 font-bold">page_number</span> *</span>
-          <span><span className="text-pink-500 font-bold">character_name</span> * (must match)</span>
-          <span><span className="text-pink-500 font-bold">text</span> (dialogue)</span>
-          <span><span className="text-blue-500 font-bold">height</span> (px, default 200)</span>
-          <span>char_x, char_y (0-100, default 50)</span>
-          <span>text_x, text_y (0-100, default 50/80)</span>
+          <span><span className="text-pink-500 font-bold">page_number</span> * (required)</span>
+          <span><span className="text-pink-500 font-bold">text</span> * (dialogue text)</span>
+          <span><span className="text-blue-500 font-bold">text_x</span> (0–100, default 50)</span>
+          <span><span className="text-blue-500 font-bold">text_y</span> (0–100, default 50)</span>
+          <span><span className="text-purple-500 font-bold">background_url</span> (optional, first row per page)</span>
         </div>
-        <p className="text-gray-400">Multiple rows with same page_number = multiple characters on that page</p>
+        <p className="text-gray-400">Multiple rows with same page_number = multiple text bubbles on that page</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
