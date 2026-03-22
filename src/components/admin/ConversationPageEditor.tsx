@@ -214,51 +214,77 @@ function SharedDragCanvas({ texts, backgroundImageUrl, displayMode = "mobile", o
   return (
     <div className="space-y-1">
       <p className="text-xs font-bold text-gray-500">Drag bubbles to position</p>
+      {/* Outer shell matching ConversationLayout */}
       <div
-        ref={canvasRef}
-        onMouseMove={(e) => {
-          if (dragging.current === null) return;
-          e.preventDefault();
-          const p = toPercent(e);
-          if (p) onMove(dragging.current, p);
-        }}
-        onMouseUp={() => { dragging.current = null; }}
-        onMouseLeave={() => { dragging.current = null; }}
-        onTouchMove={(e) => {
-          if (dragging.current === null) return;
-          e.preventDefault();
-          const p = toPercent(e);
-          if (p) onMove(dragging.current, p);
-        }}
-        onTouchEnd={() => { dragging.current = null; }}
-        className="relative w-full rounded-xl overflow-hidden border-2 border-gray-200 select-none"
-        style={{
-          aspectRatio,
-          maxHeight: MAX_H,
-          maxWidth,
-          margin: "0 auto",
-          backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundColor: backgroundImageUrl ? undefined : "#ede9fe",
-        }}
+        className="rounded-2xl overflow-hidden shadow-lg select-none"
+        style={{ maxWidth, margin: "0 auto", background: "#1a0a2e" }}
       >
-        {texts.map((slot, idx) => (
-          <div
-            key={idx}
-            className="absolute cursor-grab active:cursor-grabbing bg-white rounded-2xl px-3 py-1.5 shadow-lg border-2 border-pink-200 text-xs font-bold text-gray-700 max-w-[150px] truncate"
-            style={{
-              left: `${slot.position.x}%`,
-              top: `${slot.position.y}%`,
-              transform: "translate(-50%, -50%)",
-              touchAction: "none",
-            }}
-            onMouseDown={(e) => { e.preventDefault(); dragging.current = idx; }}
-            onTouchStart={(e) => { e.preventDefault(); dragging.current = idx; }}
-          >
-            {slot.text || `💬 ${idx + 1}`}
+        {/* Scene — matches ConversationScene root */}
+        <div
+          ref={canvasRef}
+          onMouseMove={(e) => {
+            if (dragging.current === null) return;
+            e.preventDefault();
+            const p = toPercent(e);
+            if (p) onMove(dragging.current, p);
+          }}
+          onMouseUp={() => { dragging.current = null; }}
+          onMouseLeave={() => { dragging.current = null; }}
+          onTouchMove={(e) => {
+            if (dragging.current === null) return;
+            e.preventDefault();
+            const p = toPercent(e);
+            if (p) onMove(dragging.current, p);
+          }}
+          onTouchEnd={() => { dragging.current = null; }}
+          className="relative w-full overflow-hidden"
+          style={{ aspectRatio, maxHeight: MAX_H }}
+        >
+          {/* Background */}
+          {backgroundImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={backgroundImageUrl} alt="bg" className="absolute inset-0 w-full h-full object-cover" />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-b from-purple-900 via-indigo-900 to-pink-900" />
+          )}
+
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/30" />
+
+          {/* Header bar */}
+          <div className="relative z-10 flex items-center justify-between px-3 py-2 bg-black/40 backdrop-blur-sm">
+            <span className="text-white/60 text-[10px] font-bold">← Back</span>
+            <span className="text-white font-black text-[10px] truncate flex-1 text-center px-2">Preview</span>
+            <span className="text-white/60 text-[10px] font-bold">1/1</span>
           </div>
-        ))}
+
+          {/* Page dots */}
+          <div className="relative z-10 flex justify-center gap-1 py-1">
+            <div className="w-4 h-1.5 rounded-full bg-white" />
+          </div>
+
+          {/* Text bubbles — draggable */}
+          {texts.map((slot, idx) => (
+            <div
+              key={idx}
+              className="absolute z-20 cursor-grab active:cursor-grabbing bg-white rounded-2xl px-3 py-1.5 shadow-xl border-2 border-pink-200 text-xs font-bold text-gray-700 max-w-[150px] truncate"
+              style={{
+                left: `${slot.position.x}%`,
+                top: `${slot.position.y}%`,
+                transform: "translate(-50%, -50%)",
+                touchAction: "none",
+              }}
+              onMouseDown={(e) => { e.preventDefault(); dragging.current = idx; }}
+              onTouchStart={(e) => { e.preventDefault(); dragging.current = idx; }}
+            >
+              {slot.text || `💬 ${idx + 1}`}
+            </div>
+          ))}
+
+          {/* Nav arrows */}
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-6 h-10 bg-white/20 text-white font-black text-xs rounded-r-xl">←</div>
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-6 h-10 bg-pink-500 text-white font-black text-xs rounded-l-xl">→</div>
+        </div>
       </div>
     </div>
   );
