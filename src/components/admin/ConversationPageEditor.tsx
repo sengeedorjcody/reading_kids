@@ -4,7 +4,11 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IConversationPage, ITextSlot } from "@/types";
 
-interface IBackground { _id: unknown; name: string; imageUrl: string; }
+interface IBackground {
+  _id: unknown;
+  name: string;
+  imageUrl: string;
+}
 
 interface Props {
   page: IConversationPage;
@@ -14,27 +18,46 @@ interface Props {
   displayMode?: "mobile" | "desktop";
 }
 
-export default function ConversationPageEditor({ page, backgrounds, conversationId, fallbackBackgroundImageUrl, displayMode = "mobile" }: Props) {
+export default function ConversationPageEditor({
+  page,
+  backgrounds,
+  conversationId,
+  fallbackBackgroundImageUrl,
+  displayMode = "mobile",
+}: Props) {
   const router = useRouter();
   const [texts, setTexts] = useState<ITextSlot[]>(page.texts ?? []);
-  const [pageBackground, setPageBackground] = useState<string | undefined>(page.backgroundImageUrl);
+  const [pageBackground, setPageBackground] = useState<string | undefined>(
+    page.backgroundImageUrl
+  );
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  const addText = () => setTexts([...texts, { text: "", position: { x: 50, y: 50 + texts.length * 15 } }]);
-  const removeText = (idx: number) => setTexts(texts.filter((_, i) => i !== idx));
+  const addText = () =>
+    setTexts([
+      ...texts,
+      { text: "", position: { x: 50, y: 50 + texts.length * 15 } },
+    ]);
+  const removeText = (idx: number) =>
+    setTexts(texts.filter((_, i) => i !== idx));
   const updateText = (idx: number, updates: Partial<ITextSlot>) =>
-    setTexts(texts.map((t, i) => i === idx ? { ...t, ...updates } : t));
+    setTexts(texts.map((t, i) => (i === idx ? { ...t, ...updates } : t)));
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await fetch(`/api/conversations/${conversationId}/pages/${page.pageNumber}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texts, backgroundImageUrl: pageBackground ?? null }),
-      });
+      await fetch(
+        `/api/conversations/${conversationId}/pages/${page.pageNumber}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            texts,
+            backgroundImageUrl: pageBackground ?? null,
+          }),
+        }
+      );
       router.refresh();
     } finally {
       setSaving(false);
@@ -45,7 +68,10 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
     if (!confirm(`Delete page ${page.pageNumber}?`)) return;
     setDeleting(true);
     try {
-      await fetch(`/api/conversations/${conversationId}/pages/${page.pageNumber}`, { method: "DELETE" });
+      await fetch(
+        `/api/conversations/${conversationId}/pages/${page.pageNumber}`,
+        { method: "DELETE" }
+      );
       router.refresh();
     } finally {
       setDeleting(false);
@@ -68,10 +94,16 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
           </span>
           {activeBackground && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={activeBackground} alt="bg" className="w-8 h-5 object-cover rounded" />
+            <img
+              src={activeBackground}
+              alt="bg"
+              className="w-8 h-5 object-cover rounded"
+            />
           )}
           <span className="font-bold text-gray-500 text-sm">
-            {texts.length === 0 ? "No text" : `${texts.length} text bubble${texts.length > 1 ? "s" : ""}`}
+            {texts.length === 0
+              ? "No text"
+              : `${texts.length} text bubble${texts.length > 1 ? "s" : ""}`}
           </span>
         </div>
         <span className="text-gray-400 text-sm">{expanded ? "▲" : "▼"}</span>
@@ -81,8 +113,16 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
         <div className="px-4 pb-4 border-t border-gray-50 space-y-4">
           {/* Background picker */}
           <div className="space-y-2">
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
-            <div className={`grid gap-1.5 ${displayMode === "desktop" ? "grid-cols-4 sm:grid-cols-5" : "grid-cols-5 sm:grid-cols-6"}`}>
+            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">
+              🌅 Page Background
+            </label>
+            <div
+              className={`grid gap-1.5 ${
+                displayMode === "desktop"
+                  ? "grid-cols-4 sm:grid-cols-5"
+                  : "grid-cols-5 sm:grid-cols-6"
+              }`}
+            >
               {/* Default button — shows actual fallback image if available */}
               <button
                 type="button"
@@ -92,18 +132,26 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
                     ? "border-rose-400 ring-2 ring-rose-300"
                     : "border-gray-200 hover:border-gray-400"
                 }`}
-                style={{ aspectRatio, maxHeight: 52 }}
+                style={{ aspectRatio, maxHeight: 250 }}
               >
                 {fallbackBackgroundImageUrl ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={fallbackBackgroundImageUrl} alt="default" className="w-full h-full object-cover" />
+                    <img
+                      src={fallbackBackgroundImageUrl}
+                      alt="default"
+                      className="w-full h-full object-cover"
+                    />
                     <span className="absolute inset-0 flex items-end justify-center pb-1">
-                      <span className="bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Default</span>
+                      <span className="bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        Default
+                      </span>
                     </span>
                   </>
                 ) : (
-                  <span className="flex items-center justify-center h-full text-xs font-bold text-gray-400">None</span>
+                  <span className="flex items-center justify-center h-full text-xs font-bold text-gray-400">
+                    None
+                  </span>
                 )}
               </button>
 
@@ -118,10 +166,14 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
                       ? "border-rose-400 ring-2 ring-rose-300"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
-                  style={{ aspectRatio, maxHeight: 52 }}
+                  style={{ aspectRatio, maxHeight: 250 }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
+                  <img
+                    src={bg.imageUrl}
+                    alt={bg.name}
+                    className="w-full h-full object-cover"
+                  />
                 </button>
               ))}
             </div>
@@ -130,7 +182,9 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
           {/* Text inputs */}
           {texts.map((slot, idx) => (
             <div key={idx} className="flex items-start gap-2">
-              <span className="mt-2 text-xs font-black text-gray-400 w-5 text-center">{idx + 1}</span>
+              <span className="mt-2 text-xs font-black text-gray-400 w-5 text-center">
+                {idx + 1}
+              </span>
               <textarea
                 value={slot.text}
                 onChange={(e) => updateText(idx, { text: e.target.value })}
@@ -187,7 +241,12 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
   );
 }
 
-function SharedDragCanvas({ texts, backgroundImageUrl, displayMode = "mobile", onMove }: {
+function SharedDragCanvas({
+  texts,
+  backgroundImageUrl,
+  displayMode = "mobile",
+  onMove,
+}: {
   texts: ITextSlot[];
   backgroundImageUrl?: string;
   displayMode?: "mobile" | "desktop";
@@ -199,21 +258,32 @@ function SharedDragCanvas({ texts, backgroundImageUrl, displayMode = "mobile", o
   const toPercent = (e: React.MouseEvent | React.TouchEvent) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return null;
-    const clientX = "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+    const clientX =
+      "touches" in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+    const clientY =
+      "touches" in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
     return {
-      x: Math.round(Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100))),
-      y: Math.round(Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100))),
+      x: Math.round(
+        Math.min(100, Math.max(0, ((clientX - rect.left) / rect.width) * 100))
+      ),
+      y: Math.round(
+        Math.min(100, Math.max(0, ((clientY - rect.top) / rect.height) * 100))
+      ),
     };
   };
 
   const aspectRatio = displayMode === "desktop" ? "16 / 9" : "9 / 16";
   const MAX_H = 500;
-  const maxWidth = displayMode === "desktop" ? Math.round(MAX_H * 16 / 9) : Math.round(MAX_H * 9 / 16);
+  const maxWidth =
+    displayMode === "desktop"
+      ? Math.round((MAX_H * 16) / 9)
+      : Math.round((MAX_H * 9) / 16);
 
   return (
     <div className="space-y-1">
-      <p className="text-xs font-bold text-gray-500">Drag bubbles to position</p>
+      <p className="text-xs font-bold text-gray-500">
+        Drag bubbles to position
+      </p>
       <div
         ref={canvasRef}
         onMouseMove={(e) => {
@@ -222,22 +292,30 @@ function SharedDragCanvas({ texts, backgroundImageUrl, displayMode = "mobile", o
           const p = toPercent(e);
           if (p) onMove(dragging.current, p);
         }}
-        onMouseUp={() => { dragging.current = null; }}
-        onMouseLeave={() => { dragging.current = null; }}
+        onMouseUp={() => {
+          dragging.current = null;
+        }}
+        onMouseLeave={() => {
+          dragging.current = null;
+        }}
         onTouchMove={(e) => {
           if (dragging.current === null) return;
           e.preventDefault();
           const p = toPercent(e);
           if (p) onMove(dragging.current, p);
         }}
-        onTouchEnd={() => { dragging.current = null; }}
+        onTouchEnd={() => {
+          dragging.current = null;
+        }}
         className="relative w-full rounded-xl overflow-hidden border-2 border-gray-200 select-none"
         style={{
           aspectRatio,
           maxHeight: MAX_H,
           maxWidth,
           margin: "0 auto",
-          backgroundImage: backgroundImageUrl ? `url(${backgroundImageUrl})` : undefined,
+          backgroundImage: backgroundImageUrl
+            ? `url(${backgroundImageUrl})`
+            : undefined,
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundColor: backgroundImageUrl ? undefined : "#ede9fe",
@@ -253,8 +331,14 @@ function SharedDragCanvas({ texts, backgroundImageUrl, displayMode = "mobile", o
               transform: "translate(-50%, -50%)",
               touchAction: "none",
             }}
-            onMouseDown={(e) => { e.preventDefault(); dragging.current = idx; }}
-            onTouchStart={(e) => { e.preventDefault(); dragging.current = idx; }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              dragging.current = idx;
+            }}
+            onTouchStart={(e) => {
+              e.preventDefault();
+              dragging.current = idx;
+            }}
           >
             {slot.text || `💬 ${idx + 1}`}
           </div>
