@@ -10,6 +10,11 @@ const CharacterSlotSchema = new Schema({
   height: { type: Number },
 }, { _id: false });
 
+const TextSlotSchema = new Schema({
+  text: { type: String, trim: true, default: "" },
+  position: { type: PositionSchema, default: () => ({ x: 50, y: 50 }) },
+}, { _id: false });
+
 export interface IConversationPageDoc extends Document {
   conversationId: mongoose.Types.ObjectId;
   pageNumber: number;
@@ -19,6 +24,7 @@ export interface IConversationPageDoc extends Document {
     characterPosition: { x: number; y: number };
     textPosition: { x: number; y: number };
   }>;
+  texts: Array<{ text: string; position: { x: number; y: number } }>;
   backgroundImageUrl?: string;
 }
 
@@ -27,6 +33,7 @@ const ConversationPageSchema = new Schema<IConversationPageDoc>(
     conversationId: { type: Schema.Types.ObjectId, ref: "Conversation", required: true, index: true },
     pageNumber: { type: Number, required: true },
     characters: { type: [CharacterSlotSchema], default: [] },
+    texts: { type: [TextSlotSchema], default: [] },
     backgroundImageUrl: { type: String, trim: true },
   },
   { timestamps: true }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { IConversation, IConversationPage, IConversationCharacterSlot, ICharacter } from "@/types";
+import { IConversation, IConversationPage, IConversationCharacterSlot, ICharacter, ITextSlot } from "@/types";
 import { useReadingStore } from "@/store/readingStore";
 import { useSpeech } from "@/hooks/useSpeech";
 
@@ -59,14 +59,17 @@ export default function ConversationScene({ conversation, page, currentPage }: C
         })}
       </div>
 
-      {/* Characters stage — positioned absolutely */}
+      {/* Stage — positioned absolutely */}
       <div className="relative flex-1">
         {page?.characters?.map((slot, idx) => (
           <CharacterSlotView key={idx} slot={slot as unknown as IConversationCharacterSlot} />
         ))}
+        {page?.texts?.map((slot, idx) => (
+          <TextSlotView key={idx} slot={slot as unknown as ITextSlot} />
+        ))}
 
         {/* Empty page message */}
-        {(!page || !page.characters || page.characters.length === 0) && (
+        {(!page || (!page.characters?.length && !page.texts?.length)) && (
           <div className="flex items-center justify-center h-full">
             <p className="text-white/40 font-bold text-lg">ページ {currentPage}</p>
           </div>
@@ -156,6 +159,22 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
         </div>
       )}
     </>
+  );
+}
+
+function TextSlotView({ slot }: { slot: ITextSlot }) {
+  const { setSelectedWord } = useReadingStore();
+  const { speak } = useSpeech();
+
+  return (
+    <div
+      className="absolute transform -translate-x-1/2 -translate-y-1/2 max-w-[220px]"
+      style={{ left: `${slot.position.x}%`, top: `${slot.position.y}%` }}
+    >
+      <div className="bg-white rounded-2xl px-4 py-2 shadow-xl border-2 border-pink-200">
+        <DialogueText text={slot.text} setSelectedWord={setSelectedWord} speak={speak} />
+      </div>
+    </div>
   );
 }
 

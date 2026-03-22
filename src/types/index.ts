@@ -101,11 +101,17 @@ export interface IConversationCharacterSlot {
   height?: number; // per-page height override
 }
 
+export interface ITextSlot {
+  text: string;
+  position: { x: number; y: number };
+}
+
 export interface IConversationPage {
   _id: string;
   conversationId: string;
   pageNumber: number;
   characters: IConversationCharacterSlot[];
+  texts: ITextSlot[];
   backgroundImageUrl?: string;
 }
 
