@@ -94,21 +94,23 @@ export async function POST(req: NextRequest) {
   await connectDB();
 
   let inserted = 0;
-  let updated = 0;
   let skipped = 0;
   const errors: string[] = [];
 
   for (const entry of valid) {
     try {
-      // Check if existing before upsert to count correctly
+      // Only insert if the word does not already exist — never overwrite
       const existing = await DictionaryWord.exists({ japanese_word: entry.japanese_word });
-      await DictionaryWord.findOneAndUpdate(
-        { japanese_word: entry.japanese_word },
-        { $set: { ...entry, ...(conversationId ? { conversationId } : {}), ...(bookId ? { bookId } : {}) } },
-        { upsert: true, new: true }
-      );
-      if (existing) updated++;
-      else inserted++;
+      if (existing) {
+        skipped++;
+        continue;
+      }
+      await DictionaryWord.create({
+        ...entry,
+        ...(conversationId ? { conversationId } : {}),
+        ...(bookId ? { bookId } : {}),
+      });
+      inserted++;
     } catch (err: unknown) {
       skipped++;
       errors.push(`"${entry.japanese_word}": ${(err as Error).message}`);
@@ -119,7 +121,6 @@ export async function POST(req: NextRequest) {
     success: true,
     total: valid.length,
     inserted,
-    updated,
     skipped,
     errors: errors.slice(0, 10),
   });
