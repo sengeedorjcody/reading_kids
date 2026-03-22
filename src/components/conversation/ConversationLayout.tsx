@@ -13,7 +13,6 @@ interface ConversationLayoutProps {
 
 export default function ConversationLayout({ conversation, page, currentPage }: ConversationLayoutProps) {
   const isMobile = conversation.displayMode === "mobile";
-  const sceneWidth = isMobile ? "max-w-sm" : "max-w-4xl";
 
   return (
     <div className="flex h-screen bg-[#1a0a2e]">
@@ -31,7 +30,13 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
 
       {/* Right: Scene */}
       <div className="flex-1 overflow-hidden flex flex-col items-center justify-center p-4">
-        <div className={`w-full ${sceneWidth} h-full`}>
+        <div
+          className="w-full"
+          style={{
+            aspectRatio: isMobile ? "3 / 4" : "16 / 9",
+            maxHeight: "calc(100vh - 2rem)",
+          }}
+        >
           <ConversationScene
             conversation={conversation}
             page={page}
