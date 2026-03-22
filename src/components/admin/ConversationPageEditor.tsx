@@ -4,15 +4,18 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IConversationPage, IConversationCharacterSlot, ICharacter } from "@/types";
 
+interface IBackground { _id: string; name: string; imageUrl: string; }
+
 interface Props {
   page: IConversationPage;
   characters: ICharacter[];
+  backgrounds: IBackground[];
   conversationId: string;
   fallbackBackgroundImageUrl?: string;
   displayMode?: "mobile" | "desktop";
 }
 
-export default function ConversationPageEditor({ page, characters, conversationId, fallbackBackgroundImageUrl, displayMode = "mobile" }: Props) {
+export default function ConversationPageEditor({ page, characters, backgrounds, conversationId, fallbackBackgroundImageUrl, displayMode = "mobile" }: Props) {
   const router = useRouter();
   const [slots, setSlots] = useState<IConversationCharacterSlot[]>(() =>
     (page.characters ?? []).map((slot) => ({
@@ -101,15 +104,37 @@ export default function ConversationPageEditor({ page, characters, conversationI
       {expanded && (
         <div className="px-4 pb-4 border-t border-gray-50 space-y-4">
           {/* Background section */}
-          <div className="space-y-1">
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background URL</label>
-            <input
-              type="url"
-              value={pageBackground ?? ""}
-              onChange={(e) => setPageBackground(e.target.value || undefined)}
-              placeholder={fallbackBackgroundImageUrl ? "Leave empty to use conversation default" : "https://..."}
-              className="w-full border-2 border-gray-200 focus:border-rose-400 rounded-xl px-3 py-2 text-sm text-gray-700 outline-none"
-            />
+          <div className="space-y-2">
+            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => setPageBackground(undefined)}
+                className={`aspect-video rounded-xl border-2 flex items-center justify-center text-xs font-bold transition-all ${
+                  pageBackground === undefined
+                    ? "border-rose-400 bg-rose-50 text-rose-600"
+                    : "border-gray-200 text-gray-400 hover:border-gray-300"
+                }`}
+              >
+                {fallbackBackgroundImageUrl ? "Default" : "None"}
+              </button>
+              {backgrounds.map((bg) => (
+                <button
+                  key={bg._id}
+                  type="button"
+                  onClick={() => setPageBackground(bg.imageUrl)}
+                  title={bg.name}
+                  className={`aspect-video rounded-xl border-2 overflow-hidden transition-all ${
+                    pageBackground === bg.imageUrl
+                      ? "border-rose-400 ring-2 ring-rose-300"
+                      : "border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
           </div>
 
           {slots.map((slot, idx) => (
