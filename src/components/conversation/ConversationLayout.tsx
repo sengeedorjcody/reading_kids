@@ -29,7 +29,7 @@ export default function ConversationLayout({ conversation, page, currentPage }: 
       </div>
 
       {/* Right: Scene */}
-      <div className="flex-1 overflow-hidden flex items-start justify-center p-4">
+      <div className="flex-1 overflow-hidden flex items-start justify-center px-4 py-0">
         <div
           className="h-full"
           style={{
