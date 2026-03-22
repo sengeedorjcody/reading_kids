@@ -16,8 +16,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <NavLink href="/admin/dictionary" icon="📝" label="Dictionary" />
           <NavLink href="/admin/dictionary/new" icon="➕" label="Add Word" />
           <div className="pt-4 mt-4 border-t border-gray-700">
-            <NavLink href="/admin/characters" icon="🎭" label="Characters" />
-            <NavLink href="/admin/characters/new" icon="🎭" label="New Character" />
             <NavLink href="/admin/images" icon="🖼️" label="Images" />
           </div>
           <div className="pt-2">
@@ -40,7 +38,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { href: "/admin/books", icon: "📚", label: "Books" },
             { href: "/admin/books/upload", icon: "📤", label: "Upload" },
             { href: "/admin/dictionary", icon: "📝", label: "Dict" },
-            { href: "/admin/characters", icon: "🎭", label: "Chars" },
             { href: "/admin/images", icon: "🖼️", label: "Images" },
             { href: "/admin/backgrounds", icon: "🌅", label: "BGs" },
             { href: "/admin/conversations", icon: "💬", label: "Convos" },

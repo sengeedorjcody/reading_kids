@@ -106,6 +106,7 @@ export interface IConversationPage {
   conversationId: string;
   pageNumber: number;
   characters: IConversationCharacterSlot[];
+  backgroundImageUrl?: string;
 }
 
 export interface IConversation {

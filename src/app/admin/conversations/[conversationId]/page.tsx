@@ -6,6 +6,7 @@ import { connectDB } from "@/lib/db/mongoose";
 import Conversation from "@/lib/db/models/Conversation";
 import ConversationPage from "@/lib/db/models/ConversationPage";
 import Character from "@/lib/db/models/Character";
+import Background, { IBackgroundDoc } from "@/lib/db/models/Background";
 import { IConversation, IConversationPage, ICharacter } from "@/types";
 import ConversationPageEditor from "@/components/admin/ConversationPageEditor";
 import ConversationExcelImport from "@/components/admin/ConversationExcelImport";
@@ -15,22 +16,24 @@ async function getData(id: string) {
   try {
     await connectDB();
     void Character;
-    const [conv, pages, characters] = await Promise.all([
+    const [conv, pages, characters, backgrounds] = await Promise.all([
       Conversation.findById(id).lean(),
       ConversationPage.find({ conversationId: id }).sort({ pageNumber: 1 }).populate("characters.characterId").lean(),
       Character.find().sort({ name: 1 }).lean(),
+      Background.find().sort({ createdAt: -1 }).lean(),
     ]);
-    return { conv, pages, characters };
-  } catch { return { conv: null, pages: [], characters: [] }; }
+    return { conv, pages, characters, backgrounds };
+  } catch { return { conv: null, pages: [], characters: [], backgrounds: [] }; }
 }
 
 export default async function AdminConversationDetailPage({ params }: { params: { conversationId: string } }) {
-  const { conv, pages, characters } = await getData(params.conversationId);
+  const { conv, pages, characters, backgrounds } = await getData(params.conversationId);
   if (!conv) notFound();
 
   const conversation = JSON.parse(JSON.stringify(conv)) as IConversation;
   const convPages = JSON.parse(JSON.stringify(pages)) as IConversationPage[];
   const charList = JSON.parse(JSON.stringify(characters)) as ICharacter[];
+  const bgList = JSON.parse(JSON.stringify(backgrounds)) as IBackgroundDoc[];
 
   return (
     <div className="space-y-6">
@@ -86,8 +89,9 @@ export default async function AdminConversationDetailPage({ params }: { params: 
             key={page._id}
             page={page}
             characters={charList}
+            backgrounds={bgList}
             conversationId={params.conversationId}
-            backgroundImageUrl={conversation.backgroundImageUrl}
+            fallbackBackgroundImageUrl={conversation.backgroundImageUrl}
             displayMode={conversation.displayMode}
           />
         ))}

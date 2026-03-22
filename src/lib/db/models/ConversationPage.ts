@@ -19,6 +19,7 @@ export interface IConversationPageDoc extends Document {
     characterPosition: { x: number; y: number };
     textPosition: { x: number; y: number };
   }>;
+  backgroundImageUrl?: string;
 }
 
 const ConversationPageSchema = new Schema<IConversationPageDoc>(
@@ -26,6 +27,7 @@ const ConversationPageSchema = new Schema<IConversationPageDoc>(
     conversationId: { type: Schema.Types.ObjectId, ref: "Conversation", required: true, index: true },
     pageNumber: { type: Number, required: true },
     characters: { type: [CharacterSlotSchema], default: [] },
+    backgroundImageUrl: { type: String, trim: true },
   },
   { timestamps: true }
 );

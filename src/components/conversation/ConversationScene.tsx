@@ -19,11 +19,11 @@ export default function ConversationScene({ conversation, page, currentPage }: C
 
   return (
     <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 flex flex-col">
-      {/* Background */}
-      {conversation.backgroundImageUrl ? (
+      {/* Background — page-level overrides conversation-level */}
+      {(page?.backgroundImageUrl ?? conversation.backgroundImageUrl) ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={conversation.backgroundImageUrl}
+          src={(page?.backgroundImageUrl ?? conversation.backgroundImageUrl)!}
           alt="background"
           className="absolute inset-0 w-full h-full object-cover"
         />

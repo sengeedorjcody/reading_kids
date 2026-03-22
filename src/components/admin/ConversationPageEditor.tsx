@@ -3,16 +3,18 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { IConversationPage, IConversationCharacterSlot, ICharacter } from "@/types";
+import { IBackgroundDoc } from "@/lib/db/models/Background";
 
 interface Props {
   page: IConversationPage;
   characters: ICharacter[];
+  backgrounds: IBackgroundDoc[];
   conversationId: string;
-  backgroundImageUrl?: string;
+  fallbackBackgroundImageUrl?: string;
   displayMode?: "mobile" | "desktop";
 }
 
-export default function ConversationPageEditor({ page, characters, conversationId, backgroundImageUrl, displayMode = "mobile" }: Props) {
+export default function ConversationPageEditor({ page, characters, backgrounds, conversationId, fallbackBackgroundImageUrl, displayMode = "mobile" }: Props) {
   const router = useRouter();
   const [slots, setSlots] = useState<IConversationCharacterSlot[]>(() =>
     (page.characters ?? []).map((slot) => ({
@@ -23,6 +25,7 @@ export default function ConversationPageEditor({ page, characters, conversationI
       height: slot.height,
     }))
   );
+  const [pageBackground, setPageBackground] = useState<string | undefined>(page.backgroundImageUrl);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -48,7 +51,7 @@ export default function ConversationPageEditor({ page, characters, conversationI
       await fetch(`/api/conversations/${conversationId}/pages/${page.pageNumber}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ characters: slots }),
+        body: JSON.stringify({ characters: slots, backgroundImageUrl: pageBackground ?? null }),
       });
       router.refresh();
     } finally {
@@ -67,6 +70,8 @@ export default function ConversationPageEditor({ page, characters, conversationI
     }
   };
 
+  const activeBackground = pageBackground ?? fallbackBackgroundImageUrl;
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
       {/* Page header */}
@@ -78,26 +83,65 @@ export default function ConversationPageEditor({ page, characters, conversationI
           <span className="bg-rose-100 text-rose-600 font-black text-sm w-8 h-8 rounded-xl flex items-center justify-center">
             {page.pageNumber}
           </span>
-          <span className="font-bold text-gray-600 text-sm">
-            {slots.length === 0 ? "No characters" : `${slots.length} character${slots.length > 1 ? "s" : ""}`}
-            {slots.length > 0 && `: ${slots.map(s => {
-              const ch = characters.find(c => c._id === s.characterId);
-              return ch?.name ?? "?";
-            }).join(", ")}`}
-          </span>
+          <div className="flex items-center gap-2">
+            {pageBackground && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={pageBackground} alt="bg" className="w-8 h-5 object-cover rounded" />
+            )}
+            <span className="font-bold text-gray-600 text-sm">
+              {slots.length === 0 ? "No characters" : `${slots.length} character${slots.length > 1 ? "s" : ""}`}
+              {slots.length > 0 && `: ${slots.map(s => {
+                const ch = characters.find(c => c._id === s.characterId);
+                return ch?.name ?? "?";
+              }).join(", ")}`}
+            </span>
+          </div>
         </div>
         <span className="text-gray-400 text-sm">{expanded ? "▲" : "▼"}</span>
       </div>
 
       {expanded && (
         <div className="px-4 pb-4 border-t border-gray-50 space-y-4">
+          {/* Background section */}
+          <div className="space-y-2">
+            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+              {/* None option */}
+              <button
+                type="button"
+                onClick={() => setPageBackground(undefined)}
+                className={`aspect-video rounded-xl border-2 flex items-center justify-center text-xs font-bold transition-all ${
+                  pageBackground === undefined
+                    ? "border-rose-400 bg-rose-50 text-rose-600"
+                    : "border-gray-200 text-gray-400 hover:border-gray-300"
+                }`}
+              >
+                {fallbackBackgroundImageUrl ? "Default" : "None"}
+              </button>
+              {backgrounds.map((bg) => (
+                <button
+                  key={String(bg._id)}
+                  type="button"
+                  onClick={() => setPageBackground(bg.imageUrl)}
+                  className={`aspect-video rounded-xl border-2 overflow-hidden transition-all ${
+                    pageBackground === bg.imageUrl ? "border-rose-400 ring-2 ring-rose-300" : "border-gray-200 hover:border-gray-400"
+                  }`}
+                  title={bg.name}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          </div>
+
           {slots.map((slot, idx) => (
             <SlotEditor
               key={idx}
               idx={idx}
               slot={slot}
               characters={characters}
-              backgroundImageUrl={backgroundImageUrl}
+              backgroundImageUrl={activeBackground}
               displayMode={displayMode}
               onChange={(updates) => updateSlot(idx, updates)}
               onRemove={() => removeSlot(idx)}
