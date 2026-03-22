@@ -28,7 +28,7 @@ export default function ConversationScene({
   const baseUrl = `/conversations/${conversation._id}/read`;
 
   return (
-    <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 flex flex-col">
+    <div className="relative w-full h-full overflow-hidden flex flex-col">
       {/* Background — page-level overrides conversation-level */}
       {page?.backgroundImageUrl ?? conversation.backgroundImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

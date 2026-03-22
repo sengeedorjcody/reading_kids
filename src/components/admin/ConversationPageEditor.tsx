@@ -21,6 +21,7 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [showBgPicker, setShowBgPicker] = useState(false);
 
   const addText = () => setTexts([...texts, { text: "", position: { x: 50, y: 50 + texts.length * 15 } }]);
   const removeText = (idx: number) => setTexts(texts.filter((_, i) => i !== idx));
@@ -79,52 +80,71 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
 
       {expanded && (
         <div className="px-4 pb-4 border-t border-gray-50 space-y-4">
-          {/* Background picker */}
+          {/* Background picker — toggle */}
           <div className="space-y-2">
-            <label className="block text-xs font-black text-gray-500 uppercase tracking-wider">🌅 Page Background</label>
-            <div className={`grid gap-1.5 ${displayMode === "desktop" ? "grid-cols-4 sm:grid-cols-5" : "grid-cols-5 sm:grid-cols-6"}`}>
-              {/* Default button — shows actual fallback image if available */}
-              <button
-                type="button"
-                onClick={() => setPageBackground(undefined)}
-                className={`rounded-lg border-2 overflow-hidden relative transition-all ${
-                  pageBackground === undefined
-                    ? "border-rose-400 ring-2 ring-rose-300"
-                    : "border-gray-200 hover:border-gray-400"
-                }`}
-                style={{ aspectRatio, maxHeight: 52 }}
-              >
-                {fallbackBackgroundImageUrl ? (
-                  <>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={fallbackBackgroundImageUrl} alt="default" className="w-full h-full object-cover" />
-                    <span className="absolute inset-0 flex items-end justify-center pb-1">
-                      <span className="bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Default</span>
-                    </span>
-                  </>
-                ) : (
-                  <span className="flex items-center justify-center h-full text-xs font-bold text-gray-400">None</span>
-                )}
-              </button>
+            <button
+              type="button"
+              onClick={() => setShowBgPicker((v) => !v)}
+              className="flex items-center gap-2 text-xs font-black text-gray-500 uppercase tracking-wider hover:text-rose-500 transition-colors"
+            >
+              <span>🌅 Page Background</span>
+              {activeBackground && !showBgPicker && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={activeBackground} alt="current bg" className="w-8 h-5 object-cover rounded border border-gray-200" />
+              )}
+              <span className="ml-auto text-gray-300">{showBgPicker ? "▲ Hide" : "▼ Choose"}</span>
+            </button>
 
-              {backgrounds.map((bg) => (
-                <button
-                  key={String(bg._id)}
-                  type="button"
-                  onClick={() => setPageBackground(bg.imageUrl)}
-                  title={bg.name}
-                  className={`rounded-lg border-2 overflow-hidden transition-all ${
-                    pageBackground === bg.imageUrl
-                      ? "border-rose-400 ring-2 ring-rose-300"
-                      : "border-gray-200 hover:border-gray-400"
-                  }`}
-                  style={{ aspectRatio, maxHeight: 52 }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+            {showBgPicker && (
+              <div
+                className="overflow-y-auto rounded-xl border border-gray-100 p-2 bg-gray-50"
+                style={{ maxHeight: 280 }}
+              >
+                <div className={`grid gap-1.5 ${displayMode === "desktop" ? "grid-cols-3 sm:grid-cols-4" : "grid-cols-3 sm:grid-cols-4"}`}>
+                  {/* Default button */}
+                  <button
+                    type="button"
+                    onClick={() => { setPageBackground(undefined); setShowBgPicker(false); }}
+                    className={`rounded-lg border-2 overflow-hidden relative transition-all ${
+                      pageBackground === undefined
+                        ? "border-rose-400 ring-2 ring-rose-300"
+                        : "border-gray-200 hover:border-gray-400"
+                    }`}
+                    style={{ aspectRatio }}
+                  >
+                    {fallbackBackgroundImageUrl ? (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={fallbackBackgroundImageUrl} alt="default" className="w-full h-full object-cover" />
+                        <span className="absolute inset-0 flex items-end justify-center pb-1">
+                          <span className="bg-black/50 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Default</span>
+                        </span>
+                      </>
+                    ) : (
+                      <span className="flex items-center justify-center h-full text-xs font-bold text-gray-400">None</span>
+                    )}
+                  </button>
+
+                  {backgrounds.map((bg) => (
+                    <button
+                      key={String(bg._id)}
+                      type="button"
+                      onClick={() => { setPageBackground(bg.imageUrl); setShowBgPicker(false); }}
+                      title={bg.name}
+                      className={`rounded-lg border-2 overflow-hidden transition-all ${
+                        pageBackground === bg.imageUrl
+                          ? "border-rose-400 ring-2 ring-rose-300"
+                          : "border-gray-200 hover:border-gray-400"
+                      }`}
+                      style={{ aspectRatio }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Text inputs */}
