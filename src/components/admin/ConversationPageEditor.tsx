@@ -7,7 +7,6 @@ import { IConversationPage, IConversationCharacterSlot, ICharacter } from "@/typ
 interface Props {
   page: IConversationPage;
   characters: ICharacter[];
-  backgrounds?: IBackgroundDoc[];
   conversationId: string;
   fallbackBackgroundImageUrl?: string;
   displayMode?: "mobile" | "desktop";
