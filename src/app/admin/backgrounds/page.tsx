@@ -5,6 +5,7 @@ import Background from "@/lib/db/models/Background";
 import { IBackgroundDoc } from "@/lib/db/models/Background";
 import BackgroundUploadForm from "@/components/admin/BackgroundUploadForm";
 import DeleteBackgroundButton from "@/components/admin/DeleteBackgroundButton";
+import CopyUrlButton from "@/components/admin/CopyUrlButton";
 
 async function getBackgrounds(): Promise<IBackgroundDoc[]> {
   await connectDB();
@@ -37,9 +38,10 @@ export default async function AdminBackgroundsPage() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
               </div>
-              <div className="p-3">
+              <div className="p-3 space-y-2">
                 <p className="text-sm font-bold text-gray-700 truncate">{bg.name}</p>
                 <p className="text-xs text-gray-400">{new Date(bg.createdAt).toLocaleDateString()}</p>
+                <CopyUrlButton url={bg.imageUrl} />
                 <DeleteBackgroundButton bgId={String(bg._id)} />
               </div>
             </div>
