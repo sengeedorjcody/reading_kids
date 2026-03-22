@@ -5,9 +5,8 @@ import { notFound } from "next/navigation";
 import { connectDB } from "@/lib/db/mongoose";
 import Conversation from "@/lib/db/models/Conversation";
 import ConversationPage from "@/lib/db/models/ConversationPage";
-import Character from "@/lib/db/models/Character";
 import Background, { IBackgroundDoc } from "@/lib/db/models/Background";
-import { IConversation, IConversationPage, ICharacter } from "@/types";
+import { IConversation, IConversationPage } from "@/types";
 import ConversationPageEditor from "@/components/admin/ConversationPageEditor";
 import ConversationExcelImport from "@/components/admin/ConversationExcelImport";
 import ConversationEditPanel from "@/components/admin/ConversationEditPanel";
@@ -15,24 +14,21 @@ import ConversationEditPanel from "@/components/admin/ConversationEditPanel";
 async function getData(id: string) {
   try {
     await connectDB();
-    void Character;
-    const [conv, pages, characters, backgrounds] = await Promise.all([
+    const [conv, pages, backgrounds] = await Promise.all([
       Conversation.findById(id).lean(),
-      ConversationPage.find({ conversationId: id }).sort({ pageNumber: 1 }).populate("characters.characterId").lean(),
-      Character.find().sort({ name: 1 }).lean(),
+      ConversationPage.find({ conversationId: id }).sort({ pageNumber: 1 }).lean(),
       Background.find().sort({ createdAt: -1 }).lean(),
     ]);
-    return { conv, pages, characters, backgrounds };
-  } catch { return { conv: null, pages: [], characters: [], backgrounds: [] }; }
+    return { conv, pages, backgrounds };
+  } catch { return { conv: null, pages: [], backgrounds: [] }; }
 }
 
 export default async function AdminConversationDetailPage({ params }: { params: { conversationId: string } }) {
-  const { conv, pages, characters, backgrounds } = await getData(params.conversationId);
+  const { conv, pages, backgrounds } = await getData(params.conversationId);
   if (!conv) notFound();
 
   const conversation = JSON.parse(JSON.stringify(conv)) as IConversation;
   const convPages = JSON.parse(JSON.stringify(pages)) as IConversationPage[];
-  const charList = JSON.parse(JSON.stringify(characters)) as ICharacter[];
   const bgList = JSON.parse(JSON.stringify(backgrounds)) as IBackgroundDoc[];
 
   return (
@@ -88,7 +84,6 @@ export default async function AdminConversationDetailPage({ params }: { params: 
           <ConversationPageEditor
             key={page._id}
             page={page}
-            characters={charList}
             backgrounds={bgList}
             conversationId={params.conversationId}
             fallbackBackgroundImageUrl={conversation.backgroundImageUrl}
