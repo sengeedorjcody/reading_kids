@@ -18,7 +18,7 @@ async function getData(bookId?: string, conversationId?: string) {
   if (conversationId) filter.conversationId = conversationId;
 
   const [words, books, conversations] = await Promise.all([
-    DictionaryWord.find(filter).sort({ japanese_word: 1 }).limit(200).lean(),
+    DictionaryWord.find(filter).sort({ createdAt: -1 }).limit(200).lean(),
     Book.find().sort({ title: 1 }).select("title").lean(),
     Conversation.find().sort({ title: 1 }).select("title").lean(),
   ]);
