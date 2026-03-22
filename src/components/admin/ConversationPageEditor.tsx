@@ -87,12 +87,12 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
               <button
                 type="button"
                 onClick={() => setPageBackground(undefined)}
-                className={`rounded-xl border-2 overflow-hidden relative transition-all ${
+                className={`rounded-lg border-2 overflow-hidden relative transition-all ${
                   pageBackground === undefined
                     ? "border-rose-400 ring-2 ring-rose-300"
                     : "border-gray-200 hover:border-gray-400"
                 }`}
-                style={{ aspectRatio }}
+                style={{ aspectRatio, maxHeight: 52 }}
               >
                 {fallbackBackgroundImageUrl ? (
                   <>
@@ -113,12 +113,12 @@ export default function ConversationPageEditor({ page, backgrounds, conversation
                   type="button"
                   onClick={() => setPageBackground(bg.imageUrl)}
                   title={bg.name}
-                  className={`rounded-xl border-2 overflow-hidden transition-all ${
+                  className={`rounded-lg border-2 overflow-hidden transition-all ${
                     pageBackground === bg.imageUrl
                       ? "border-rose-400 ring-2 ring-rose-300"
                       : "border-gray-200 hover:border-gray-400"
                   }`}
-                  style={{ aspectRatio }}
+                  style={{ aspectRatio, maxHeight: 52 }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={bg.imageUrl} alt={bg.name} className="w-full h-full object-cover" />
