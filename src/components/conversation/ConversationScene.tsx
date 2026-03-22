@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { IConversation, IConversationPage, IConversationCharacterSlot, ICharacter, ITextSlot } from "@/types";
+import {
+  IConversation,
+  IConversationPage,
+  IConversationCharacterSlot,
+  ICharacter,
+  ITextSlot,
+} from "@/types";
 import { useReadingStore } from "@/store/readingStore";
 import { useSpeech } from "@/hooks/useSpeech";
 
@@ -11,7 +17,11 @@ interface ConversationSceneProps {
   currentPage: number;
 }
 
-export default function ConversationScene({ conversation, page, currentPage }: ConversationSceneProps) {
+export default function ConversationScene({
+  conversation,
+  page,
+  currentPage,
+}: ConversationSceneProps) {
   const totalPages = conversation.totalPages;
   const isFirst = currentPage === 1;
   const isLast = currentPage === totalPages;
@@ -20,7 +30,7 @@ export default function ConversationScene({ conversation, page, currentPage }: C
   return (
     <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 flex flex-col">
       {/* Background — page-level overrides conversation-level */}
-      {(page?.backgroundImageUrl ?? conversation.backgroundImageUrl) ? (
+      {page?.backgroundImageUrl ?? conversation.backgroundImageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={(page?.backgroundImageUrl ?? conversation.backgroundImageUrl)!}
@@ -32,15 +42,22 @@ export default function ConversationScene({ conversation, page, currentPage }: C
       )}
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 " />
 
       {/* Header */}
       <div className="relative z-10 flex items-center justify-between px-4 py-3 bg-black/40 backdrop-blur-sm gap-2">
-        <Link href="/conversations" className="text-white/80 hover:text-white font-bold text-sm flex items-center gap-1 flex-shrink-0">
+        <Link
+          href="/conversations"
+          className="text-white/80 hover:text-white font-bold text-sm flex items-center gap-1 flex-shrink-0"
+        >
           ← Back
         </Link>
-        <p className="text-white font-black text-sm truncate flex-1 text-center">{conversation.title}</p>
-        <span className="text-white/60 text-xs font-bold flex-shrink-0">{currentPage}/{totalPages}</span>
+        <p className="text-white font-black text-sm truncate flex-1 text-center">
+          {conversation.title}
+        </p>
+        <span className="text-white/60 text-xs font-bold flex-shrink-0">
+          {currentPage}/{totalPages}
+        </span>
       </div>
 
       {/* Page dots */}
@@ -52,7 +69,9 @@ export default function ConversationScene({ conversation, page, currentPage }: C
               key={p}
               href={`${baseUrl}/${p}`}
               className={`rounded-full transition-all ${
-                p === currentPage ? "w-5 h-2.5 bg-white" : "w-2.5 h-2.5 bg-white/30 hover:bg-white/60"
+                p === currentPage
+                  ? "w-5 h-2.5 bg-white"
+                  : "w-2.5 h-2.5 bg-white/30 hover:bg-white/60"
               }`}
             />
           );
@@ -62,7 +81,10 @@ export default function ConversationScene({ conversation, page, currentPage }: C
       {/* Stage — positioned absolutely */}
       <div className="relative flex-1">
         {page?.characters?.map((slot, idx) => (
-          <CharacterSlotView key={idx} slot={slot as unknown as IConversationCharacterSlot} />
+          <CharacterSlotView
+            key={idx}
+            slot={slot as unknown as IConversationCharacterSlot}
+          />
         ))}
         {page?.texts?.map((slot, idx) => (
           <TextSlotView key={idx} slot={slot as unknown as ITextSlot} />
@@ -71,7 +93,9 @@ export default function ConversationScene({ conversation, page, currentPage }: C
         {/* Empty page message */}
         {(!page || (!page.characters?.length && !page.texts?.length)) && (
           <div className="flex items-center justify-center h-full">
-            <p className="text-white/40 font-bold text-lg">ページ {currentPage}</p>
+            <p className="text-white/40 font-bold text-lg">
+              ページ {currentPage}
+            </p>
           </div>
         )}
 
@@ -104,7 +128,6 @@ export default function ConversationScene({ conversation, page, currentPage }: C
           )}
         </div>
       </div>
-
     </div>
   );
 }
@@ -130,7 +153,10 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
             src={char.imageUrl}
             alt={char.name ?? "character"}
             className="h-36 w-auto object-contain"
-            style={{ mixBlendMode: "multiply", filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.5))" }}
+            style={{
+              mixBlendMode: "multiply",
+              filter: "drop-shadow(0 4px 16px rgba(0,0,0,0.5))",
+            }}
           />
         ) : (
           <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl">
@@ -154,7 +180,11 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
           }}
         >
           <div className="bg-white rounded-2xl px-4 py-2 shadow-xl border-2 border-pink-200">
-            <DialogueText text={slot.text} setSelectedWord={setSelectedWord} speak={speak} />
+            <DialogueText
+              text={slot.text}
+              setSelectedWord={setSelectedWord}
+              speak={speak}
+            />
           </div>
         </div>
       )}
@@ -172,13 +202,21 @@ function TextSlotView({ slot }: { slot: ITextSlot }) {
       style={{ left: `${slot.position.x}%`, top: `${slot.position.y}%` }}
     >
       <div className="bg-white rounded-2xl px-4 py-2 shadow-xl border-2 border-pink-200">
-        <DialogueText text={slot.text} setSelectedWord={setSelectedWord} speak={speak} />
+        <DialogueText
+          text={slot.text}
+          setSelectedWord={setSelectedWord}
+          speak={speak}
+        />
       </div>
     </div>
   );
 }
 
-function DialogueText({ text, setSelectedWord, speak }: {
+function DialogueText({
+  text,
+  setSelectedWord,
+  speak,
+}: {
   text: string;
   setSelectedWord: (word: null, surface?: string) => void;
   speak: (text: string) => void;
@@ -213,7 +251,9 @@ function tokenize(text: string): Array<{ text: string; isJapanese: boolean }> {
   let currentIsJapanese = false;
 
   for (const ch of text) {
-    const isJP = /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/.test(ch);
+    const isJP = /[\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/.test(
+      ch
+    );
     if (result.length === 0 && current === "") {
       current = ch;
       currentIsJapanese = isJP;
