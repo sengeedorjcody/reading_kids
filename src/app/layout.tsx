@@ -21,6 +21,16 @@ const notoSerifJP = Noto_Serif_JP({
 export const metadata: Metadata = {
   title: "にほんご よもう！ - Learn Japanese Reading",
   description: "A fun and interactive Japanese reading website for kids.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "よもう！",
+  },
+  icons: {
+    apple: "/icons/icon-192x192.png",
+  },
+  themeColor: "#f472b6",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
