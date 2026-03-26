@@ -9,3 +9,10 @@ export async function deleteWord(wordId: string) {
   await DictionaryWord.findByIdAndDelete(wordId);
   revalidatePath("/admin/dictionary");
 }
+
+export async function deleteWords(wordIds: string[]) {
+  if (!wordIds.length) return;
+  await connectDB();
+  await DictionaryWord.deleteMany({ _id: { $in: wordIds } });
+  revalidatePath("/admin/dictionary");
+}

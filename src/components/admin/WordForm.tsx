@@ -93,6 +93,16 @@ export default function WordForm({ initial, wordId }: WordFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
+      {/* ── Top save bar ── */}
+      <div className="flex gap-3 pb-2 border-b border-gray-100">
+        <Button type="submit" size="lg" disabled={saving}>
+          {saving ? "⏳ Saving..." : wordId ? "💾 Update Word" : "➕ Add Word"}
+        </Button>
+        <Button type="button" variant="ghost" size="lg" onClick={() => router.back()}>
+          Cancel
+        </Button>
+      </div>
+
       {/* ── Example image ── */}
       <div>
         <label className="block text-sm font-bold text-gray-600 mb-2">Example Image</label>

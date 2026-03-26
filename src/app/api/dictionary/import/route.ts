@@ -99,8 +99,12 @@ export async function POST(req: NextRequest) {
 
   for (const entry of valid) {
     try {
-      // Only insert if the word does not already exist — never overwrite
-      const existing = await DictionaryWord.exists({ japanese_word: entry.japanese_word });
+      // Match existing words by hiragana first; fall back to japanese_word if no hiragana provided
+      const lookupQuery = entry.hiragana
+        ? { hiragana: entry.hiragana }
+        : { japanese_word: entry.japanese_word };
+
+      const existing = await DictionaryWord.exists(lookupQuery);
       if (existing) {
         skipped++;
         continue;
