@@ -93,20 +93,6 @@ export default function WordForm({ initial, wordId }: WordFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl">
-      {fields.map((field) => (
-        <div key={field.name}>
-          <label className="block text-sm font-bold text-gray-600 mb-1">{field.label}</label>
-          <input
-            type="text"
-            name={field.name}
-            value={form[field.name]}
-            onChange={handleChange}
-            placeholder={field.placeholder}
-            className={`w-full border-2 border-gray-200 rounded-2xl px-4 py-3 focus:border-pink-400 focus:outline-none ${"className" in field ? field.className : "text-base"}`}
-          />
-        </div>
-      ))}
-
       {/* ── Example image ── */}
       <div>
         <label className="block text-sm font-bold text-gray-600 mb-2">Example Image</label>
@@ -143,6 +129,20 @@ export default function WordForm({ initial, wordId }: WordFormProps) {
         </div>
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageFile} />
       </div>
+
+      {fields.map((field) => (
+        <div key={field.name}>
+          <label className="block text-sm font-bold text-gray-600 mb-1">{field.label}</label>
+          <input
+            type="text"
+            name={field.name}
+            value={form[field.name]}
+            onChange={handleChange}
+            placeholder={field.placeholder}
+            className={`w-full border-2 border-gray-200 rounded-2xl px-4 py-3 focus:border-pink-400 focus:outline-none ${"className" in field ? field.className : "text-base"}`}
+          />
+        </div>
+      ))}
 
       <div>
         <label className="block text-sm font-bold text-gray-600 mb-1">JLPT Level</label>

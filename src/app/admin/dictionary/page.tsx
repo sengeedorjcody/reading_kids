@@ -18,7 +18,7 @@ async function getData(bookId?: string, conversationId?: string) {
   if (conversationId) filter.conversationId = conversationId;
 
   const [words, books, conversations] = await Promise.all([
-    DictionaryWord.find(filter).sort({ createdAt: -1 }).limit(200).lean(),
+    DictionaryWord.find(filter).sort({ example_image_url: 1, createdAt: -1 }).limit(200).lean(),
     Book.find().sort({ title: 1 }).select("title").lean(),
     Conversation.find().sort({ title: 1 }).select("title").lean(),
   ]);
@@ -39,16 +39,16 @@ export default async function AdminDictionaryPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-black text-gray-800">📝 Dictionary</h1>
-        <Link
-          href="/admin/dictionary/new"
-          className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-2xl transition-all"
-        >
-          ➕ Add Word
-        </Link>
+        <div className="flex items-center gap-3">
+          <ExcelImportForm />
+          <Link
+            href="/admin/dictionary/new"
+            className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-5 rounded-2xl transition-all"
+          >
+            ➕ Add Word
+          </Link>
+        </div>
       </div>
-
-      {/* Excel Import */}
-      <ExcelImportForm />
 
       {/* Filters */}
       <DictionaryFilter books={bookList} conversations={convList} total={wordList.length} />
