@@ -32,6 +32,7 @@ interface GameItem {
   id: number;
   char: string;
   romaji: string;
+  speakText: string; // what to pass to TTS
   x: number;
   y: number;
   size: number;
@@ -71,6 +72,8 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
   const positions = buildGrid();
   const items: GameItem[] = [];
 
+  const toSpeakText = (k: KanaChar) => k.phonetic ?? k.romaji ?? k.char;
+
   // Target appears TARGET_COUNT times
   for (let i = 0; i < TARGET_COUNT; i++) {
     const pos = positions[i];
@@ -78,6 +81,7 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
       id: i,
       char: target.char,
       romaji: target.romaji,
+      speakText: toSpeakText(target),
       x: pos.x,
       y: pos.y,
       size: 28 + Math.floor(Math.random() * 40), // 28–68px
@@ -95,6 +99,7 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
       id: i,
       char: other.char,
       romaji: other.romaji,
+      speakText: toSpeakText(other),
       x: pos.x,
       y: pos.y,
       size: 22 + Math.floor(Math.random() * 36), // 22–58px
@@ -149,7 +154,7 @@ export default function GamePage() {
 
   const handleTap = (item: GameItem) => {
     if (item.state === "correct") return;
-    speak(item.char);
+    speak(item.speakText);
 
     if (item.char === target.char) {
       setItems((prev) =>
