@@ -109,12 +109,10 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
 function CharGlyph({ char }: { char: string }) {
   if (char.length === 2 && SMALL_KANA.has(char[1])) {
     return (
-      <>
-        {char[0]}
-        <span style={{ fontSize: "0.55em", verticalAlign: "sub", lineHeight: 1 }}>
-          {char[1]}
-        </span>
-      </>
+      <span style={{ display: "inline-flex", alignItems: "flex-end", lineHeight: 1 }}>
+        <span style={{ lineHeight: 1 }}>{char[0]}</span>
+        <span style={{ fontSize: "0.52em", lineHeight: 1 }}>{char[1]}</span>
+      </span>
     );
   }
   return <>{char}</>;
@@ -215,7 +213,10 @@ export default function GamePage() {
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">Find all:</span>
             <div className={`w-14 h-14 rounded-2xl bg-white border-2 flex items-center justify-center shadow-lg ${charsetColors[charset].ring}`}>
-              <span className="text-4xl font-black text-gray-800 select-none">
+              <span
+                className="font-black text-gray-800 select-none"
+                style={{ fontSize: target.char.length > 1 ? "1.6rem" : "2.25rem" }}
+              >
                 <CharGlyph char={target.char} />
               </span>
             </div>
