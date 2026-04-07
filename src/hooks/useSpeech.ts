@@ -6,7 +6,6 @@ export function useSpeech() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const speak = useCallback((text: string, audioUrl?: string) => {
-    // If there's a cloudinary audio URL, use it
     if (audioUrl) {
       if (audioRef.current) {
         audioRef.current.pause();
@@ -14,7 +13,6 @@ export function useSpeech() {
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
       audio.play().catch(() => {
-        // Fallback to Web Speech API if audio fails
         speakWithWebAPI(text);
       });
       return;
@@ -36,16 +34,13 @@ export function useSpeech() {
   return { speak, stop };
 }
 
-/** Detect language from character unicode range */
 function detectLang(text: string): "ja-JP" | "mn-MN" {
-  // Cyrillic block: U+0400–U+04FF
   return /[\u0400-\u04FF]/.test(text) ? "mn-MN" : "ja-JP";
 }
 
 function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
   const voices = window.speechSynthesis.getVoices();
 
-  // For Mongolian: prefer Russian voice directly — same Cyrillic script, sounds natural
   if (lang === "mn-MN") {
     return (
       voices.find((v) => v.lang.startsWith("ru")) ??
@@ -53,7 +48,6 @@ function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
     );
   }
 
-  // For other languages: exact match → prefix match
   return (
     voices.find((v) => v.lang === lang) ??
     voices.find((v) => v.lang.startsWith(lang.split("-")[0]))
@@ -61,9 +55,15 @@ function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
 }
 
 function doSpeak(text: string) {
-  window.speechSynthesis.cancel();
+  const ss = window.speechSynthesis;
+
+  // iOS Safari: if synthesis is paused/stuck, resume it first
+  if (ss.paused) ss.resume();
+
+  // Cancel any ongoing speech
+  ss.cancel();
+
   const lang = detectLang(text);
-  // Use ru-RU as the utterance lang for Cyrillic — Russian TTS reads it correctly
   const utteranceLang = lang === "mn-MN" ? "ru-RU" : lang;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = utteranceLang;
@@ -73,20 +73,21 @@ function doSpeak(text: string) {
   const voice = getBestVoice(lang);
   if (voice) utterance.voice = voice;
 
-  window.speechSynthesis.speak(utterance);
+  // iOS needs a short delay after cancel() before speak() works reliably
+  setTimeout(() => ss.speak(utterance), 50);
 }
 
 function speakWithWebAPI(text: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
-  // Voices may not be loaded yet on first call — wait for voiceschanged if needed
   const voices = window.speechSynthesis.getVoices();
   if (voices.length === 0) {
-    const handler = () => {
-      window.speechSynthesis.removeEventListener("voiceschanged", handler);
-      doSpeak(text);
-    };
-    window.speechSynthesis.addEventListener("voiceschanged", handler);
+    // { once: true } prevents multiple handlers stacking up on repeated calls
+    window.speechSynthesis.addEventListener(
+      "voiceschanged",
+      () => doSpeak(text),
+      { once: true }
+    );
   } else {
     doSpeak(text);
   }
