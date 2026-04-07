@@ -99,10 +99,7 @@ export default function BodyPage() {
         {placed.map((p) => (
           <button
             key={p.id}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              handleTap(p);
-            }}
+            onClick={() => handleTap(p)}
             style={{
               position: "absolute",
               left: `${p.x}%`,
@@ -113,7 +110,7 @@ export default function BodyPage() {
               transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
               userSelect: "none",
               WebkitUserSelect: "none",
-              touchAction: "none",
+              touchAction: "manipulation",
               zIndex: p.tapped ? 20 : 1,
             }}
             className="focus:outline-none"

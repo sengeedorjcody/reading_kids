@@ -105,10 +105,7 @@ export default function AnimalsPage() {
         {items.map((item) => (
           <button
             key={item.id}
-            onPointerDown={(e) => {
-              e.preventDefault();
-              handleTap(item);
-            }}
+            onClick={() => handleTap(item)}
             style={{
               position: "absolute",
               left: `${item.x}%`,
@@ -119,7 +116,7 @@ export default function AnimalsPage() {
               transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
               userSelect: "none",
               WebkitUserSelect: "none",
-              touchAction: "none",
+              touchAction: "manipulation",
               zIndex: item.tapped ? 20 : 1,
             }}
             className="focus:outline-none"
