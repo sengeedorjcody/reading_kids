@@ -72,7 +72,11 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
   const positions = buildGrid();
   const items: GameItem[] = [];
 
-  const toSpeakText = (k: KanaChar) => k.phonetic ?? k.romaji ?? k.char;
+  // Cyrillic (Mongolian) → lowercase char so Russian TTS reads it naturally
+  // Japanese → the character itself, same as the alphabet section
+  const isCyrillic = (s: string) => /[\u0400-\u04FF]/.test(s);
+  const toSpeakText = (k: KanaChar) =>
+    isCyrillic(k.char) ? k.char.toLowerCase() : k.char;
 
   // Target appears TARGET_COUNT times
   for (let i = 0; i < TARGET_COUNT; i++) {
