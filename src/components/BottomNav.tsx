@@ -22,6 +22,7 @@ export default function BottomNav() {
           <BottomNavLink href="/game" icon="🎮" label="Game" />
           <BottomNavLink href="/animals" icon="🐾" label="Animals" />
           <BottomNavLink href="/body" icon="🧑" label="Body" />
+          <BottomNavLink href="/home" icon="🏠" label="Home" />
           <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
         </div>
