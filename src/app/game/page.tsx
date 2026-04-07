@@ -16,16 +16,27 @@ const CHARSET_MAP: Record<Charset, KanaChar[]> = {
 };
 
 const TOTAL_ITEMS = 50;
-const TARGET_COUNT = 9; // how many times target appears in the pool
+const TARGET_COUNT = 9;
+
+// Kid-friendly vibrant palette (used in default state)
+const COLORS = [
+  "#f97316", "#8b5cf6", "#0ea5e9", "#ec4899",
+  "#84cc16", "#f59e0b", "#06b6d4", "#d946ef",
+  "#14b8a6", "#6366f1", "#e11d48", "#65a30d",
+];
+
+// Small kana characters — second char in combos like きゃ
+const SMALL_KANA = new Set("ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶ");
 
 interface GameItem {
   id: number;
   char: string;
   romaji: string;
-  x: number;   // % left
-  y: number;   // % top
-  size: number; // font-size px
-  rotate: number; // deg rotation for extra chaos
+  x: number;
+  y: number;
+  size: number;
+  rotate: number;
+  color: string;
   state: "default" | "correct" | "wrong";
 }
 
@@ -33,41 +44,80 @@ function randomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+/** Divide the play field into a 7×8 grid, shuffle cells, return 50 positions */
+function buildGrid(): Array<{ x: number; y: number }> {
+  const COLS = 7, ROWS = 8;
+  const cellW = 90 / COLS;
+  const cellH = 90 / ROWS;
+  const cells: Array<{ x: number; y: number }> = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      // Random jitter within 20–80% of the cell so items stay inside
+      cells.push({
+        x: 5 + c * cellW + cellW * 0.2 + Math.random() * cellW * 0.6,
+        y: 5 + r * cellH + cellH * 0.2 + Math.random() * cellH * 0.6,
+      });
+    }
+  }
+  // Shuffle and take first TOTAL_ITEMS cells
+  cells.sort(() => Math.random() - 0.5);
+  return cells.slice(0, TOTAL_ITEMS);
+}
+
 function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
   const others = allChars.filter((c) => c.char !== target.char);
+  const positions = buildGrid();
   const items: GameItem[] = [];
 
   // Target appears TARGET_COUNT times
   for (let i = 0; i < TARGET_COUNT; i++) {
+    const pos = positions[i];
     items.push({
       id: i,
       char: target.char,
       romaji: target.romaji,
-      x: 4 + Math.random() * 82,
-      y: 4 + Math.random() * 82,
-      size: 28 + Math.floor(Math.random() * 52), // 28–80px
-      rotate: (Math.random() - 0.5) * 40,
+      x: pos.x,
+      y: pos.y,
+      size: 28 + Math.floor(Math.random() * 40), // 28–68px
+      rotate: (Math.random() - 0.5) * 30,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
     });
   }
 
-  // Fill rest with random distractors (can repeat)
+  // Fill rest with random distractors
   for (let i = TARGET_COUNT; i < TOTAL_ITEMS; i++) {
+    const pos = positions[i];
     const other = randomItem(others);
     items.push({
       id: i,
       char: other.char,
       romaji: other.romaji,
-      x: 4 + Math.random() * 82,
-      y: 4 + Math.random() * 82,
-      size: 20 + Math.floor(Math.random() * 48), // 20–68px
-      rotate: (Math.random() - 0.5) * 40,
+      x: pos.x,
+      y: pos.y,
+      size: 22 + Math.floor(Math.random() * 36), // 22–58px
+      rotate: (Math.random() - 0.5) * 30,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
     });
   }
 
-  // Shuffle
   return items.sort(() => Math.random() - 0.5);
+}
+
+/** Render a character — combo chars (e.g. きゃ) get the second glyph smaller */
+function CharGlyph({ char }: { char: string }) {
+  if (char.length === 2 && SMALL_KANA.has(char[1])) {
+    return (
+      <>
+        {char[0]}
+        <span style={{ fontSize: "0.55em", verticalAlign: "sub", lineHeight: 1 }}>
+          {char[1]}
+        </span>
+      </>
+    );
+  }
+  return <>{char}</>;
 }
 
 export default function GamePage() {
@@ -99,8 +149,6 @@ export default function GamePage() {
 
   const handleTap = (item: GameItem) => {
     if (item.state === "correct") return;
-
-    // Speak the character
     speak(item.char);
 
     if (item.char === target.char) {
@@ -109,11 +157,9 @@ export default function GamePage() {
       );
       setFound((f) => f + 1);
     } else {
-      // Show red briefly
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, state: "wrong" } : i))
       );
-      // Clear any existing timer for this item
       if (wrongTimers.current.has(item.id)) {
         clearTimeout(wrongTimers.current.get(item.id));
       }
@@ -136,13 +182,10 @@ export default function GamePage() {
   };
 
   return (
-    // Fixed full-screen layout — hide the bottom nav area
     <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
 
       {/* ── Header ── */}
       <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm">
-
-        {/* Top row: charset switcher + score */}
         <div className="flex items-center justify-between px-3 pt-3 pb-1 gap-2">
           <div className="flex gap-1.5">
             {(["hiragana", "katakana", "mongolian"] as Charset[]).map((cs) => (
@@ -159,8 +202,6 @@ export default function GamePage() {
               </button>
             ))}
           </div>
-
-          {/* Score */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-400 font-bold">Found</span>
             <span className="text-2xl font-black text-green-500 tabular-nums">
@@ -170,21 +211,19 @@ export default function GamePage() {
           </div>
         </div>
 
-        {/* Bottom row: target character */}
         <div className="flex items-center justify-between px-3 pb-3 gap-3">
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">Find all:</span>
-            <div
-              className={`w-14 h-14 rounded-2xl border-3 flex items-center justify-center shadow-lg ${charsetColors[charset].ring} bg-white border-2`}
-            >
-              <span className="text-4xl font-black text-gray-800 select-none">{target.char}</span>
+            <div className={`w-14 h-14 rounded-2xl bg-white border-2 flex items-center justify-center shadow-lg ${charsetColors[charset].ring}`}>
+              <span className="text-4xl font-black text-gray-800 select-none">
+                <CharGlyph char={target.char} />
+              </span>
             </div>
             <div>
               <p className="text-xl font-black text-purple-600">{target.romaji}</p>
               <p className="text-xs text-gray-400">Tap every one you find</p>
             </div>
           </div>
-
           <button
             onClick={() => startRound(charset)}
             className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-purple-100 hover:bg-purple-200 text-purple-600 font-black text-xs active:scale-95 transition-all"
@@ -200,6 +239,12 @@ export default function GamePage() {
         {items.map((item) => {
           const isCorrect = item.state === "correct";
           const isWrong = item.state === "wrong";
+          const color = isCorrect ? "#22c55e" : isWrong ? "#ef4444" : item.color;
+          const shadow = isCorrect
+            ? "0 0 14px rgba(34,197,94,0.8)"
+            : isWrong
+            ? "0 0 14px rgba(239,68,68,0.8)"
+            : "none";
 
           return (
             <button
@@ -215,25 +260,18 @@ export default function GamePage() {
                 fontSize: `${item.size}px`,
                 transform: `translate(-50%, -50%) rotate(${item.rotate}deg)`,
                 lineHeight: 1,
-                color: isCorrect
-                  ? "#22c55e"
-                  : isWrong
-                  ? "#ef4444"
-                  : "#374151",
-                textShadow: isCorrect
-                  ? "0 0 12px rgba(34,197,94,0.7)"
-                  : isWrong
-                  ? "0 0 12px rgba(239,68,68,0.7)"
-                  : "none",
-                transition: "color 0.15s, text-shadow 0.15s, transform 0.1s",
+                color,
+                textShadow: shadow,
+                transition: "color 0.15s, text-shadow 0.15s",
                 userSelect: "none",
                 WebkitUserSelect: "none",
                 touchAction: "none",
                 zIndex: isCorrect ? 10 : 1,
+                fontWeight: "bold",
               }}
-              className="font-bold active:scale-125 focus:outline-none"
+              className="active:scale-125 focus:outline-none"
             >
-              {item.char}
+              <CharGlyph char={item.char} />
             </button>
           );
         })}
