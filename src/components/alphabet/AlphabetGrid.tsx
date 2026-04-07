@@ -56,7 +56,7 @@ export default function AlphabetGrid({ kana, title }: AlphabetGridProps) {
           </h3>
           <div className="grid grid-cols-5 sm:grid-cols-5 gap-3">
             {grouped[row].map((k) => (
-              <CharacterCard key={k.char} kana={k} speakText={k.romaji} />
+              <CharacterCard key={k.char} kana={k} />
             ))}
           </div>
         </div>
@@ -80,7 +80,7 @@ export default function AlphabetGrid({ kana, title }: AlphabetGridProps) {
                 </h3>
                 <div className="grid grid-cols-5 sm:grid-cols-5 gap-3">
                   {grouped[row].map((k) => (
-                    <CharacterCard key={k.char} kana={k} speakText={k.romaji} />
+                    <CharacterCard key={k.char} kana={k} />
                   ))}
                 </div>
               </div>
@@ -101,7 +101,7 @@ export default function AlphabetGrid({ kana, title }: AlphabetGridProps) {
           </div>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {grouped[COMBO_ROW].map((k) => (
-              <CharacterCard key={k.char} kana={k} speakText={k.romaji} />
+              <CharacterCard key={k.char} kana={k} />
             ))}
           </div>
         </div>
