@@ -16,7 +16,7 @@ const CHARSET_MAP: Record<Charset, KanaChar[]> = {
 };
 
 const TOTAL_ITEMS = 50;
-const TARGET_COUNT = 9;
+const TARGET_COUNT = 4;
 
 // Kid-friendly vibrant palette (used in default state)
 const COLORS = [
@@ -44,22 +44,24 @@ function randomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/** Divide the play field into a 7×8 grid, shuffle cells, return 50 positions */
+/**
+ * Divide the play field into an 8×7 grid (56 cells).
+ * Y range is capped at 78% so nothing ends up behind the bottom nav (~96px).
+ */
 function buildGrid(): Array<{ x: number; y: number }> {
-  const COLS = 7, ROWS = 8;
-  const cellW = 90 / COLS;
-  const cellH = 90 / ROWS;
+  const COLS = 8, ROWS = 7;
+  const X_RANGE = 90, Y_RANGE = 75; // % — Y capped to avoid bottom nav
+  const cellW = X_RANGE / COLS;
+  const cellH = Y_RANGE / ROWS;
   const cells: Array<{ x: number; y: number }> = [];
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      // Random jitter within 20–80% of the cell so items stay inside
       cells.push({
         x: 5 + c * cellW + cellW * 0.2 + Math.random() * cellW * 0.6,
         y: 5 + r * cellH + cellH * 0.2 + Math.random() * cellH * 0.6,
       });
     }
   }
-  // Shuffle and take first TOTAL_ITEMS cells
   cells.sort(() => Math.random() - 0.5);
   return cells.slice(0, TOTAL_ITEMS);
 }
@@ -125,10 +127,9 @@ export default function GamePage() {
     generateItems(randomItem(HIRAGANA), HIRAGANA)
   );
   const [found, setFound] = useState(0);
+  const [showCongrats, setShowCongrats] = useState(false);
   const { speak } = useSpeech();
   const wrongTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
-
-  const complete = found >= TARGET_COUNT;
 
   const startRound = useCallback((cs: Charset) => {
     const chars = CHARSET_MAP[cs];
@@ -136,6 +137,7 @@ export default function GamePage() {
     setTarget(newTarget);
     setItems(generateItems(newTarget, chars));
     setFound(0);
+    setShowCongrats(false);
     wrongTimers.current.forEach(clearTimeout);
     wrongTimers.current.clear();
   }, []);
@@ -153,7 +155,11 @@ export default function GamePage() {
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, state: "correct" } : i))
       );
-      setFound((f) => f + 1);
+      setFound((f) => {
+        const next = f + 1;
+        if (next >= TARGET_COUNT) setShowCongrats(true);
+        return next;
+      });
     } else {
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? { ...i, state: "wrong" } : i))
@@ -277,17 +283,33 @@ export default function GamePage() {
           );
         })}
 
-        {/* ── All found celebration ── */}
-        {complete && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 backdrop-blur-sm z-30 gap-4">
-            <div className="text-7xl animate-bounce">🎉</div>
-            <p className="text-3xl font-black text-green-600">All {TARGET_COUNT} found!</p>
-            <button
-              onClick={() => startRound(charset)}
-              className="mt-2 px-8 py-4 rounded-3xl bg-green-500 hover:bg-green-600 text-white text-xl font-black shadow-xl active:scale-95 transition-all"
-            >
-              Next Round ▶
-            </button>
+        {/* ── Congrats popup ── */}
+        {showCongrats && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+            <div className="bg-white rounded-3xl shadow-2xl px-8 py-10 flex flex-col items-center gap-5 mx-6 animate-fade-in">
+              <div className="text-7xl animate-bounce">🎉</div>
+              <p className="text-2xl font-black text-green-600 text-center">
+                You found all {TARGET_COUNT}!
+              </p>
+              {/* Show the character they just found */}
+              <div className="flex items-center gap-3">
+                <div className={`w-16 h-16 rounded-2xl bg-green-50 border-2 border-green-400 flex items-center justify-center shadow`}>
+                  <span className="text-4xl font-black text-green-600 select-none">
+                    <CharGlyph char={target.char} />
+                  </span>
+                </div>
+                <div>
+                  <p className="text-2xl font-black text-green-500">{target.romaji}</p>
+                  <p className="text-sm text-gray-400">Great job! 🌟</p>
+                </div>
+              </div>
+              <button
+                onClick={() => startRound(charset)}
+                className="w-full py-4 rounded-3xl bg-green-500 hover:bg-green-600 text-white text-xl font-black shadow-lg active:scale-95 transition-all"
+              >
+                Find Next ▶
+              </button>
+            </div>
           </div>
         )}
       </div>
