@@ -31,4 +31,9 @@ export const HOME_ITEMS: VocabItem[] = [
   { emoji: "🛁", japanese: "おふろ",     romaji: "ofuro",     english: "Bath" },
   { emoji: "🪟", japanese: "まど",       romaji: "mado",      english: "Window" },
   { emoji: "🪣", japanese: "バケツ",     romaji: "baketsu",   english: "Bucket" },
+  { emoji: "🏓", japanese: "テーブル",   romaji: "teeburu",   english: "Table" },
+  { emoji: "📦", japanese: "でんしレンジ", romaji: "denshi renji", english: "Microwave" },
+  { emoji: "🫧", japanese: "せんたくき", romaji: "sentakuki", english: "Washing Machine" },
+  { emoji: "🚗", japanese: "くるま",     romaji: "kuruma",    english: "Car" },
+  { emoji: "📱", japanese: "でんわ",     romaji: "denwa",     english: "Phone" },
 ];
