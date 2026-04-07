@@ -18,21 +18,19 @@ const CHARSET_MAP: Record<Charset, KanaChar[]> = {
 const TOTAL_ITEMS = 50;
 const TARGET_COUNT = 4;
 
-// Kid-friendly vibrant palette (used in default state)
 const COLORS = [
   "#f97316", "#8b5cf6", "#0ea5e9", "#ec4899",
   "#84cc16", "#f59e0b", "#06b6d4", "#d946ef",
   "#14b8a6", "#6366f1", "#e11d48", "#65a30d",
 ];
 
-// Small kana characters — second char in combos like きゃ
 const SMALL_KANA = new Set("ぁぃぅぇぉっゃゅょゎゕゖァィゥェォッャュョヮヵヶ");
 
 interface GameItem {
   id: number;
   char: string;
   romaji: string;
-  speakText: string; // what to pass to TTS
+  speakText: string;
   x: number;
   y: number;
   size: number;
@@ -41,19 +39,25 @@ interface GameItem {
   state: "default" | "correct" | "wrong";
 }
 
+interface Round {
+  target: KanaChar;
+  targetSpeakText: string;
+  items: GameItem[];
+}
+
 function randomItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/**
- * Divide the play field into an 8×7 grid (56 cells).
- * Y range is capped at 78% so nothing ends up behind the bottom nav (~96px).
- */
+// Cyrillic → lowercase char for Russian TTS; Japanese → char itself
+function toSpeakText(k: KanaChar): string {
+  return /[\u0400-\u04FF]/.test(k.char) ? k.char.toLowerCase() : k.char;
+}
+
 function buildGrid(): Array<{ x: number; y: number }> {
   const COLS = 8, ROWS = 7;
-  const X_RANGE = 90, Y_RANGE = 75; // % — Y capped to avoid bottom nav
-  const cellW = X_RANGE / COLS;
-  const cellH = Y_RANGE / ROWS;
+  const cellW = 90 / COLS;
+  const cellH = 75 / ROWS;
   const cells: Array<{ x: number; y: number }> = [];
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
@@ -67,35 +71,30 @@ function buildGrid(): Array<{ x: number; y: number }> {
   return cells.slice(0, TOTAL_ITEMS);
 }
 
-function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
-  const others = allChars.filter((c) => c.char !== target.char);
+function buildRound(charset: Charset): Round {
+  const chars = CHARSET_MAP[charset];
+  const target = randomItem(chars);
+  const targetSpeakText = toSpeakText(target);
+  const others = chars.filter((c) => c.char !== target.char);
   const positions = buildGrid();
   const items: GameItem[] = [];
 
-  // Cyrillic (Mongolian) → lowercase char so Russian TTS reads it naturally
-  // Japanese → the character itself, same as the alphabet section
-  const isCyrillic = (s: string) => /[\u0400-\u04FF]/.test(s);
-  const toSpeakText = (k: KanaChar) =>
-    isCyrillic(k.char) ? k.char.toLowerCase() : k.char;
-
-  // Target appears TARGET_COUNT times
   for (let i = 0; i < TARGET_COUNT; i++) {
     const pos = positions[i];
     items.push({
       id: i,
       char: target.char,
       romaji: target.romaji,
-      speakText: toSpeakText(target),
+      speakText: targetSpeakText,
       x: pos.x,
       y: pos.y,
-      size: 28 + Math.floor(Math.random() * 40), // 28–68px
+      size: 28 + Math.floor(Math.random() * 40),
       rotate: (Math.random() - 0.5) * 30,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
     });
   }
 
-  // Fill rest with random distractors
   for (let i = TARGET_COUNT; i < TOTAL_ITEMS; i++) {
     const pos = positions[i];
     const other = randomItem(others);
@@ -106,17 +105,16 @@ function generateItems(target: KanaChar, allChars: KanaChar[]): GameItem[] {
       speakText: toSpeakText(other),
       x: pos.x,
       y: pos.y,
-      size: 22 + Math.floor(Math.random() * 36), // 22–58px
+      size: 22 + Math.floor(Math.random() * 36),
       rotate: (Math.random() - 0.5) * 30,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
     });
   }
 
-  return items.sort(() => Math.random() - 0.5);
+  return { target, targetSpeakText, items: items.sort(() => Math.random() - 0.5) };
 }
 
-/** Render a character — combo chars (e.g. きゃ) get the second glyph smaller */
 function CharGlyph({ char }: { char: string }) {
   if (char.length === 2 && SMALL_KANA.has(char[1])) {
     return (
@@ -131,20 +129,17 @@ function CharGlyph({ char }: { char: string }) {
 
 export default function GamePage() {
   const [charset, setCharset] = useState<Charset>("hiragana");
-  const [target, setTarget] = useState<KanaChar>(() => randomItem(HIRAGANA));
-  const [items, setItems] = useState<GameItem[]>(() =>
-    generateItems(randomItem(HIRAGANA), HIRAGANA)
-  );
+  // target and items are always built together to guarantee they match
+  const [round, setRound] = useState<Round>(() => buildRound("hiragana"));
   const [found, setFound] = useState(0);
   const [showCongrats, setShowCongrats] = useState(false);
   const { speak } = useSpeech();
   const wrongTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
+  const { target, targetSpeakText, items } = round;
+
   const startRound = useCallback((cs: Charset) => {
-    const chars = CHARSET_MAP[cs];
-    const newTarget = randomItem(chars);
-    setTarget(newTarget);
-    setItems(generateItems(newTarget, chars));
+    setRound(buildRound(cs));
     setFound(0);
     setShowCongrats(false);
     wrongTimers.current.forEach(clearTimeout);
@@ -161,27 +156,34 @@ export default function GamePage() {
     speak(item.speakText);
 
     if (item.char === target.char) {
-      setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, state: "correct" } : i))
-      );
+      setRound((prev) => ({
+        ...prev,
+        items: prev.items.map((i) =>
+          i.id === item.id ? { ...i, state: "correct" } : i
+        ),
+      }));
       setFound((f) => {
         const next = f + 1;
         if (next >= TARGET_COUNT) setShowCongrats(true);
         return next;
       });
     } else {
-      setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? { ...i, state: "wrong" } : i))
-      );
+      setRound((prev) => ({
+        ...prev,
+        items: prev.items.map((i) =>
+          i.id === item.id ? { ...i, state: "wrong" } : i
+        ),
+      }));
       if (wrongTimers.current.has(item.id)) {
         clearTimeout(wrongTimers.current.get(item.id));
       }
       const timer = setTimeout(() => {
-        setItems((prev) =>
-          prev.map((i) =>
+        setRound((prev) => ({
+          ...prev,
+          items: prev.items.map((i) =>
             i.id === item.id && i.state === "wrong" ? { ...i, state: "default" } : i
-          )
-        );
+          ),
+        }));
         wrongTimers.current.delete(item.id);
       }, 700);
       wrongTimers.current.set(item.id, timer);
@@ -227,6 +229,8 @@ export default function GamePage() {
         <div className="flex items-center justify-between px-3 pb-3 gap-3">
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wide">Find all:</span>
+
+            {/* Target character box */}
             <div className={`w-14 h-14 rounded-2xl bg-white border-2 flex items-center justify-center shadow-lg ${charsetColors[charset].ring}`}>
               <span
                 className="font-black text-gray-800 select-none"
@@ -235,11 +239,22 @@ export default function GamePage() {
                 <CharGlyph char={target.char} />
               </span>
             </div>
+
             <div>
               <p className="text-xl font-black text-purple-600">{target.romaji}</p>
               <p className="text-xs text-gray-400">Tap every one you find</p>
             </div>
+
+            {/* Speaker button */}
+            <button
+              onClick={() => speak(targetSpeakText)}
+              className="w-10 h-10 rounded-2xl bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-xl active:scale-90 transition-all shadow-sm"
+              aria-label="Hear pronunciation"
+            >
+              🔊
+            </button>
           </div>
+
           <button
             onClick={() => startRound(charset)}
             className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-purple-100 hover:bg-purple-200 text-purple-600 font-black text-xs active:scale-95 transition-all"
@@ -300,7 +315,6 @@ export default function GamePage() {
               <p className="text-2xl font-black text-green-600 text-center">
                 You found all {TARGET_COUNT}!
               </p>
-              {/* Show the character they just found */}
               <div className="flex items-center gap-3">
                 <div className={`w-16 h-16 rounded-2xl bg-green-50 border-2 border-green-400 flex items-center justify-center shadow`}>
                   <span className="text-4xl font-black text-green-600 select-none">
