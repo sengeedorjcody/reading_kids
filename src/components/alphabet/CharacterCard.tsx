@@ -5,6 +5,7 @@ import { KanaChar } from "@/types";
 import { useSpeech } from "@/hooks/useSpeech";
 import { cn } from "@/lib/utils";
 import AlphabetDictionaryModal from "./AlphabetDictionaryModal";
+import StrokeOrderModal from "./StrokeOrderModal";
 
 interface CharacterCardProps {
   kana: KanaChar;
@@ -14,6 +15,7 @@ interface CharacterCardProps {
 export default function CharacterCard({ kana, speakText }: CharacterCardProps) {
   const [clicked, setClicked] = useState(false);
   const [showDictionary, setShowDictionary] = useState(false);
+  const [showStrokeOrder, setShowStrokeOrder] = useState(false);
   const { speak } = useSpeech();
 
   const handleClick = () => {
@@ -25,6 +27,11 @@ export default function CharacterCard({ kana, speakText }: CharacterCardProps) {
   const handleDictionaryClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowDictionary(true);
+  };
+
+  const handleStrokeOrderClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowStrokeOrder(true);
   };
 
   return (
@@ -77,6 +84,22 @@ export default function CharacterCard({ kana, speakText }: CharacterCardProps) {
         >
           📖
         </button>
+
+        {/* Stroke order button — appears on hover */}
+        <button
+          onClick={handleStrokeOrderClick}
+          title={`How to write ${kana.char}`}
+          className={cn(
+            "absolute top-1.5 left-1.5",
+            "w-7 h-7 rounded-xl flex items-center justify-center text-xs",
+            "bg-orange-100 text-orange-500 border border-orange-200",
+            "hover:bg-orange-500 hover:text-white hover:border-orange-500",
+            "opacity-0 group-hover:opacity-100",
+            "transition-all duration-150 shadow-sm"
+          )}
+        >
+          ✏️
+        </button>
       </div>
 
       {/* Dictionary modal */}
@@ -85,6 +108,15 @@ export default function CharacterCard({ kana, speakText }: CharacterCardProps) {
           char={kana.char}
           romaji={kana.romaji}
           onClose={() => setShowDictionary(false)}
+        />
+      )}
+
+      {/* Stroke order modal */}
+      {showStrokeOrder && (
+        <StrokeOrderModal
+          char={kana.char}
+          romaji={kana.romaji}
+          onClose={() => setShowStrokeOrder(false)}
         />
       )}
     </>
