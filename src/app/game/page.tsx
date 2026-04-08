@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { HIRAGANA } from "@/constants/hiragana";
 import { KATAKANA } from "@/constants/katakana";
 import { MONGOLIAN } from "@/constants/mongolian";
@@ -133,8 +133,22 @@ export default function GamePage() {
   const [round, setRound] = useState<Round>(() => buildRound("hiragana"));
   const [found, setFound] = useState(0);
   const [showCongrats, setShowCongrats] = useState(false);
+  const [hintActive, setHintActive] = useState(false);
   const { speak } = useSpeech();
   const wrongTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const resetHintTimer = useCallback(() => {
+    if (hintTimer.current) clearTimeout(hintTimer.current);
+    setHintActive(false);
+    hintTimer.current = setTimeout(() => setHintActive(true), 10000);
+  }, []);
+
+  // Start hint timer when round changes
+  useEffect(() => {
+    resetHintTimer();
+    return () => { if (hintTimer.current) clearTimeout(hintTimer.current); };
+  }, [round.target.char, resetHintTimer]);
 
   const { target, targetSpeakText, items } = round;
 
@@ -156,6 +170,7 @@ export default function GamePage() {
     speak(item.speakText);
 
     if (item.char === target.char) {
+      resetHintTimer();
       setRound((prev) => ({
         ...prev,
         items: prev.items.map((i) =>
@@ -267,9 +282,31 @@ export default function GamePage() {
 
       {/* ── Game area ── */}
       <div className="flex-1 relative overflow-hidden">
+        <style>{`
+          @keyframes hint-pulse {
+            0%, 100% { text-shadow: 0 0 8px rgba(250,204,21,0.6), 0 0 20px rgba(250,204,21,0.4); }
+            50% { text-shadow: 0 0 18px rgba(250,204,21,1), 0 0 40px rgba(251,146,60,0.8), 0 0 60px rgba(250,204,21,0.5); }
+          }
+          @keyframes sparkle-orbit {
+            0%   { transform: translate(-50%, -50%) rotate(0deg)   translateX(22px) scale(1);   opacity: 1; }
+            50%  { transform: translate(-50%, -50%) rotate(180deg) translateX(22px) scale(1.4); opacity: 0.7; }
+            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(22px) scale(1);   opacity: 1; }
+          }
+          @keyframes sparkle-orbit2 {
+            0%   { transform: translate(-50%, -50%) rotate(90deg)  translateX(18px) scale(1.2); opacity: 0.8; }
+            50%  { transform: translate(-50%, -50%) rotate(270deg) translateX(18px) scale(0.8); opacity: 1; }
+            100% { transform: translate(-50%, -50%) rotate(450deg) translateX(18px) scale(1.2); opacity: 0.8; }
+          }
+          .hint-char { animation: hint-pulse 1.2s ease-in-out infinite; }
+          .sparkle-1 { animation: sparkle-orbit  1.4s linear infinite; font-size: 12px; }
+          .sparkle-2 { animation: sparkle-orbit2 1.1s linear infinite; font-size: 10px; }
+          .sparkle-3 { animation: sparkle-orbit  1.7s linear infinite reverse; font-size: 11px; }
+        `}</style>
+
         {items.map((item) => {
           const isCorrect = item.state === "correct";
           const isWrong = item.state === "wrong";
+          const isHinted = hintActive && item.char === target.char && item.state === "default";
           const color = isCorrect ? "#22c55e" : isWrong ? "#ef4444" : item.color;
           const shadow = isCorrect
             ? "0 0 14px rgba(34,197,94,0.8)"
@@ -291,18 +328,27 @@ export default function GamePage() {
                 fontSize: `${item.size}px`,
                 transform: `translate(-50%, -50%) rotate(${item.rotate}deg)`,
                 lineHeight: 1,
-                color,
+                color: isHinted ? "#f59e0b" : color,
                 textShadow: shadow,
                 transition: "color 0.15s, text-shadow 0.15s",
                 userSelect: "none",
                 WebkitUserSelect: "none",
                 touchAction: "none",
-                zIndex: isCorrect ? 10 : 1,
+                zIndex: isCorrect ? 10 : isHinted ? 5 : 1,
                 fontWeight: "bold",
               }}
-              className="active:scale-125 focus:outline-none"
+              className={`active:scale-125 focus:outline-none${isHinted ? " hint-char" : ""}`}
             >
               <CharGlyph char={item.char} />
+
+              {/* Sparkle particles orbiting the hinted character */}
+              {isHinted && (
+                <>
+                  <span className="sparkle-1" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>✨</span>
+                  <span className="sparkle-2" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>⭐</span>
+                  <span className="sparkle-3" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>✨</span>
+                </>
+              )}
             </button>
           );
         })}
