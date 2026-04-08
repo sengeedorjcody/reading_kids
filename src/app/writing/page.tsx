@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { ANIMALS } from "@/constants/animals";
 import { HOME_ITEMS } from "@/constants/homeitems";
 import { BODY_PARTS } from "@/constants/bodyparts";
+import { THEMES } from "@/constants/themes";
 import { useSpeech } from "@/hooks/useSpeech";
 import { IDictionaryWord } from "@/types";
 
@@ -15,7 +16,8 @@ interface WordItem {
   english: string;
 }
 
-const STATIC_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS];
+const THEME_WORDS: WordItem[] = THEMES.flatMap((t) => t.words);
+const STATIC_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS, ...THEME_WORDS];
 
 const CANVAS_RES = 600;
 

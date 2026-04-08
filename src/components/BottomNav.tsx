@@ -23,6 +23,7 @@ export default function BottomNav() {
           <BottomNavLink href="/animals" icon="🐾" label="Animals" />
           <BottomNavLink href="/body" icon="🧑" label="Body" />
           <BottomNavLink href="/home" icon="🏠" label="Home" />
+          <BottomNavLink href="/themes" icon="🎭" label="Themes" />
           <BottomNavLink href="/writing" icon="✍️" label="Writing" />
           <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />

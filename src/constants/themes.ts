@@ -1,0 +1,163 @@
+export interface ThemeWord {
+  emoji: string;
+  japanese: string;
+  romaji: string;
+  english: string;
+}
+
+export interface Theme {
+  id: string;
+  label: string;
+  icon: string;
+  color: string;         // Tailwind bg active color
+  borderColor: string;  // Tailwind border
+  bg: string;           // page background gradient
+  words: ThemeWord[];
+}
+
+export const THEMES: Theme[] = [
+  {
+    id: "swimming",
+    label: "Swimming",
+    icon: "🏊",
+    color: "bg-blue-500 text-white shadow-blue-200",
+    borderColor: "border-blue-300",
+    bg: "from-blue-50 via-cyan-50 to-sky-50",
+    words: [
+      { emoji: "🏊", japanese: "およぐ",       romaji: "oyogu",       english: "Swim" },
+      { emoji: "🏖️", japanese: "プール",       romaji: "puuru",       english: "Pool" },
+      { emoji: "🩱", japanese: "みずぎ",       romaji: "mizugi",      english: "Swimsuit" },
+      { emoji: "🥽", japanese: "ゴーグル",     romaji: "googuru",     english: "Goggles" },
+      { emoji: "💧", japanese: "みず",         romaji: "mizu",        english: "Water" },
+      { emoji: "🌊", japanese: "なみ",         romaji: "nami",        english: "Wave" },
+      { emoji: "🤿", japanese: "もぐる",       romaji: "moguru",      english: "Dive" },
+      { emoji: "🏄", japanese: "サーフィン",   romaji: "saafin",      english: "Surfing" },
+      { emoji: "🎽", japanese: "キャップ",     romaji: "kyappu",      english: "Swim Cap" },
+      { emoji: "🏆", japanese: "きょうそう",   romaji: "kyousou",     english: "Race" },
+      { emoji: "🦈", japanese: "さめ",         romaji: "same",        english: "Shark" },
+      { emoji: "🐟", japanese: "さかな",       romaji: "sakana",      english: "Fish" },
+      { emoji: "🫁", japanese: "いきをとめる", romaji: "iki wo tomeru", english: "Hold Breath" },
+      { emoji: "🪸", japanese: "うみ",         romaji: "umi",         english: "Ocean" },
+    ],
+  },
+  {
+    id: "school-commute",
+    label: "To School",
+    icon: "🎒",
+    color: "bg-orange-500 text-white shadow-orange-200",
+    borderColor: "border-orange-300",
+    bg: "from-orange-50 via-yellow-50 to-amber-50",
+    words: [
+      { emoji: "🎒", japanese: "ランドセル",   romaji: "randoseru",   english: "School Bag" },
+      { emoji: "🚌", japanese: "スクールバス", romaji: "sukuuru basu", english: "School Bus" },
+      { emoji: "🚶", japanese: "あるく",       romaji: "aruku",       english: "Walk" },
+      { emoji: "🚲", japanese: "じてんしゃ",   romaji: "jitensha",    english: "Bicycle" },
+      { emoji: "⏰", japanese: "じかん",       romaji: "jikan",       english: "Time" },
+      { emoji: "🏫", japanese: "がっこう",     romaji: "gakkou",      english: "School" },
+      { emoji: "🍱", japanese: "おべんとう",   romaji: "obentou",     english: "Lunch Box" },
+      { emoji: "👟", japanese: "くつ",         romaji: "kutsu",       english: "Shoes" },
+      { emoji: "🧢", japanese: "ぼうし",       romaji: "boushi",      english: "Hat" },
+      { emoji: "🌅", japanese: "あさ",         romaji: "asa",         english: "Morning" },
+      { emoji: "👋", japanese: "いってきます", romaji: "ittekimasu",  english: "I'm leaving!" },
+      { emoji: "🏃", japanese: "はしる",       romaji: "hashiru",     english: "Run" },
+      { emoji: "🗺️", japanese: "みち",         romaji: "michi",       english: "Road" },
+      { emoji: "🚦", japanese: "しんごう",     romaji: "shingou",     english: "Traffic Light" },
+    ],
+  },
+  {
+    id: "shopping",
+    label: "Shopping",
+    icon: "🛒",
+    color: "bg-pink-500 text-white shadow-pink-200",
+    borderColor: "border-pink-300",
+    bg: "from-pink-50 via-rose-50 to-fuchsia-50",
+    words: [
+      { emoji: "🛒", japanese: "カート",         romaji: "kaato",        english: "Cart" },
+      { emoji: "💰", japanese: "おかね",         romaji: "okane",        english: "Money" },
+      { emoji: "🏪", japanese: "おみせ",         romaji: "omise",        english: "Shop" },
+      { emoji: "👜", japanese: "かばん",         romaji: "kaban",        english: "Bag" },
+      { emoji: "💳", japanese: "カード",         romaji: "kaado",        english: "Card" },
+      { emoji: "🛍️", japanese: "かいものぶくろ", romaji: "kaimono bukuro", english: "Shopping Bag" },
+      { emoji: "🧾", japanese: "レシート",       romaji: "reshiito",     english: "Receipt" },
+      { emoji: "👗", japanese: "ふく",           romaji: "fuku",         english: "Clothes" },
+      { emoji: "🍎", japanese: "くだもの",       romaji: "kudamono",     english: "Fruit" },
+      { emoji: "🥦", japanese: "やさい",         romaji: "yasai",        english: "Vegetable" },
+      { emoji: "🏷️", japanese: "ねだん",         romaji: "nedan",        english: "Price" },
+      { emoji: "🤑", japanese: "やすい",         romaji: "yasui",        english: "Cheap" },
+      { emoji: "💎", japanese: "たかい",         romaji: "takai",        english: "Expensive" },
+      { emoji: "🧴", japanese: "せんざい",       romaji: "senzai",       english: "Detergent" },
+    ],
+  },
+  {
+    id: "weekdays",
+    label: "Weekdays",
+    icon: "📅",
+    color: "bg-violet-500 text-white shadow-violet-200",
+    borderColor: "border-violet-300",
+    bg: "from-violet-50 via-purple-50 to-indigo-50",
+    words: [
+      { emoji: "1️⃣", japanese: "げつようび", romaji: "getsuyoubi", english: "Monday" },
+      { emoji: "2️⃣", japanese: "かようび",   romaji: "kayoubi",    english: "Tuesday" },
+      { emoji: "3️⃣", japanese: "すいようび", romaji: "suiyoubi",   english: "Wednesday" },
+      { emoji: "4️⃣", japanese: "もくようび", romaji: "mokuyoubi",  english: "Thursday" },
+      { emoji: "5️⃣", japanese: "きんようび", romaji: "kinyoubi",   english: "Friday" },
+      { emoji: "🎉", japanese: "どようび",   romaji: "doyoubi",    english: "Saturday" },
+      { emoji: "☀️", japanese: "にちようび", romaji: "nichiyoubi", english: "Sunday" },
+      { emoji: "📅", japanese: "きょう",     romaji: "kyou",       english: "Today" },
+      { emoji: "➡️", japanese: "あした",     romaji: "ashita",     english: "Tomorrow" },
+      { emoji: "⬅️", japanese: "きのう",     romaji: "kinou",      english: "Yesterday" },
+      { emoji: "🗓️", japanese: "しゅう",     romaji: "shuu",       english: "Week" },
+      { emoji: "🏖️", japanese: "しゅうまつ", romaji: "shuumatsu",  english: "Weekend" },
+      { emoji: "🌙", japanese: "まいにち",   romaji: "mainichi",   english: "Every day" },
+      { emoji: "📆", japanese: "らいしゅう", romaji: "raishuu",    english: "Next week" },
+    ],
+  },
+  {
+    id: "hospital",
+    label: "Hospital",
+    icon: "🏥",
+    color: "bg-red-500 text-white shadow-red-200",
+    borderColor: "border-red-300",
+    bg: "from-red-50 via-rose-50 to-orange-50",
+    words: [
+      { emoji: "🏥", japanese: "びょういん",   romaji: "byouin",      english: "Hospital" },
+      { emoji: "👨‍⚕️", japanese: "いしゃ",      romaji: "isha",        english: "Doctor" },
+      { emoji: "👩‍⚕️", japanese: "かんごし",    romaji: "kangoshi",    english: "Nurse" },
+      { emoji: "💊", japanese: "くすり",       romaji: "kusuri",      english: "Medicine" },
+      { emoji: "🩹", japanese: "ばんそうこう", romaji: "bansoukou",   english: "Bandage" },
+      { emoji: "🌡️", japanese: "たいおんけい", romaji: "taionkei",    english: "Thermometer" },
+      { emoji: "💉", japanese: "ちゅうしゃ",   romaji: "chuusha",     english: "Injection" },
+      { emoji: "🚑", japanese: "きゅうきゅうしゃ", romaji: "kyuukyuusha", english: "Ambulance" },
+      { emoji: "🩺", japanese: "しんさつ",     romaji: "shinsatsu",   english: "Checkup" },
+      { emoji: "🦷", japanese: "はいしゃ",     romaji: "haisha",      english: "Dentist" },
+      { emoji: "😷", japanese: "マスク",       romaji: "masuku",      english: "Mask" },
+      { emoji: "🛏️", japanese: "にゅういん",   romaji: "nyuuin",      english: "Hospitalized" },
+      { emoji: "😰", japanese: "いたい",       romaji: "itai",        english: "Hurt / Pain" },
+      { emoji: "💪", japanese: "げんき",       romaji: "genki",       english: "Healthy" },
+    ],
+  },
+  {
+    id: "school",
+    label: "School",
+    icon: "🏫",
+    color: "bg-green-500 text-white shadow-green-200",
+    borderColor: "border-green-300",
+    bg: "from-green-50 via-emerald-50 to-teal-50",
+    words: [
+      { emoji: "🏫", japanese: "がっこう",     romaji: "gakkou",      english: "School" },
+      { emoji: "👨‍🏫", japanese: "せんせい",     romaji: "sensei",      english: "Teacher" },
+      { emoji: "🧑‍🎓", japanese: "せいと",       romaji: "seito",       english: "Student" },
+      { emoji: "✏️", japanese: "えんぴつ",     romaji: "enpitsu",     english: "Pencil" },
+      { emoji: "📚", japanese: "きょうかしょ", romaji: "kyoukasho",   english: "Textbook" },
+      { emoji: "🪑", japanese: "つくえ",       romaji: "tsukue",      english: "Desk" },
+      { emoji: "🖊️", japanese: "ペン",         romaji: "pen",         english: "Pen" },
+      { emoji: "📐", japanese: "じょうぎ",     romaji: "jougi",       english: "Ruler" },
+      { emoji: "✂️", japanese: "はさみ",       romaji: "hasami",      english: "Scissors" },
+      { emoji: "🖥️", japanese: "コンピューター", romaji: "konpyuutaa", english: "Computer" },
+      { emoji: "🖼️", japanese: "こくばん",     romaji: "kokuban",     english: "Blackboard" },
+      { emoji: "🗑️", japanese: "ごみばこ",     romaji: "gomibako",    english: "Trash Can" },
+      { emoji: "📝", japanese: "ノート",       romaji: "nooto",       english: "Notebook" },
+      { emoji: "🔔", japanese: "チャイム",     romaji: "chaimu",      english: "Bell / Chime" },
+    ],
+  },
+];
