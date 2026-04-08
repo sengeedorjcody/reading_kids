@@ -4,6 +4,7 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { ANIMALS } from "@/constants/animals";
 import { HOME_ITEMS } from "@/constants/homeitems";
 import { BODY_PARTS } from "@/constants/bodyparts";
+import { useSpeech } from "@/hooks/useSpeech";
 
 interface WordItem {
   emoji: string;
@@ -27,6 +28,7 @@ export default function WritingPage() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const { speak } = useSpeech();
 
   const drawGuide = useCallback(() => {
     const canvas = canvasRef.current;
@@ -53,10 +55,15 @@ export default function WritingPage() {
     ctx.stroke();
     ctx.restore();
 
-    const len = word.japanese.length;
-    const fontSize = len <= 1 ? s * 0.6 : len <= 2 ? s * 0.45 : len <= 4 ? s * 0.28 : s * 0.18;
+    // Auto-fit: start large and shrink until text fits within 90% of canvas width
+    const maxWidth = s * 0.9;
+    let fontSize = s * 0.6;
     ctx.save();
     ctx.font = `bold ${fontSize}px serif`;
+    while (ctx.measureText(word.japanese).width > maxWidth && fontSize > s * 0.08) {
+      fontSize -= s * 0.02;
+      ctx.font = `bold ${fontSize}px serif`;
+    }
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(0,0,0,0.06)";
@@ -158,6 +165,15 @@ export default function WritingPage() {
             {word.english}
           </p>
         </div>
+
+        {/* Speaker button */}
+        <button
+          onClick={() => speak(word.japanese)}
+          className="w-16 h-16 rounded-full bg-white border-2 border-orange-200 flex items-center justify-center text-3xl shadow-sm hover:bg-orange-50 transition-colors active:scale-95"
+          aria-label="Speak"
+        >
+          🔊
+        </button>
 
         {/* Next word button */}
         <button
