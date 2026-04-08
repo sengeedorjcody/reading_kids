@@ -5,30 +5,62 @@ import { ANIMALS } from "@/constants/animals";
 import { HOME_ITEMS } from "@/constants/homeitems";
 import { BODY_PARTS } from "@/constants/bodyparts";
 import { useSpeech } from "@/hooks/useSpeech";
+import { IDictionaryWord } from "@/types";
 
 interface WordItem {
   emoji: string;
+  imageUrl?: string;
   japanese: string;
   romaji: string;
   english: string;
 }
 
-const ALL_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS];
+const STATIC_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS];
 
 const CANVAS_RES = 600;
 
-function getRandomWord(exclude?: WordItem): WordItem {
-  const pool = exclude ? ALL_WORDS.filter((w) => w.japanese !== exclude.japanese) : ALL_WORDS;
-  return pool[Math.floor(Math.random() * pool.length)];
+function pickRandom(pool: WordItem[], exclude?: WordItem): WordItem {
+  const filtered = exclude ? pool.filter((w) => w.japanese !== exclude.japanese) : pool;
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
+
+function dictToWordItem(w: IDictionaryWord): WordItem {
+  return {
+    emoji: "📖",
+    imageUrl: w.example_image_url || undefined,
+    japanese: w.hiragana || w.japanese_word,
+    romaji: w.romaji || "",
+    english: w.english_meaning || "",
+  };
 }
 
 export default function WritingPage() {
-  const [word, setWord] = useState<WordItem>(() => getRandomWord());
+  const [pool, setPool] = useState<WordItem[]>(STATIC_WORDS);
+  const [word, setWord] = useState<WordItem>(() => pickRandom(STATIC_WORDS));
   const [showCongrats, setShowCongrats] = useState(false);
+  const [loading, setLoading] = useState(true);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
   const { speak } = useSpeech();
+
+  // Fetch all dictionary words and merge into pool
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await fetch("/api/dictionary?limit=500");
+        if (!res.ok) return;
+        const data = await res.json();
+        const dictWords: WordItem[] = (data.words as IDictionaryWord[])
+          .filter((w) => w.hiragana || w.japanese_word)
+          .map(dictToWordItem);
+        setPool([...STATIC_WORDS, ...dictWords]);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
   const drawGuide = useCallback(() => {
     const canvas = canvasRef.current;
@@ -55,7 +87,6 @@ export default function WritingPage() {
     ctx.stroke();
     ctx.restore();
 
-    // Auto-fit: start large and shrink until text fits within 90% of canvas width
     const maxWidth = s * 0.9;
     let fontSize = s * 0.6;
     ctx.save();
@@ -139,7 +170,7 @@ export default function WritingPage() {
 
   const handleNext = () => {
     setShowCongrats(false);
-    setWord(getRandomWord(word));
+    setWord(pickRandom(pool, word));
   };
 
   return (
@@ -148,10 +179,18 @@ export default function WritingPage() {
       {/* ── LEFT: Word Details ── */}
       <div className="md:w-2/5 w-full flex flex-col items-center justify-center gap-6 px-8 py-8 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 border-b md:border-b-0 md:border-r border-orange-100">
 
-        {/* Emoji */}
-        <div className="text-[7rem] md:text-[9rem] leading-none select-none drop-shadow-sm">
-          {word.emoji}
-        </div>
+        {/* Image or emoji */}
+        {word.imageUrl ? (
+          <img
+            src={word.imageUrl}
+            alt={word.english}
+            className="w-40 h-40 md:w-52 md:h-52 object-cover rounded-3xl shadow-lg border-4 border-white"
+          />
+        ) : (
+          <div className="text-[7rem] md:text-[9rem] leading-none select-none drop-shadow-sm">
+            {word.emoji}
+          </div>
+        )}
 
         {/* Word info */}
         <div className="text-center flex flex-col gap-2">
@@ -178,12 +217,14 @@ export default function WritingPage() {
         {/* Next word button */}
         <button
           onClick={handleNext}
-          className="mt-2 flex items-center gap-2 px-7 py-3 rounded-2xl bg-white border-2 border-orange-200 text-orange-500 font-bold text-base hover:bg-orange-50 transition-colors shadow-sm active:scale-95"
+          className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-white border-2 border-orange-200 text-orange-500 font-bold text-base hover:bg-orange-50 transition-colors shadow-sm active:scale-95"
         >
           🔀 Next Word
         </button>
 
-        <p className="text-xs text-gray-300 font-medium">{ALL_WORDS.length} words</p>
+        <p className="text-xs text-gray-300 font-medium">
+          {loading ? "Loading…" : `${pool.length} words`}
+        </p>
       </div>
 
       {/* ── RIGHT: Canvas ── */}
@@ -206,7 +247,6 @@ export default function WritingPage() {
           onTouchEnd={endDraw}
         />
 
-        {/* Action buttons */}
         <div className="flex gap-3">
           <button
             onClick={handleClear}
@@ -226,7 +266,15 @@ export default function WritingPage() {
       {/* ── Congrats overlay ── */}
       {showCongrats && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm animate-fade-in">
-          <div className="text-[8rem] leading-none mb-2 animate-bounce">{word.emoji}</div>
+          {word.imageUrl ? (
+            <img
+              src={word.imageUrl}
+              alt={word.english}
+              className="w-36 h-36 object-cover rounded-3xl shadow-lg border-4 border-white mb-4 animate-bounce"
+            />
+          ) : (
+            <div className="text-[8rem] leading-none mb-2 animate-bounce">{word.emoji}</div>
+          )}
           <div className="text-6xl mb-4">🎉</div>
           <p className="text-4xl font-black text-green-500 mb-1">よくできました！</p>
           <p className="text-xl font-bold text-gray-400 mb-6">Great job writing!</p>
