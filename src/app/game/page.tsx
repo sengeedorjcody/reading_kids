@@ -283,30 +283,66 @@ export default function GamePage() {
       {/* ── Game area ── */}
       <div className="flex-1 relative overflow-hidden">
         <style>{`
-          @keyframes hint-pulse {
-            0%, 100% { text-shadow: 0 0 8px rgba(250,204,21,0.6), 0 0 20px rgba(250,204,21,0.4); }
-            50% { text-shadow: 0 0 18px rgba(250,204,21,1), 0 0 40px rgba(251,146,60,0.8), 0 0 60px rgba(250,204,21,0.5); }
+          @keyframes hint-ring {
+            0%   { transform: translate(-50%, -50%) scale(0.25); opacity: 0; }
+            8%   { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1);    opacity: 0; }
           }
-          @keyframes sparkle-orbit {
-            0%   { transform: translate(-50%, -50%) rotate(0deg)   translateX(22px) scale(1);   opacity: 1; }
-            50%  { transform: translate(-50%, -50%) rotate(180deg) translateX(22px) scale(1.4); opacity: 0.7; }
-            100% { transform: translate(-50%, -50%) rotate(360deg) translateX(22px) scale(1);   opacity: 1; }
+          @keyframes hint-ring2 {
+            0%   { transform: translate(-50%, -50%) scale(0.25); opacity: 0; }
+            8%   { opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.3);  opacity: 0; }
           }
-          @keyframes sparkle-orbit2 {
-            0%   { transform: translate(-50%, -50%) rotate(90deg)  translateX(18px) scale(1.2); opacity: 0.8; }
-            50%  { transform: translate(-50%, -50%) rotate(270deg) translateX(18px) scale(0.8); opacity: 1; }
-            100% { transform: translate(-50%, -50%) rotate(450deg) translateX(18px) scale(1.2); opacity: 0.8; }
+          .hint-ring-1 {
+            animation: hint-ring  4.5s ease-out infinite;
           }
-          .hint-char { animation: hint-pulse 1.2s ease-in-out infinite; }
-          .sparkle-1 { animation: sparkle-orbit  1.4s linear infinite; font-size: 12px; }
-          .sparkle-2 { animation: sparkle-orbit2 1.1s linear infinite; font-size: 10px; }
-          .sparkle-3 { animation: sparkle-orbit  1.7s linear infinite reverse; font-size: 11px; }
+          .hint-ring-2 {
+            animation: hint-ring2 4.5s ease-out infinite;
+            animation-delay: 0.3s;
+          }
         `}</style>
+
+        {/* Hint rings — rendered separately so the character stays unchanged */}
+        {hintActive && items
+          .filter((item) => item.char === target.char && item.state === "default")
+          .map((item) => {
+            const ringSize = Math.max(90, item.size * 3);
+            return (
+              <div key={`hint-${item.id}`} style={{ position: "absolute", left: `${item.x}%`, top: `${item.y}%`, pointerEvents: "none", zIndex: 4 }}>
+                <div
+                  className="hint-ring-1"
+                  style={{
+                    position: "absolute",
+                    width: ringSize,
+                    height: ringSize,
+                    borderRadius: "50%",
+                    border: "6px solid rgba(251,191,36,0.85)",
+                    boxShadow: "0 0 24px 8px rgba(251,191,36,0.45), inset 0 0 20px rgba(251,191,36,0.15)",
+                    left: "50%",
+                    top: "50%",
+                  }}
+                />
+                <div
+                  className="hint-ring-2"
+                  style={{
+                    position: "absolute",
+                    width: ringSize * 1.25,
+                    height: ringSize * 1.25,
+                    borderRadius: "50%",
+                    border: "4px solid rgba(251,146,60,0.5)",
+                    boxShadow: "0 0 30px 6px rgba(251,146,60,0.25)",
+                    left: "50%",
+                    top: "50%",
+                  }}
+                />
+              </div>
+            );
+          })
+        }
 
         {items.map((item) => {
           const isCorrect = item.state === "correct";
           const isWrong = item.state === "wrong";
-          const isHinted = hintActive && item.char === target.char && item.state === "default";
           const color = isCorrect ? "#22c55e" : isWrong ? "#ef4444" : item.color;
           const shadow = isCorrect
             ? "0 0 14px rgba(34,197,94,0.8)"
@@ -328,27 +364,18 @@ export default function GamePage() {
                 fontSize: `${item.size}px`,
                 transform: `translate(-50%, -50%) rotate(${item.rotate}deg)`,
                 lineHeight: 1,
-                color: isHinted ? "#f59e0b" : color,
+                color,
                 textShadow: shadow,
                 transition: "color 0.15s, text-shadow 0.15s",
                 userSelect: "none",
                 WebkitUserSelect: "none",
                 touchAction: "none",
-                zIndex: isCorrect ? 10 : isHinted ? 5 : 1,
+                zIndex: isCorrect ? 10 : 1,
                 fontWeight: "bold",
               }}
-              className={`active:scale-125 focus:outline-none${isHinted ? " hint-char" : ""}`}
+              className="active:scale-125 focus:outline-none"
             >
               <CharGlyph char={item.char} />
-
-              {/* Sparkle particles orbiting the hinted character */}
-              {isHinted && (
-                <>
-                  <span className="sparkle-1" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>✨</span>
-                  <span className="sparkle-2" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>⭐</span>
-                  <span className="sparkle-3" style={{ position: "absolute", left: "50%", top: "50%", pointerEvents: "none" }}>✨</span>
-                </>
-              )}
             </button>
           );
         })}
