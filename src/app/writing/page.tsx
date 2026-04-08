@@ -1,31 +1,37 @@
 "use client";
 
-import { useEffect, useRef, useCallback, useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
+import { ANIMALS } from "@/constants/animals";
+import { HOME_ITEMS } from "@/constants/homeitems";
+import { BODY_PARTS } from "@/constants/bodyparts";
 
-interface StrokeOrderModalProps {
-  char: string;
+interface WordItem {
+  emoji: string;
+  japanese: string;
   romaji: string;
-  onClose: () => void;
+  english: string;
 }
 
-const CANVAS_SIZE = 300;
+const ALL_WORDS: WordItem[] = [
+  ...ANIMALS,
+  ...HOME_ITEMS,
+  ...BODY_PARTS,
+];
 
-export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderModalProps) {
+const CANVAS_SIZE = 320;
+
+function getRandomWord(exclude?: WordItem): WordItem {
+  const pool = exclude ? ALL_WORDS.filter((w) => w.japanese !== exclude.japanese) : ALL_WORDS;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+export default function WritingPage() {
+  const [word, setWord] = useState<WordItem>(() => getRandomWord());
+  const [showCongrats, setShowCongrats] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
   const lastPos = useRef<{ x: number; y: number } | null>(null);
-  const [showCongrats, setShowCongrats] = useState(false);
 
-  // Close on Escape key
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  // Draw the guide grid and faint character on the canvas
   const drawGuide = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -34,11 +40,10 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
 
     const s = CANVAS_SIZE;
 
-    // Background
     ctx.fillStyle = "#fff9f0";
     ctx.fillRect(0, 0, s, s);
 
-    // Center cross guides (dashed orange)
+    // Grid guides
     ctx.save();
     ctx.setLineDash([6, 6]);
     ctx.strokeStyle = "rgba(249,115,22,0.35)";
@@ -48,7 +53,6 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
     ctx.moveTo(0, s / 2); ctx.lineTo(s, s / 2);
     ctx.stroke();
 
-    // Diagonal guides
     ctx.strokeStyle = "rgba(249,115,22,0.15)";
     ctx.beginPath();
     ctx.moveTo(0, 0); ctx.lineTo(s, s);
@@ -56,15 +60,16 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
     ctx.stroke();
     ctx.restore();
 
-    // Faint ghost character in the center
+    // Ghost word
+    const fontSize = word.japanese.length <= 2 ? s * 0.55 : word.japanese.length <= 4 ? s * 0.3 : s * 0.2;
     ctx.save();
-    ctx.font = `bold ${s * 0.7}px serif`;
+    ctx.font = `bold ${fontSize}px serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(0,0,0,0.07)";
-    ctx.fillText(char, s / 2, s / 2);
+    ctx.fillText(word.japanese, s / 2, s / 2);
     ctx.restore();
-  }, [char]);
+  }, [word]);
 
   useEffect(() => {
     drawGuide();
@@ -111,7 +116,6 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
       return;
     }
 
-    // Detect Apple Pencil force if available (PointerEvent)
     let lineWidth = 4;
     if ("pressure" in (e.nativeEvent as PointerEvent)) {
       const pressure = (e.nativeEvent as PointerEvent).pressure;
@@ -147,39 +151,34 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
     drawGuide();
   };
 
+  const handleNext = () => {
+    setShowCongrats(false);
+    setWord(getRandomWord(word));
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+    <div className="max-w-md mx-auto px-4 py-8">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-black text-gray-800 mb-1">かいてみよう！</h1>
+        <p className="text-gray-400 font-medium">Word Writing Practice ✏️</p>
+      </div>
 
-      {/* Panel */}
-      <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
-
-        {/* Header */}
-        <div className="flex items-center gap-4 px-6 py-5 border-b border-orange-100 bg-gradient-to-r from-yellow-50 to-orange-50 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-2xl bg-white border-2 border-orange-200 flex items-center justify-center shadow-sm">
-              <span className="text-3xl font-black text-gray-800">{char}</span>
-            </div>
-            <div>
-              <p className="text-2xl font-black text-orange-500">{romaji}</p>
-              <p className="text-sm text-gray-400">Draw to practice ✏️</p>
-            </div>
+      {/* Word Card */}
+      <div className="relative bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden mb-6">
+        {/* Emoji + word info */}
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 px-6 py-6 flex items-center gap-5 border-b border-orange-100">
+          <div className="text-6xl">{word.emoji}</div>
+          <div className="flex flex-col gap-1">
+            <span className="text-4xl font-black text-gray-800 leading-none">{word.japanese}</span>
+            <span className="text-xl font-bold text-orange-500">{word.romaji}</span>
+            <span className="text-base text-gray-500 font-medium">{word.english}</span>
           </div>
-          <button
-            onClick={onClose}
-            className="ml-auto p-2 rounded-2xl bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors text-lg font-black shadow-sm border border-gray-100"
-            aria-label="Close"
-          >
-            ✕
-          </button>
         </div>
 
-        {/* Drawing canvas */}
+        {/* Canvas */}
         <div className="flex flex-col items-center gap-4 px-6 py-6">
+          <p className="text-sm text-gray-400 font-medium">Trace the word below ✏️</p>
           <canvas
             ref={canvasRef}
             width={CANVAS_SIZE}
@@ -195,11 +194,7 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
             onTouchEnd={endDraw}
           />
 
-          <p className="text-xs text-center text-gray-400">
-            Trace the faint character using your pencil or finger
-          </p>
-
-          {/* Action buttons */}
+          {/* Buttons */}
           <div className="flex gap-3 w-full">
             <button
               onClick={handleClear}
@@ -207,14 +202,12 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
             >
               🗑️ Clear
             </button>
-            <a
-              href={`https://jisho.org/search/${encodeURIComponent(char)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+            <button
+              onClick={handleNext}
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
             >
-              📖 Stroke Guide
-            </a>
+              🔀 Next Word
+            </button>
             <button
               onClick={() => setShowCongrats(true)}
               className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
@@ -226,12 +219,14 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
 
         {/* Congrats overlay */}
         {showCongrats && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 rounded-3xl animate-fade-in">
-            <div className="text-7xl mb-4 animate-bounce">🎉</div>
-            <p className="text-3xl font-black text-green-500 mb-2">よくできました！</p>
-            <p className="text-lg font-bold text-gray-500 mb-6">Great job!</p>
-            <div className="text-5xl font-black text-gray-800 mb-1">{char}</div>
-            <div className="text-xl text-orange-500 font-bold mb-8">{romaji}</div>
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/97 rounded-3xl animate-fade-in">
+            <div className="text-8xl mb-4 animate-bounce">{word.emoji}</div>
+            <div className="text-7xl mb-2">🎉</div>
+            <p className="text-3xl font-black text-green-500 mb-1">よくできました！</p>
+            <p className="text-lg font-bold text-gray-500 mb-4">Great job writing!</p>
+            <div className="text-4xl font-black text-gray-800 mb-1">{word.japanese}</div>
+            <div className="text-xl text-orange-500 font-bold mb-1">{word.romaji}</div>
+            <div className="text-base text-gray-500 font-medium mb-8">{word.english}</div>
             <div className="flex gap-3">
               <button
                 onClick={() => { setShowCongrats(false); handleClear(); }}
@@ -240,15 +235,20 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
                 ✏️ Try Again
               </button>
               <button
-                onClick={onClose}
+                onClick={handleNext}
                 className="px-6 py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold transition-colors shadow-md active:scale-95"
               >
-                Next →
+                Next Word →
               </button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Word count hint */}
+      <p className="text-center text-xs text-gray-400">
+        {ALL_WORDS.length} words in the dictionary
+      </p>
     </div>
   );
 }
