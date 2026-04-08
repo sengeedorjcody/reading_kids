@@ -133,22 +133,37 @@ export default function GamePage() {
   const [round, setRound] = useState<Round>(() => buildRound("hiragana"));
   const [found, setFound] = useState(0);
   const [showCongrats, setShowCongrats] = useState(false);
-  const [hintActive, setHintActive] = useState(false);
+  const [hintItemId, setHintItemId] = useState<number | null>(null);
   const { speak } = useSpeech();
   const wrongTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const hintTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const roundRef = useRef(round);
+  roundRef.current = round;
 
-  const resetHintTimer = useCallback(() => {
+  const scheduleHint = useCallback(() => {
     if (hintTimer.current) clearTimeout(hintTimer.current);
-    setHintActive(false);
-    hintTimer.current = setTimeout(() => setHintActive(true), 10000);
+    // Wait 10s, then flash one random unfound target, then wait 2s, then repeat
+    hintTimer.current = setTimeout(() => {
+      const unfound = roundRef.current.items.filter(
+        (i) => i.char === roundRef.current.target.char && i.state === "default"
+      );
+      if (unfound.length === 0) return;
+      const picked = unfound[Math.floor(Math.random() * unfound.length)];
+      setHintItemId(picked.id);
+      // Clear ring after 2s, then schedule next hint
+      hintTimer.current = setTimeout(() => {
+        setHintItemId(null);
+        scheduleHint();
+      }, 2000);
+    }, 10000);
   }, []);
 
-  // Start hint timer when round changes
+  // Start hint cycle when round changes
   useEffect(() => {
-    resetHintTimer();
+    setHintItemId(null);
+    scheduleHint();
     return () => { if (hintTimer.current) clearTimeout(hintTimer.current); };
-  }, [round.target.char, resetHintTimer]);
+  }, [round.target.char, scheduleHint]);
 
   const { target, targetSpeakText, items } = round;
 
@@ -170,7 +185,8 @@ export default function GamePage() {
     speak(item.speakText);
 
     if (item.char === target.char) {
-      resetHintTimer();
+      setHintItemId(null);
+      scheduleHint();
       setRound((prev) => ({
         ...prev,
         items: prev.items.map((i) =>
@@ -294,17 +310,17 @@ export default function GamePage() {
             100% { transform: translate(-50%, -50%) scale(1.3);  opacity: 0; }
           }
           .hint-ring-1 {
-            animation: hint-ring  4.5s ease-out infinite;
+            animation: hint-ring  2s ease-out 1 forwards;
           }
           .hint-ring-2 {
-            animation: hint-ring2 4.5s ease-out infinite;
-            animation-delay: 0.3s;
+            animation: hint-ring2 2s ease-out 1 forwards;
+            animation-delay: 0.25s;
           }
         `}</style>
 
-        {/* Hint rings — rendered separately so the character stays unchanged */}
-        {hintActive && items
-          .filter((item) => item.char === target.char && item.state === "default")
+        {/* Hint ring — one ring on one random unfound target, plays once */}
+        {hintItemId !== null && items
+          .filter((item) => item.id === hintItemId)
           .map((item) => {
             const ringSize = Math.max(90, item.size * 3);
             return (
