@@ -12,13 +12,9 @@ interface WordItem {
   english: string;
 }
 
-const ALL_WORDS: WordItem[] = [
-  ...ANIMALS,
-  ...HOME_ITEMS,
-  ...BODY_PARTS,
-];
+const ALL_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS];
 
-const CANVAS_SIZE = 320;
+const CANVAS_RES = 600;
 
 function getRandomWord(exclude?: WordItem): WordItem {
   const pool = exclude ? ALL_WORDS.filter((w) => w.japanese !== exclude.japanese) : ALL_WORDS;
@@ -37,63 +33,51 @@ export default function WritingPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const s = CANVAS_SIZE;
+    const s = CANVAS_RES;
 
     ctx.fillStyle = "#fff9f0";
     ctx.fillRect(0, 0, s, s);
 
-    // Grid guides
     ctx.save();
-    ctx.setLineDash([6, 6]);
-    ctx.strokeStyle = "rgba(249,115,22,0.35)";
-    ctx.lineWidth = 1.5;
+    ctx.setLineDash([10, 10]);
+    ctx.strokeStyle = "rgba(249,115,22,0.3)";
+    ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(s / 2, 0); ctx.lineTo(s / 2, s);
     ctx.moveTo(0, s / 2); ctx.lineTo(s, s / 2);
     ctx.stroke();
-
-    ctx.strokeStyle = "rgba(249,115,22,0.15)";
+    ctx.strokeStyle = "rgba(249,115,22,0.12)";
     ctx.beginPath();
     ctx.moveTo(0, 0); ctx.lineTo(s, s);
     ctx.moveTo(s, 0); ctx.lineTo(0, s);
     ctx.stroke();
     ctx.restore();
 
-    // Ghost word
-    const fontSize = word.japanese.length <= 2 ? s * 0.55 : word.japanese.length <= 4 ? s * 0.3 : s * 0.2;
+    const len = word.japanese.length;
+    const fontSize = len <= 1 ? s * 0.6 : len <= 2 ? s * 0.45 : len <= 4 ? s * 0.28 : s * 0.18;
     ctx.save();
     ctx.font = `bold ${fontSize}px serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = "rgba(0,0,0,0.07)";
+    ctx.fillStyle = "rgba(0,0,0,0.06)";
     ctx.fillText(word.japanese, s / 2, s / 2);
     ctx.restore();
   }, [word]);
 
-  useEffect(() => {
-    drawGuide();
-  }, [drawGuide]);
+  useEffect(() => { drawGuide(); }, [drawGuide]);
 
   const getPos = (e: React.TouchEvent | React.MouseEvent): { x: number; y: number } | null => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
-    const scaleX = CANVAS_SIZE / rect.width;
-    const scaleY = CANVAS_SIZE / rect.height;
-
+    const scaleX = CANVAS_RES / rect.width;
+    const scaleY = CANVAS_RES / rect.height;
     if ("touches" in e) {
       if (e.touches.length === 0) return null;
-      const touch = e.touches[0];
-      return {
-        x: (touch.clientX - rect.left) * scaleX,
-        y: (touch.clientY - rect.top) * scaleY,
-      };
+      const t = e.touches[0];
+      return { x: (t.clientX - rect.left) * scaleX, y: (t.clientY - rect.top) * scaleY };
     }
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    };
+    return { x: (e.clientX - rect.left) * scaleX, y: (e.clientY - rect.top) * scaleY };
   };
 
   const startDraw = (e: React.TouchEvent | React.MouseEvent) => {
@@ -109,17 +93,13 @@ export default function WritingPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
     const pos = getPos(e);
-    if (!pos || !lastPos.current) {
-      lastPos.current = pos;
-      return;
-    }
+    if (!pos || !lastPos.current) { lastPos.current = pos; return; }
 
-    let lineWidth = 4;
+    let lineWidth = 6;
     if ("pressure" in (e.nativeEvent as PointerEvent)) {
-      const pressure = (e.nativeEvent as PointerEvent).pressure;
-      if (pressure > 0) lineWidth = Math.max(2, pressure * 10);
+      const p = (e.nativeEvent as PointerEvent).pressure;
+      if (p > 0) lineWidth = Math.max(3, p * 14);
     }
 
     ctx.save();
@@ -132,7 +112,6 @@ export default function WritingPage() {
     ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
     ctx.restore();
-
     lastPos.current = pos;
   };
 
@@ -147,7 +126,7 @@ export default function WritingPage() {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    ctx.clearRect(0, 0, CANVAS_RES, CANVAS_RES);
     drawGuide();
   };
 
@@ -157,98 +136,103 @@ export default function WritingPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-black text-gray-800 mb-1">かいてみよう！</h1>
-        <p className="text-gray-400 font-medium">Word Writing Practice ✏️</p>
-      </div>
+    <div className="flex flex-col md:flex-row h-[calc(100vh-6rem)]">
 
-      {/* Word Card */}
-      <div className="relative bg-white rounded-3xl shadow-xl border border-orange-100 overflow-hidden mb-6">
-        {/* Emoji + word info */}
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 px-6 py-6 flex items-center gap-5 border-b border-orange-100">
-          <div className="text-6xl">{word.emoji}</div>
-          <div className="flex flex-col gap-1">
-            <span className="text-4xl font-black text-gray-800 leading-none">{word.japanese}</span>
-            <span className="text-xl font-bold text-orange-500">{word.romaji}</span>
-            <span className="text-base text-gray-500 font-medium">{word.english}</span>
-          </div>
+      {/* ── LEFT: Word Details ── */}
+      <div className="md:w-2/5 w-full flex flex-col items-center justify-center gap-6 px-8 py-8 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 border-b md:border-b-0 md:border-r border-orange-100">
+
+        {/* Emoji */}
+        <div className="text-[7rem] md:text-[9rem] leading-none select-none drop-shadow-sm">
+          {word.emoji}
         </div>
 
-        {/* Canvas */}
-        <div className="flex flex-col items-center gap-4 px-6 py-6">
-          <p className="text-sm text-gray-400 font-medium">Trace the word below ✏️</p>
-          <canvas
-            ref={canvasRef}
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            className="w-full rounded-2xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
-            style={{ maxWidth: CANVAS_SIZE }}
-            onMouseDown={startDraw}
-            onMouseMove={draw}
-            onMouseUp={endDraw}
-            onMouseLeave={endDraw}
-            onTouchStart={startDraw}
-            onTouchMove={draw}
-            onTouchEnd={endDraw}
-          />
+        {/* Word info */}
+        <div className="text-center flex flex-col gap-2">
+          <p className="text-5xl md:text-6xl font-black text-gray-800 leading-none tracking-tight">
+            {word.japanese}
+          </p>
+          <p className="text-2xl md:text-3xl font-bold text-orange-500">
+            {word.romaji}
+          </p>
+          <p className="text-lg md:text-xl text-gray-500 font-medium">
+            {word.english}
+          </p>
+        </div>
 
-          {/* Buttons */}
-          <div className="flex gap-3 w-full">
+        {/* Next word button */}
+        <button
+          onClick={handleNext}
+          className="mt-2 flex items-center gap-2 px-7 py-3 rounded-2xl bg-white border-2 border-orange-200 text-orange-500 font-bold text-base hover:bg-orange-50 transition-colors shadow-sm active:scale-95"
+        >
+          🔀 Next Word
+        </button>
+
+        <p className="text-xs text-gray-300 font-medium">{ALL_WORDS.length} words</p>
+      </div>
+
+      {/* ── RIGHT: Canvas ── */}
+      <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6 bg-white">
+        <p className="text-sm text-gray-400 font-medium tracking-wide uppercase">
+          ✏️ Trace the word
+        </p>
+
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_RES}
+          height={CANVAS_RES}
+          className="w-full max-w-[min(100%,calc(100vh-16rem))] aspect-square rounded-3xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
+          onMouseDown={startDraw}
+          onMouseMove={draw}
+          onMouseUp={endDraw}
+          onMouseLeave={endDraw}
+          onTouchStart={startDraw}
+          onTouchMove={draw}
+          onTouchEnd={endDraw}
+        />
+
+        {/* Action buttons */}
+        <div className="flex gap-3">
+          <button
+            onClick={handleClear}
+            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm transition-colors active:scale-95"
+          >
+            🗑️ Clear
+          </button>
+          <button
+            onClick={() => setShowCongrats(true)}
+            className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+          >
+            ✓ Done
+          </button>
+        </div>
+      </div>
+
+      {/* ── Congrats overlay ── */}
+      {showCongrats && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm animate-fade-in">
+          <div className="text-[8rem] leading-none mb-2 animate-bounce">{word.emoji}</div>
+          <div className="text-6xl mb-4">🎉</div>
+          <p className="text-4xl font-black text-green-500 mb-1">よくできました！</p>
+          <p className="text-xl font-bold text-gray-400 mb-6">Great job writing!</p>
+          <div className="text-5xl font-black text-gray-800 mb-1">{word.japanese}</div>
+          <div className="text-2xl text-orange-500 font-bold mb-1">{word.romaji}</div>
+          <div className="text-lg text-gray-400 font-medium mb-10">{word.english}</div>
+          <div className="flex gap-4">
             <button
-              onClick={handleClear}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm transition-colors active:scale-95"
+              onClick={() => { setShowCongrats(false); handleClear(); }}
+              className="px-8 py-4 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-base transition-colors shadow-md active:scale-95"
             >
-              🗑️ Clear
+              ✏️ Try Again
             </button>
             <button
               onClick={handleNext}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-blue-400 hover:bg-blue-500 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+              className="px-8 py-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-colors shadow-md active:scale-95"
             >
-              🔀 Next Word
-            </button>
-            <button
-              onClick={() => setShowCongrats(true)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
-            >
-              ✓ Done
+              Next Word →
             </button>
           </div>
         </div>
-
-        {/* Congrats overlay */}
-        {showCongrats && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/97 rounded-3xl animate-fade-in">
-            <div className="text-8xl mb-4 animate-bounce">{word.emoji}</div>
-            <div className="text-7xl mb-2">🎉</div>
-            <p className="text-3xl font-black text-green-500 mb-1">よくできました！</p>
-            <p className="text-lg font-bold text-gray-500 mb-4">Great job writing!</p>
-            <div className="text-4xl font-black text-gray-800 mb-1">{word.japanese}</div>
-            <div className="text-xl text-orange-500 font-bold mb-1">{word.romaji}</div>
-            <div className="text-base text-gray-500 font-medium mb-8">{word.english}</div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowCongrats(false); handleClear(); }}
-                className="px-6 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold transition-colors shadow-md active:scale-95"
-              >
-                ✏️ Try Again
-              </button>
-              <button
-                onClick={handleNext}
-                className="px-6 py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold transition-colors shadow-md active:scale-95"
-              >
-                Next Word →
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Word count hint */}
-      <p className="text-center text-xs text-gray-400">
-        {ALL_WORDS.length} words in the dictionary
-      </p>
+      )}
     </div>
   );
 }
