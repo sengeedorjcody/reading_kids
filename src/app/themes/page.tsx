@@ -105,47 +105,54 @@ export default function ThemesPage() {
           )}
         </div>
 
-        {/* Category tabs — wrapping */}
+        {/* Category tabs — wrapping, inline styles to avoid Tailwind purge */}
         <div className="flex flex-wrap gap-2 px-3 pb-3">
-          {THEMES.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => switchTheme(t)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all shadow ${
-                themeId === t.id
-                  ? t.color + " shadow-md scale-105"
-                  : "bg-gray-100 text-gray-500"
-              }`}
-            >
-              <span>{t.icon}</span>
-              <span>{t.label}</span>
-            </button>
-          ))}
+          {THEMES.map((t) => {
+            const isActive = themeId === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => switchTheme(t)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all shadow active:scale-95"
+                style={isActive
+                  ? { backgroundColor: t.activeColor, color: "#fff", boxShadow: `0 4px 12px ${t.activeColor}55`, transform: "scale(1.05)" }
+                  : { backgroundColor: "#f3f4f6", color: "#6b7280" }
+                }
+              >
+                <span>{t.icon}</span>
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Sentence card layout ── */}
       {theme.isSentences ? (
-        <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 flex flex-col gap-3">
           {theme.words.map((word, idx) => {
             const isPlaying = playingId === idx;
             return (
               <button
                 key={idx}
                 onClick={() => handleSentenceTap(word, idx)}
-                className={`w-full text-left flex items-center gap-4 px-5 py-4 rounded-3xl border-2 shadow-sm transition-all active:scale-95 ${
-                  isPlaying
-                    ? "bg-amber-50 border-amber-400 shadow-amber-200 shadow-md"
-                    : "bg-white border-amber-100 hover:border-amber-300"
-                }`}
+                className="w-full text-left flex items-center gap-4 px-5 py-4 rounded-3xl border-2 shadow-sm transition-all active:scale-95"
+                style={{
+                  backgroundColor: isPlaying ? "#fffbeb" : "#ffffff",
+                  borderColor: isPlaying ? theme.activeColor : theme.borderHex,
+                  boxShadow: isPlaying ? `0 4px 16px ${theme.activeColor}33` : undefined,
+                }}
               >
                 <span className="text-4xl flex-shrink-0">{word.emoji}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-lg font-black text-gray-800 leading-snug">{word.japanese}</p>
-                  <p className="text-sm font-bold text-amber-600 mt-0.5">{word.romaji}</p>
+                  <p className="text-sm font-bold mt-0.5" style={{ color: theme.activeColor }}>{word.romaji}</p>
                   <p className="text-xs text-gray-400 mt-0.5">{word.english}</p>
                 </div>
-                <span className={`text-2xl flex-shrink-0 transition-transform ${isPlaying ? "scale-125" : ""}`}>
+                <span
+                  className="text-2xl flex-shrink-0 transition-transform"
+                  style={{ transform: isPlaying ? "scale(1.3)" : "scale(1)" }}
+                >
                   🔊
                 </span>
               </button>
@@ -186,7 +193,7 @@ export default function ThemesPage() {
               className="fixed bottom-28 left-1/2 z-50 animate-fade-in"
               style={{ transform: "translateX(-50%)" }}
             >
-              <div className={`bg-white rounded-3xl shadow-2xl border ${theme.borderColor} px-6 py-4 flex items-center gap-4 min-w-[240px]`}>
+              <div className="bg-white rounded-3xl shadow-2xl border-2 px-6 py-4 flex items-center gap-4 min-w-[240px]" style={{ borderColor: theme.borderHex }}>
                 <span className="text-5xl">{active.emoji}</span>
                 <div>
                   <p className="text-3xl font-black text-gray-800 leading-tight">{active.japanese}</p>

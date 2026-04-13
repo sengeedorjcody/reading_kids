@@ -9,11 +9,11 @@ export interface Theme {
   id: string;
   label: string;
   icon: string;
-  color: string;         // Tailwind bg active color
-  borderColor: string;  // Tailwind border
-  bg: string;           // page background gradient
+  activeColor: string;   // hex — active tab background
+  borderHex: string;     // hex — card border
+  bg: string;            // Tailwind gradient classes
   words: ThemeWord[];
-  isSentences?: boolean; // show as sentence cards instead of scattered emoji
+  isSentences?: boolean;
 }
 
 export const THEMES: Theme[] = [
@@ -21,8 +21,8 @@ export const THEMES: Theme[] = [
     id: "swimming",
     label: "Swimming",
     icon: "🏊",
-    color: "bg-blue-500 text-white shadow-blue-200",
-    borderColor: "border-blue-300",
+    activeColor: "#3b82f6",
+    borderHex: "#93c5fd",
     bg: "from-blue-50 via-cyan-50 to-sky-50",
     words: [
       { emoji: "🏊", japanese: "およぐ",       romaji: "oyogu",       english: "Swim" },
@@ -45,8 +45,8 @@ export const THEMES: Theme[] = [
     id: "school-commute",
     label: "To School",
     icon: "🎒",
-    color: "bg-orange-500 text-white shadow-orange-200",
-    borderColor: "border-orange-300",
+    activeColor: "#f97316",
+    borderHex: "#fdba74",
     bg: "from-orange-50 via-yellow-50 to-amber-50",
     words: [
       { emoji: "🎒", japanese: "ランドセル",   romaji: "randoseru",   english: "School Bag" },
@@ -69,8 +69,8 @@ export const THEMES: Theme[] = [
     id: "shopping",
     label: "Shopping",
     icon: "🛒",
-    color: "bg-pink-500 text-white shadow-pink-200",
-    borderColor: "border-pink-300",
+    activeColor: "#ec4899",
+    borderHex: "#f9a8d4",
     bg: "from-pink-50 via-rose-50 to-fuchsia-50",
     words: [
       { emoji: "🛒", japanese: "カート",         romaji: "kaato",        english: "Cart" },
@@ -93,8 +93,8 @@ export const THEMES: Theme[] = [
     id: "weekdays",
     label: "Weekdays",
     icon: "📅",
-    color: "bg-violet-500 text-white shadow-violet-200",
-    borderColor: "border-violet-300",
+    activeColor: "#8b5cf6",
+    borderHex: "#c4b5fd",
     bg: "from-violet-50 via-purple-50 to-indigo-50",
     words: [
       { emoji: "1️⃣", japanese: "げつようび", romaji: "getsuyoubi", english: "Monday" },
@@ -117,8 +117,8 @@ export const THEMES: Theme[] = [
     id: "hospital",
     label: "Hospital",
     icon: "🏥",
-    color: "bg-red-500 text-white shadow-red-200",
-    borderColor: "border-red-300",
+    activeColor: "#ef4444",
+    borderHex: "#fca5a5",
     bg: "from-red-50 via-rose-50 to-orange-50",
     words: [
       { emoji: "🏥", japanese: "びょういん",   romaji: "byouin",      english: "Hospital" },
@@ -141,8 +141,8 @@ export const THEMES: Theme[] = [
     id: "shopping-sentences",
     label: "Shopping Talk",
     icon: "🗣️",
-    color: "bg-amber-500 text-white shadow-amber-200",
-    borderColor: "border-amber-300",
+    activeColor: "#f59e0b",
+    borderHex: "#fcd34d",
     bg: "from-amber-50 via-yellow-50 to-orange-50",
     isSentences: true,
     words: [
@@ -166,8 +166,8 @@ export const THEMES: Theme[] = [
     id: "school",
     label: "School",
     icon: "🏫",
-    color: "bg-green-500 text-white shadow-green-200",
-    borderColor: "border-green-300",
+    activeColor: "#22c55e",
+    borderHex: "#86efac",
     bg: "from-green-50 via-emerald-50 to-teal-50",
     words: [
       { emoji: "🏫", japanese: "がっこう",     romaji: "gakkou",      english: "School" },
