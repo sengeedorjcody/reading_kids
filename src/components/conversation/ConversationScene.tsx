@@ -185,6 +185,12 @@ function CharacterSlotView({ slot }: { slot: IConversationCharacterSlot }) {
               setSelectedWord={setSelectedWord}
               speak={speak}
             />
+            <button
+              onClick={() => speak(slot.text)}
+              className="mt-1 w-full flex items-center justify-center gap-1 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-500 text-xs font-bold transition-colors active:scale-95"
+            >
+              🔊 全部読む
+            </button>
           </div>
         </div>
       )}
@@ -207,6 +213,12 @@ function TextSlotView({ slot }: { slot: ITextSlot }) {
           setSelectedWord={setSelectedWord}
           speak={speak}
         />
+        <button
+          onClick={() => speak(slot.text)}
+          className="mt-1 w-full flex items-center justify-center gap-1 py-1 rounded-xl bg-pink-50 hover:bg-pink-100 text-pink-500 text-xs font-bold transition-colors active:scale-95"
+        >
+          🔊 全部読む
+        </button>
       </div>
     </div>
   );

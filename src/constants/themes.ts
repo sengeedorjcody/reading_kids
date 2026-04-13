@@ -13,6 +13,7 @@ export interface Theme {
   borderColor: string;  // Tailwind border
   bg: string;           // page background gradient
   words: ThemeWord[];
+  isSentences?: boolean; // show as sentence cards instead of scattered emoji
 }
 
 export const THEMES: Theme[] = [
@@ -134,6 +135,31 @@ export const THEMES: Theme[] = [
       { emoji: "🛏️", japanese: "にゅういん",   romaji: "nyuuin",      english: "Hospitalized" },
       { emoji: "😰", japanese: "いたい",       romaji: "itai",        english: "Hurt / Pain" },
       { emoji: "💪", japanese: "げんき",       romaji: "genki",       english: "Healthy" },
+    ],
+  },
+  {
+    id: "shopping-sentences",
+    label: "Shopping Talk",
+    icon: "🗣️",
+    color: "bg-amber-500 text-white shadow-amber-200",
+    borderColor: "border-amber-300",
+    bg: "from-amber-50 via-yellow-50 to-orange-50",
+    isSentences: true,
+    words: [
+      { emoji: "🙋", japanese: "すみません、これはいくらですか？",       romaji: "Sumimasen, kore wa ikura desu ka?",         english: "Excuse me, how much is this?" },
+      { emoji: "🛍️", japanese: "これをください。",                       romaji: "Kore wo kudasai.",                          english: "I'll take this one please." },
+      { emoji: "💸", japanese: "ちょっと高すぎます。",                   romaji: "Chotto takasugi masu.",                     english: "It's a bit too expensive." },
+      { emoji: "🔍", japanese: "もっと安いのはありますか？",             romaji: "Motto yasui no wa arimasu ka?",             english: "Do you have anything cheaper?" },
+      { emoji: "💳", japanese: "クレジットカードは使えますか？",         romaji: "Kurejitto kaado wa tsukaemasu ka?",         english: "Can I use a credit card?" },
+      { emoji: "🏧", japanese: "レジはどこですか？",                     romaji: "Reji wa doko desu ka?",                     english: "Where is the cashier?" },
+      { emoji: "🛒", japanese: "袋に入れてください。",                   romaji: "Fukuro ni irete kudasai.",                  english: "Please put it in a bag." },
+      { emoji: "🧾", japanese: "レシートをください。",                   romaji: "Reshiito wo kudasai.",                      english: "Please give me a receipt." },
+      { emoji: "📅", japanese: "セールはいつですか？",                   romaji: "Seeru wa itsu desu ka?",                    english: "When is the sale?" },
+      { emoji: "👗", japanese: "試着してもいいですか？",                 romaji: "Shichaku shite mo ii desu ka?",             english: "May I try it on?" },
+      { emoji: "📦", japanese: "これはどこにありますか？",               romaji: "Kore wa doko ni arimasu ka?",               english: "Where can I find this?" },
+      { emoji: "🔄", japanese: "返品できますか？",                       romaji: "Henpin dekimasu ka?",                       english: "Can I return this?" },
+      { emoji: "🎁", japanese: "プレゼント用に包んでもらえますか？",     romaji: "Purezento you ni tsutsunde moraemasu ka?",  english: "Can you gift wrap it?" },
+      { emoji: "✅", japanese: "ありがとうございました。またきます。",   romaji: "Arigatou gozaimashita. Mata kimasu.",        english: "Thank you. I'll come again!" },
     ],
   },
   {
