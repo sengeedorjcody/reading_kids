@@ -206,9 +206,6 @@ export default function FlashcardsPage() {
                 {current.hiragana && current.hiragana !== current.japanese_word && (
                   <div className="text-2xl font-bold text-pink-400">{current.hiragana}</div>
                 )}
-                {current.romaji && (
-                  <div className="text-lg text-gray-400 italic">{current.romaji}</div>
-                )}
                 <div className="mt-4 flex items-center gap-2 text-gray-300">
                   <span className="text-sm">tap to flip</span>
                   <span className="text-xl">↺</span>
@@ -244,6 +241,11 @@ export default function FlashcardsPage() {
                     <div className="text-3xl font-black text-gray-700" style={{ fontFamily: "var(--font-noto-serif-jp), serif" }}>
                       {current.japanese_word}
                     </div>
+
+                    {/* Romaji */}
+                    {current.romaji && (
+                      <div className="text-lg text-gray-400 italic">{current.romaji}</div>
+                    )}
 
                     {/* Meanings */}
                     {current.english_meaning && (

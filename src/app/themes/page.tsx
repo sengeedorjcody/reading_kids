@@ -52,7 +52,7 @@ function OrderedGridLayout({
   const isDayTheme = theme.id === "days-of-month";
 
   return (
-    <div className="flex-1 overflow-y-auto p-3">
+    <div className="flex-1 overflow-y-auto p-3 pb-28">
       <div
         className="grid gap-2"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
@@ -63,23 +63,21 @@ function OrderedGridLayout({
             <button
               key={i}
               onClick={() => onWordTap(word)}
-              className={`flex flex-col items-center justify-center py-3 rounded-2xl transition-all active:scale-95 shadow-sm border ${
-                isActive
-                  ? theme.color + " border-transparent shadow-md scale-105"
-                  : "bg-white/80 border-gray-100 text-gray-800"
-              }`}
+              className="flex flex-col items-center justify-center py-3 rounded-2xl transition-all active:scale-95 shadow-sm border"
+              style={isActive
+                ? { backgroundColor: theme.activeColor, borderColor: "transparent", color: "#fff", transform: "scale(1.05)", boxShadow: `0 4px 12px ${theme.activeColor}55` }
+                : { backgroundColor: "rgba(255,255,255,0.8)", borderColor: "#f3f4f6", color: "#1f2937" }
+              }
             >
               <span
-                className={`font-black leading-none ${
-                  isDayTheme ? "text-lg" : "text-xl"
-                } ${isActive ? "text-white" : "text-gray-800"}`}
+                className="font-black leading-none"
+                style={{ fontSize: isDayTheme ? "1.125rem" : "1.25rem" }}
               >
                 {word.emoji}
               </span>
               <span
-                className={`mt-1 text-[10px] font-bold leading-none ${
-                  isActive ? "text-white/90" : "text-gray-500"
-                }`}
+                className="mt-1 text-[10px] font-bold leading-none"
+                style={{ color: isActive ? "rgba(255,255,255,0.9)" : "#6b7280" }}
               >
                 {word.japanese}
               </span>
@@ -121,8 +119,8 @@ function WeekCalendarLayout({
 
   const getWeekStart = (offset: number) => {
     const d = new Date(today);
-    const dow = d.getDay(); // 0=Sun
-    const diff = dow === 0 ? -6 : 1 - dow; // shift to Monday
+    const dow = d.getDay();
+    const diff = dow === 0 ? -6 : 1 - dow;
     d.setDate(d.getDate() + diff + offset * 7);
     return d;
   };
@@ -136,16 +134,12 @@ function WeekCalendarLayout({
 
   const isToday = (d: Date) => d.getTime() === today.getTime();
 
-  // Mon-Sun word entries (first 7)
   const dayWords = theme.words.slice(0, 7);
   const extraWords = theme.words.slice(7);
 
   const DAY_HEADERS = ["月", "火", "水", "木", "金", "土", "日"];
+  const weekLabel = weekOffset === -1 ? "先週" : weekOffset === 0 ? "今週" : "来週";
 
-  const weekLabel =
-    weekOffset === -1 ? "先週" : weekOffset === 0 ? "今週" : "来週";
-
-  // Today's full Japanese date
   const ty = today.getFullYear();
   const tm = today.getMonth() + 1;
   const td = today.getDate();
@@ -160,7 +154,7 @@ function WeekCalendarLayout({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto pb-28">
       {/* Today's date banner */}
       <button
         onClick={() => onWordTap(todayWord)}
@@ -168,7 +162,9 @@ function WeekCalendarLayout({
       >
         <span className="text-lg">📅</span>
         <span className="text-xl font-black text-gray-800">{todayDisplay}</span>
-        <span className="text-sm text-gray-400 font-bold">（{dayWords[today.getDay() === 0 ? 6 : today.getDay() - 1].japanese}）</span>
+        <span className="text-sm text-gray-400 font-bold">
+          （{dayWords[today.getDay() === 0 ? 6 : today.getDay() - 1].japanese}）
+        </span>
       </button>
 
       <div className="p-3">
@@ -191,7 +187,6 @@ function WeekCalendarLayout({
 
         {/* Calendar grid */}
         <div className="grid grid-cols-7 gap-1 mb-4">
-          {/* Day headers */}
           {DAY_HEADERS.map((h, i) => (
             <div
               key={h}
@@ -202,7 +197,6 @@ function WeekCalendarLayout({
               {h}
             </div>
           ))}
-          {/* Date cells */}
           {days.map((d, i) => {
             const todayCell = isToday(d);
             const isSat = i === 5;
@@ -212,31 +206,26 @@ function WeekCalendarLayout({
               <button
                 key={i}
                 onClick={() => onWordTap(dayWords[i])}
-                className={`flex flex-col items-center justify-center py-2 rounded-2xl transition-all active:scale-95 ${
+                className="flex flex-col items-center justify-center py-2 rounded-2xl transition-all active:scale-95"
+                style={
                   todayCell
-                    ? "bg-violet-500 shadow-md shadow-violet-200"
+                    ? { backgroundColor: theme.activeColor, boxShadow: `0 4px 12px ${theme.activeColor}55` }
                     : isActive
-                    ? "bg-violet-100 border border-violet-300"
-                    : "bg-white/70"
-                }`}
+                    ? { backgroundColor: `${theme.activeColor}22`, border: `1px solid ${theme.activeColor}` }
+                    : { backgroundColor: "rgba(255,255,255,0.7)" }
+                }
               >
                 <span
-                  className={`text-xl font-black leading-none ${
-                    todayCell
-                      ? "text-white"
-                      : isSat
-                      ? "text-blue-500"
-                      : isSun
-                      ? "text-red-500"
-                      : "text-gray-800"
-                  }`}
+                  className="text-xl font-black leading-none"
+                  style={{
+                    color: todayCell ? "#fff" : isSat ? "#3b82f6" : isSun ? "#ef4444" : "#1f2937",
+                  }}
                 >
                   {d.getDate()}
                 </span>
                 <span
-                  className={`text-[9px] font-bold mt-0.5 ${
-                    todayCell ? "text-white/70" : "text-gray-400"
-                  }`}
+                  className="text-[9px] font-bold mt-0.5"
+                  style={{ color: todayCell ? "rgba(255,255,255,0.7)" : "#9ca3af" }}
                 >
                   {d.getMonth() + 1}/{d.getDate()}
                 </span>
@@ -253,18 +242,19 @@ function WeekCalendarLayout({
               <button
                 key={i}
                 onClick={() => onWordTap(word)}
-                className={`flex items-center gap-2 p-3 rounded-2xl transition-all active:scale-95 ${
+                className="flex items-center gap-2 p-3 rounded-2xl transition-all active:scale-95"
+                style={
                   isActive
-                    ? "bg-violet-500 shadow-md"
-                    : "bg-white/70"
-                }`}
+                    ? { backgroundColor: theme.activeColor, boxShadow: `0 4px 12px ${theme.activeColor}55` }
+                    : { backgroundColor: "rgba(255,255,255,0.7)" }
+                }
               >
                 <span className="text-xl">{word.emoji}</span>
                 <div className="text-left">
-                  <p className={`font-black text-sm ${isActive ? "text-white" : "text-gray-800"}`}>
+                  <p className="font-black text-sm" style={{ color: isActive ? "#fff" : "#1f2937" }}>
                     {word.japanese}
                   </p>
-                  <p className={`text-xs ${isActive ? "text-white/70" : "text-gray-400"}`}>
+                  <p className="text-xs" style={{ color: isActive ? "rgba(255,255,255,0.7)" : "#9ca3af" }}>
                     {word.english}
                   </p>
                 </div>
@@ -284,6 +274,7 @@ export default function ThemesPage() {
 
   const [placed, setPlaced] = useState<PlacedWord[]>(() => buildLayout(theme.words));
   const [active, setActive] = useState<ThemeWord | null>(null);
+  const [playingId, setPlayingId] = useState<number | null>(null);
   const { speak } = useSpeech();
   const labelTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tapTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
@@ -306,9 +297,16 @@ export default function ThemesPage() {
     tapTimers.current.set(p.id, t);
   }, [handleWordTap]);
 
+  const handleSentenceTap = (word: ThemeWord, idx: number) => {
+    speak(word.japanese);
+    setPlayingId(idx);
+    setTimeout(() => setPlayingId(null), 2500);
+  };
+
   const switchTheme = (t: Theme) => {
     setThemeId(t.id);
     setActive(null);
+    setPlayingId(null);
     if (labelTimer.current) clearTimeout(labelTimer.current);
     if (!t.layout || t.layout === "scatter") {
       setPlaced(buildLayout(t.words));
@@ -325,7 +323,9 @@ export default function ThemesPage() {
         <div className="flex items-center justify-between px-4 pt-3 pb-2">
           <div>
             <h1 className="text-xl font-black text-gray-800">{theme.icon} {theme.label}</h1>
-            <p className="text-xs text-gray-400">Tap to hear the Japanese word</p>
+            <p className="text-xs text-gray-400">
+              {theme.isSentences ? "Tap a sentence to hear it spoken" : "Tap to hear the Japanese word"}
+            </p>
           </div>
           {isScatter && (
             <button
@@ -339,26 +339,60 @@ export default function ThemesPage() {
         </div>
 
         {/* Category tabs */}
-        <div className="flex gap-2 px-3 pb-3 overflow-x-auto scrollbar-none">
-          {THEMES.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => switchTheme(t)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-2xl text-sm font-black transition-all shadow ${
-                themeId === t.id
-                  ? t.color + " shadow-md scale-105"
-                  : "bg-gray-100 text-gray-500"
-              }`}
-            >
-              <span>{t.icon}</span>
-              <span>{t.label}</span>
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2 px-3 pb-3">
+          {THEMES.map((t) => {
+            const isActive = themeId === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => switchTheme(t)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all shadow active:scale-95"
+                style={isActive
+                  ? { backgroundColor: t.activeColor, color: "#fff", boxShadow: `0 4px 12px ${t.activeColor}55`, transform: "scale(1.05)" }
+                  : { backgroundColor: "#f3f4f6", color: "#6b7280" }
+                }
+              >
+                <span>{t.icon}</span>
+                <span>{t.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* ── Content area ── */}
-      {theme.layout === "calendar" ? (
+      {theme.isSentences ? (
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 flex flex-col gap-3">
+          {theme.words.map((word, idx) => {
+            const isPlaying = playingId === idx;
+            return (
+              <button
+                key={idx}
+                onClick={() => handleSentenceTap(word, idx)}
+                className="w-full text-left flex items-center gap-4 px-5 py-4 rounded-3xl border-2 shadow-sm transition-all active:scale-95"
+                style={{
+                  backgroundColor: isPlaying ? "#fffbeb" : "#ffffff",
+                  borderColor: isPlaying ? theme.activeColor : theme.borderHex,
+                  boxShadow: isPlaying ? `0 4px 16px ${theme.activeColor}33` : undefined,
+                }}
+              >
+                <span className="text-4xl flex-shrink-0">{word.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-lg font-black text-gray-800 leading-snug">{word.japanese}</p>
+                  <p className="text-sm font-bold mt-0.5" style={{ color: theme.activeColor }}>{word.romaji}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{word.english}</p>
+                </div>
+                <span
+                  className="text-2xl flex-shrink-0 transition-transform"
+                  style={{ transform: isPlaying ? "scale(1.3)" : "scale(1)" }}
+                >
+                  🔊
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      ) : theme.layout === "calendar" ? (
         <WeekCalendarLayout theme={theme} onWordTap={handleWordTap} active={active} />
       ) : theme.layout === "ordered-grid" ? (
         <OrderedGridLayout theme={theme} onWordTap={handleWordTap} active={active} />
@@ -391,14 +425,17 @@ export default function ThemesPage() {
         </div>
       )}
 
-      {/* ── Floating label card ── */}
-      {active && (
+      {/* ── Floating label card (scatter + grid layouts) ── */}
+      {active && !theme.isSentences && (
         <div
           key={active.japanese}
           className="fixed bottom-28 left-1/2 z-50 animate-fade-in"
           style={{ transform: "translateX(-50%)" }}
         >
-          <div className={`bg-white rounded-3xl shadow-2xl border ${theme.borderColor} px-6 py-4 flex items-center gap-4 min-w-[240px]`}>
+          <div
+            className="bg-white rounded-3xl shadow-2xl border-2 px-6 py-4 flex items-center gap-4 min-w-[240px]"
+            style={{ borderColor: theme.borderHex }}
+          >
             <span className="text-5xl">{active.emoji}</span>
             <div>
               <p className="text-3xl font-black text-gray-800 leading-tight">{active.japanese}</p>
