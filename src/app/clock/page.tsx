@@ -330,6 +330,62 @@ export default function ClockPage() {
         </svg>
       </div>
 
+      {/* ── Arrow controls (practice mode only) ── */}
+      {!isLive && (
+        <div className="flex items-center justify-center gap-4 mb-4">
+          {/* Hour control */}
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onClick={() => setHour((h) => (h + 1) % 24)}
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black active:scale-90 transition-all"
+              style={{ backgroundColor: "#1e293b", color: "#fff", boxShadow: "0 4px 12px #1e293b44" }}
+            >
+              ▲
+            </button>
+            <span className="text-xs font-black text-gray-400">じ</span>
+            <button
+              onClick={() => setHour((h) => (h - 1 + 24) % 24)}
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black active:scale-90 transition-all"
+              style={{ backgroundColor: "#1e293b", color: "#fff", boxShadow: "0 4px 12px #1e293b44" }}
+            >
+              ▼
+            </button>
+          </div>
+
+          {/* Current time display in center */}
+          <div
+            className="flex-1 flex flex-col items-center justify-center rounded-3xl py-4"
+            style={{ backgroundColor: "#f8fafc", border: "2px solid #e2e8f0" }}
+          >
+            <div className="text-4xl font-black text-gray-800 tabular-nums">
+              {h12.toString().padStart(2, "0")}
+              <span className="text-gray-400">:</span>
+              {minute.toString().padStart(2, "0")}
+            </div>
+            <div className="text-xs font-bold text-gray-400 mt-1">{ampm}</div>
+          </div>
+
+          {/* Minute control */}
+          <div className="flex flex-col items-center gap-1">
+            <button
+              onClick={() => setMinute((m) => (m + 1) % 60)}
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black active:scale-90 transition-all"
+              style={{ backgroundColor: "#6366f1", color: "#fff", boxShadow: "0 4px 12px #6366f144" }}
+            >
+              ▲
+            </button>
+            <span className="text-xs font-black text-gray-400">ふん</span>
+            <button
+              onClick={() => setMinute((m) => (m - 1 + 60) % 60)}
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-black active:scale-90 transition-all"
+              style={{ backgroundColor: "#6366f1", color: "#fff", boxShadow: "0 4px 12px #6366f144" }}
+            >
+              ▼
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Digital display + Japanese */}
       <div
         className="rounded-3xl px-6 py-5 mb-4 text-center border-2"
