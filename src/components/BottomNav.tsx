@@ -20,6 +20,7 @@ export default function BottomNav() {
           <BottomNavLink href="/conversations" icon="💬" label="会話" />
           <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
           <BottomNavLink href="/game" icon="🎮" label="Game" />
+          <BottomNavLink href="/family" icon="👨‍👩‍👧" label="Family" />
           <BottomNavLink href="/animals" icon="🐾" label="Animals" />
           <BottomNavLink href="/body" icon="🧑" label="Body" />
           <BottomNavLink href="/home" icon="🏠" label="Home" />
