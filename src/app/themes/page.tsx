@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { THEMES, Theme, ThemeWord } from "@/constants/themes";
 import { useSpeech } from "@/hooks/useSpeech";
 
@@ -38,6 +38,12 @@ function buildLayout(words: ThemeWord[]): PlacedWord[] {
   }));
 }
 
+// Row accent colors for ordered-grid (cycles per row)
+const ROW_COLORS = [
+  "#f97316", "#8b5cf6", "#ec4899", "#22c55e",
+  "#0ea5e9", "#f59e0b", "#ef4444", "#14b8a6",
+];
+
 // ── Ordered grid layout (numbers, days of month) ──────────────────────────
 function OrderedGridLayout({
   theme,
@@ -59,19 +65,23 @@ function OrderedGridLayout({
       >
         {theme.words.map((word, i) => {
           const isActive = active?.japanese === word.japanese;
+          const rowColor = ROW_COLORS[Math.floor(i / cols) % ROW_COLORS.length];
           return (
             <button
               key={i}
               onClick={() => onWordTap(word)}
-              className="flex flex-col items-center justify-center py-3 rounded-2xl transition-all active:scale-95 shadow-sm border"
+              className="flex flex-col items-center justify-center py-3 rounded-2xl transition-all active:scale-95 shadow-sm"
               style={isActive
-                ? { backgroundColor: theme.activeColor, borderColor: "transparent", color: "#fff", transform: "scale(1.05)", boxShadow: `0 4px 12px ${theme.activeColor}55` }
-                : { backgroundColor: "rgba(255,255,255,0.8)", borderColor: "#f3f4f6", color: "#1f2937" }
+                ? { backgroundColor: rowColor, color: "#fff", transform: "scale(1.08)", boxShadow: `0 4px 14px ${rowColor}66` }
+                : { backgroundColor: "rgba(255,255,255,0.85)", borderColor: "#f3f4f6", border: "1px solid #f3f4f6" }
               }
             >
               <span
                 className="font-black leading-none"
-                style={{ fontSize: isDayTheme ? "1.125rem" : "1.25rem" }}
+                style={{
+                  fontSize: isDayTheme ? "1.125rem" : "1.25rem",
+                  color: isActive ? "#fff" : rowColor,
+                }}
               >
                 {word.emoji}
               </span>
@@ -113,6 +123,13 @@ function WeekCalendarLayout({
   active: ThemeWord | null;
 }) {
   const [weekOffset, setWeekOffset] = useState(0);
+  const [now, setNow] = useState(() => new Date());
+
+  // Live clock — ticks every second
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -155,16 +172,33 @@ function WeekCalendarLayout({
 
   return (
     <div className="flex-1 overflow-y-auto pb-28">
-      {/* Today's date banner */}
+      {/* Today's date + live clock banner */}
       <button
         onClick={() => onWordTap(todayWord)}
-        className="w-full px-4 py-3 bg-white/80 border-b border-gray-100 flex items-center justify-center gap-2 active:bg-gray-50"
+        className="w-full px-4 py-3 bg-white/80 border-b border-gray-100 flex items-center justify-between gap-2 active:bg-gray-50"
       >
-        <span className="text-lg">📅</span>
-        <span className="text-xl font-black text-gray-800">{todayDisplay}</span>
-        <span className="text-sm text-gray-400 font-bold">
-          （{dayWords[today.getDay() === 0 ? 6 : today.getDay() - 1].japanese}）
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-lg">📅</span>
+          <span className="text-xl font-black text-gray-800">{todayDisplay}</span>
+          <span className="text-sm text-gray-400 font-bold">
+            （{dayWords[today.getDay() === 0 ? 6 : today.getDay() - 1].japanese}）
+          </span>
+        </div>
+        {/* Live digital clock */}
+        <div
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl font-black tabular-nums text-white text-base"
+          style={{ backgroundColor: theme.activeColor }}
+        >
+          <span>🕐</span>
+          <span>
+            {now.getHours().toString().padStart(2, "0")}
+            <span className="animate-pulse">:</span>
+            {now.getMinutes().toString().padStart(2, "0")}
+            <span className="text-xs opacity-80 ml-0.5">
+              :{now.getSeconds().toString().padStart(2, "0")}
+            </span>
+          </span>
+        </div>
       </button>
 
       <div className="p-3">
@@ -338,15 +372,15 @@ export default function ThemesPage() {
           )}
         </div>
 
-        {/* Category tabs */}
-        <div className="flex flex-wrap gap-2 px-3 pb-3">
+        {/* Category tabs — horizontal scroll, single row */}
+        <div className="flex gap-2 px-3 pb-3 overflow-x-auto scrollbar-none">
           {THEMES.map((t) => {
             const isActive = themeId === t.id;
             return (
               <button
                 key={t.id}
                 onClick={() => switchTheme(t)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all shadow active:scale-95"
+                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all active:scale-95"
                 style={isActive
                   ? { backgroundColor: t.activeColor, color: "#fff", boxShadow: `0 4px 12px ${t.activeColor}55`, transform: "scale(1.05)" }
                   : { backgroundColor: "#f3f4f6", color: "#6b7280" }
