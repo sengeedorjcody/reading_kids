@@ -16,6 +16,13 @@ interface WordItem {
   english: string;
 }
 
+type Category = "all" | "hiragana" | "katakana" | "kanji";
+
+// ── Character detectors ───────────────────────────────────────────────────
+const isHiragana  = (s: string) => /[\u3041-\u3096]/.test(s);
+const isKatakana  = (s: string) => /[\u30A1-\u30FC]/.test(s);
+const isKanji     = (s: string) => /[\u4E00-\u9FFF]/.test(s);
+
 const THEME_WORDS: WordItem[] = THEMES.flatMap((t) => t.words);
 const STATIC_WORDS: WordItem[] = [...ANIMALS, ...HOME_ITEMS, ...BODY_PARTS, ...THEME_WORDS];
 
@@ -30,21 +37,37 @@ function dictToWordItem(w: IDictionaryWord): WordItem {
   return {
     emoji: "📖",
     imageUrl: w.example_image_url || undefined,
-    japanese: w.hiragana || w.japanese_word,
+    japanese: w.japanese_word,
     romaji: w.romaji || "",
     english: w.english_meaning || "",
   };
 }
 
+const CATEGORY_CONFIG: Record<Category, { label: string; jp: string; color: string; icon: string }> = {
+  all:      { label: "All",      jp: "すべて",   color: "#6b7280", icon: "📝" },
+  hiragana: { label: "Hiragana", jp: "ひらがな", color: "#ec4899", icon: "あ" },
+  katakana: { label: "Katakana", jp: "カタカナ", color: "#3b82f6", icon: "ア" },
+  kanji:    { label: "Kanji",    jp: "かんじ",   color: "#f97316", icon: "字" },
+};
+
 export default function WritingPage() {
-  const [pool, setPool] = useState<WordItem[]>(STATIC_WORDS);
-  const [word, setWord] = useState<WordItem>(() => pickRandom(STATIC_WORDS));
+  const [allPool,  setAllPool]  = useState<WordItem[]>(STATIC_WORDS);
+  const [category, setCategory] = useState<Category>("all");
+  const [word,     setWord]     = useState<WordItem>(() => pickRandom(STATIC_WORDS));
   const [showCongrats, setShowCongrats] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isDrawing = useRef(false);
-  const lastPos = useRef<{ x: number; y: number } | null>(null);
-  const { speak } = useSpeech();
+  const [loading, setLoading]   = useState(true);
+  const canvasRef  = useRef<HTMLCanvasElement>(null);
+  const isDrawing  = useRef(false);
+  const lastPos    = useRef<{ x: number; y: number } | null>(null);
+  const { speak }  = useSpeech();
+
+  // Filtered pool based on category
+  const pool = (() => {
+    if (category === "hiragana") return allPool.filter(w => isHiragana(w.japanese) && !isKanji(w.japanese));
+    if (category === "katakana") return allPool.filter(w => isKatakana(w.japanese));
+    if (category === "kanji")    return allPool.filter(w => isKanji(w.japanese));
+    return allPool;
+  })();
 
   // Fetch all dictionary words and merge into pool
   useEffect(() => {
@@ -54,15 +77,24 @@ export default function WritingPage() {
         if (!res.ok) return;
         const data = await res.json();
         const dictWords: WordItem[] = (data.words as IDictionaryWord[])
-          .filter((w) => w.hiragana || w.japanese_word)
+          .filter((w) => w.japanese_word)
           .map(dictToWordItem);
-        setPool([...STATIC_WORDS, ...dictWords]);
+        setAllPool([...STATIC_WORDS, ...dictWords]);
       } finally {
         setLoading(false);
       }
     }
     load();
   }, []);
+
+  // When category changes, pick a new word from the new filtered pool
+  useEffect(() => {
+    if (pool.length > 0) {
+      setWord(pickRandom(pool));
+      handleClear();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category]);
 
   const drawGuide = useCallback(() => {
     const canvas = canvasRef.current;
@@ -106,7 +138,7 @@ export default function WritingPage() {
 
   useEffect(() => { drawGuide(); }, [drawGuide]);
 
-  const getPos = (e: React.TouchEvent | React.MouseEvent): { x: number; y: number } | null => {
+  const getPos = (e: React.TouchEvent | React.MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
@@ -172,96 +204,151 @@ export default function WritingPage() {
 
   const handleNext = () => {
     setShowCongrats(false);
-    setWord(pickRandom(pool, word));
+    if (pool.length > 0) setWord(pickRandom(pool, word));
   };
 
+  const cfg = CATEGORY_CONFIG[category];
+  const kanjiCount = allPool.filter(w => isKanji(w.japanese)).length;
+
   return (
-    <div className="flex flex-col md:flex-row h-[calc(100vh-6rem)]">
+    <div className="flex flex-col h-[calc(100vh-6rem)]">
 
-      {/* ── LEFT: Word Details ── */}
-      <div className="md:w-2/5 w-full flex flex-col items-center justify-center gap-6 px-8 py-8 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 border-b md:border-b-0 md:border-r border-orange-100">
+      {/* ── Category tabs ── */}
+      <div className="flex-shrink-0 flex gap-2 px-4 pt-3 pb-2 bg-white border-b border-gray-100 overflow-x-auto scrollbar-none">
+        {(Object.keys(CATEGORY_CONFIG) as Category[]).map((cat) => {
+          const c = CATEGORY_CONFIG[cat];
+          const isActive = category === cat;
+          const count = (() => {
+            if (cat === "hiragana") return allPool.filter(w => isHiragana(w.japanese) && !isKanji(w.japanese)).length;
+            if (cat === "katakana") return allPool.filter(w => isKatakana(w.japanese)).length;
+            if (cat === "kanji")    return kanjiCount;
+            return allPool.length;
+          })();
+          return (
+            <button
+              key={cat}
+              onClick={() => setCategory(cat)}
+              className="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-2xl font-black text-sm transition-all active:scale-95"
+              style={isActive
+                ? { backgroundColor: c.color, color: "#fff", boxShadow: `0 4px 10px ${c.color}44` }
+                : { backgroundColor: "#f3f4f6", color: "#6b7280" }
+              }
+            >
+              <span className="text-base">{c.icon}</span>
+              <span>{c.jp}</span>
+              <span
+                className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                style={{ backgroundColor: isActive ? "rgba(255,255,255,0.25)" : "#e5e7eb", color: isActive ? "#fff" : "#9ca3af" }}
+              >
+                {loading ? "…" : count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-        {/* Image or emoji */}
-        {word.imageUrl ? (
-          <img
-            src={word.imageUrl}
-            alt={word.english}
-            className="w-40 h-40 md:w-52 md:h-52 object-cover rounded-3xl shadow-lg border-4 border-white"
-          />
-        ) : (
-          <div className="text-[7rem] md:text-[9rem] leading-none select-none drop-shadow-sm">
-            {word.emoji}
+      {/* ── Main layout ── */}
+      <div className="flex flex-col md:flex-row flex-1 min-h-0">
+
+        {/* LEFT: Word details */}
+        <div className="md:w-2/5 w-full flex flex-col items-center justify-center gap-5 px-8 py-6 bg-gradient-to-br from-yellow-50 via-orange-50 to-pink-50 border-b md:border-b-0 md:border-r border-orange-100">
+
+          {/* Category badge */}
+          <div
+            className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-black"
+            style={{ backgroundColor: `${cfg.color}18`, color: cfg.color }}
+          >
+            <span>{cfg.icon}</span>
+            <span>{cfg.jp} · {cfg.label}</span>
           </div>
-        )}
 
-        {/* Word info */}
-        <div className="text-center flex flex-col gap-2">
-          <p className="text-5xl md:text-6xl font-black text-gray-800 leading-none tracking-tight">
-            {word.japanese}
-          </p>
-          <p className="text-2xl md:text-3xl font-bold text-orange-500">
-            {word.romaji}
-          </p>
-          <p className="text-lg md:text-xl text-gray-500 font-medium">
-            {word.english}
+          {/* Image or emoji */}
+          {word.imageUrl ? (
+            <img
+              src={word.imageUrl}
+              alt={word.english}
+              className="w-40 h-40 md:w-52 md:h-52 object-cover rounded-3xl shadow-lg border-4 border-white"
+            />
+          ) : (
+            <div className="text-[7rem] md:text-[9rem] leading-none select-none drop-shadow-sm">
+              {word.emoji}
+            </div>
+          )}
+
+          {/* Word info */}
+          <div className="text-center flex flex-col gap-2">
+            <p
+              className="text-5xl md:text-6xl font-black text-gray-800 leading-none tracking-tight"
+              style={{ fontFamily: "var(--font-noto-serif-jp, serif)" }}
+            >
+              {word.japanese}
+            </p>
+            <p className="text-2xl md:text-3xl font-bold text-orange-500">{word.romaji}</p>
+            <p className="text-lg md:text-xl text-gray-500 font-medium">{word.english}</p>
+
+            {/* Character type badges */}
+            <div className="flex gap-1.5 justify-center mt-1">
+              {isHiragana(word.japanese)  && <span className="px-2 py-0.5 rounded-lg bg-pink-100 text-pink-600 text-xs font-black">ひらがな</span>}
+              {isKatakana(word.japanese)  && <span className="px-2 py-0.5 rounded-lg bg-blue-100 text-blue-600 text-xs font-black">カタカナ</span>}
+              {isKanji(word.japanese)     && <span className="px-2 py-0.5 rounded-lg bg-orange-100 text-orange-600 text-xs font-black">漢字</span>}
+            </div>
+          </div>
+
+          {/* Speaker + Next */}
+          <div className="flex gap-3">
+            <button
+              onClick={() => speak(word.japanese)}
+              className="w-14 h-14 rounded-full bg-white border-2 border-orange-200 flex items-center justify-center text-2xl shadow-sm hover:bg-orange-50 transition-colors active:scale-95"
+            >
+              🔊
+            </button>
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-2 border-orange-200 text-orange-500 font-bold text-base hover:bg-orange-50 transition-colors shadow-sm active:scale-95"
+            >
+              🔀 Next
+            </button>
+          </div>
+
+          <p className="text-xs text-gray-300 font-medium">
+            {loading ? "Loading…" : `${pool.length} words in this category`}
           </p>
         </div>
 
-        {/* Speaker button */}
-        <button
-          onClick={() => speak(word.japanese)}
-          className="w-16 h-16 rounded-full bg-white border-2 border-orange-200 flex items-center justify-center text-3xl shadow-sm hover:bg-orange-50 transition-colors active:scale-95"
-          aria-label="Speak"
-        >
-          🔊
-        </button>
+        {/* RIGHT: Canvas */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6 bg-white">
+          <p className="text-sm text-gray-400 font-medium tracking-wide uppercase">
+            ✏️ Trace the word
+          </p>
 
-        {/* Next word button */}
-        <button
-          onClick={handleNext}
-          className="flex items-center gap-2 px-7 py-3 rounded-2xl bg-white border-2 border-orange-200 text-orange-500 font-bold text-base hover:bg-orange-50 transition-colors shadow-sm active:scale-95"
-        >
-          🔀 Next Word
-        </button>
+          <canvas
+            ref={canvasRef}
+            width={CANVAS_RES}
+            height={CANVAS_RES}
+            className="w-full max-w-[min(100%,calc(100vh-20rem))] aspect-square rounded-3xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
+            onMouseDown={startDraw}
+            onMouseMove={draw}
+            onMouseUp={endDraw}
+            onMouseLeave={endDraw}
+            onTouchStart={startDraw}
+            onTouchMove={draw}
+            onTouchEnd={endDraw}
+          />
 
-        <p className="text-xs text-gray-300 font-medium">
-          {loading ? "Loading…" : `${pool.length} words`}
-        </p>
-      </div>
-
-      {/* ── RIGHT: Canvas ── */}
-      <div className="flex-1 flex flex-col items-center justify-center gap-4 p-6 bg-white">
-        <p className="text-sm text-gray-400 font-medium tracking-wide uppercase">
-          ✏️ Trace the word
-        </p>
-
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_RES}
-          height={CANVAS_RES}
-          className="w-full max-w-[min(100%,calc(100vh-16rem))] aspect-square rounded-3xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
-          onMouseDown={startDraw}
-          onMouseMove={draw}
-          onMouseUp={endDraw}
-          onMouseLeave={endDraw}
-          onTouchStart={startDraw}
-          onTouchMove={draw}
-          onTouchEnd={endDraw}
-        />
-
-        <div className="flex gap-3">
-          <button
-            onClick={handleClear}
-            className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm transition-colors active:scale-95"
-          >
-            🗑️ Clear
-          </button>
-          <button
-            onClick={() => setShowCongrats(true)}
-            className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
-          >
-            ✓ Done
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleClear}
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm transition-colors active:scale-95"
+            >
+              🗑️ Clear
+            </button>
+            <button
+              onClick={() => setShowCongrats(true)}
+              className="flex items-center gap-2 px-8 py-3 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+            >
+              ✓ Done
+            </button>
+          </div>
         </div>
       </div>
 
@@ -269,11 +356,8 @@ export default function WritingPage() {
       {showCongrats && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 backdrop-blur-sm animate-fade-in">
           {word.imageUrl ? (
-            <img
-              src={word.imageUrl}
-              alt={word.english}
-              className="w-36 h-36 object-cover rounded-3xl shadow-lg border-4 border-white mb-4 animate-bounce"
-            />
+            <img src={word.imageUrl} alt={word.english}
+              className="w-36 h-36 object-cover rounded-3xl shadow-lg border-4 border-white mb-4 animate-bounce" />
           ) : (
             <div className="text-[8rem] leading-none mb-2 animate-bounce">{word.emoji}</div>
           )}
@@ -284,16 +368,12 @@ export default function WritingPage() {
           <div className="text-2xl text-orange-500 font-bold mb-1">{word.romaji}</div>
           <div className="text-lg text-gray-400 font-medium mb-10">{word.english}</div>
           <div className="flex gap-4">
-            <button
-              onClick={() => { setShowCongrats(false); handleClear(); }}
-              className="px-8 py-4 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-base transition-colors shadow-md active:scale-95"
-            >
+            <button onClick={() => { setShowCongrats(false); handleClear(); }}
+              className="px-8 py-4 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-base transition-colors shadow-md active:scale-95">
               ✏️ Try Again
             </button>
-            <button
-              onClick={handleNext}
-              className="px-8 py-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-colors shadow-md active:scale-95"
-            >
+            <button onClick={handleNext}
+              className="px-8 py-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-base transition-colors shadow-md active:scale-95">
               Next Word →
             </button>
           </div>

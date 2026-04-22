@@ -8,87 +8,58 @@ interface StrokeOrderModalProps {
   onClose: () => void;
 }
 
-const CANVAS_SIZE = 300;
+const CS = 300; // canvas resolution
 
-export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderModalProps) {
+// ── Single practice canvas ─────────────────────────────────────────────────
+function PracticeCanvas({ char, index }: { char: string; index: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const isDrawing = useRef(false);
-  const lastPos = useRef<{ x: number; y: number } | null>(null);
-  const [showCongrats, setShowCongrats] = useState(false);
+  const lastPos    = useRef<{ x: number; y: number } | null>(null);
 
-  // Close on Escape key
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [onClose]);
-
-  // Draw the guide grid and faint character on the canvas
   const drawGuide = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-
-    const s = CANVAS_SIZE;
-
-    // Background
     ctx.fillStyle = "#fff9f0";
-    ctx.fillRect(0, 0, s, s);
-
-    // Center cross guides (dashed orange)
+    ctx.fillRect(0, 0, CS, CS);
     ctx.save();
     ctx.setLineDash([6, 6]);
     ctx.strokeStyle = "rgba(249,115,22,0.35)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(s / 2, 0); ctx.lineTo(s / 2, s);
-    ctx.moveTo(0, s / 2); ctx.lineTo(s, s / 2);
+    ctx.moveTo(CS / 2, 0);   ctx.lineTo(CS / 2, CS);
+    ctx.moveTo(0, CS / 2);   ctx.lineTo(CS, CS / 2);
     ctx.stroke();
-
-    // Diagonal guides
     ctx.strokeStyle = "rgba(249,115,22,0.15)";
     ctx.beginPath();
-    ctx.moveTo(0, 0); ctx.lineTo(s, s);
-    ctx.moveTo(s, 0); ctx.lineTo(0, s);
+    ctx.moveTo(0, 0);  ctx.lineTo(CS, CS);
+    ctx.moveTo(CS, 0); ctx.lineTo(0, CS);
     ctx.stroke();
     ctx.restore();
-
-    // Faint ghost character in the center
     ctx.save();
-    ctx.font = `bold ${s * 0.7}px serif`;
+    ctx.font = `bold ${CS * 0.7}px serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = "rgba(0,0,0,0.07)";
-    ctx.fillText(char, s / 2, s / 2);
+    ctx.fillText(char, CS / 2, CS / 2);
     ctx.restore();
   }, [char]);
 
-  useEffect(() => {
-    drawGuide();
-  }, [drawGuide]);
+  useEffect(() => { drawGuide(); }, [drawGuide]);
 
-  const getPos = (e: React.TouchEvent | React.MouseEvent): { x: number; y: number } | null => {
+  const getPos = (e: React.TouchEvent | React.MouseEvent) => {
     const canvas = canvasRef.current;
     if (!canvas) return null;
     const rect = canvas.getBoundingClientRect();
-    const scaleX = CANVAS_SIZE / rect.width;
-    const scaleY = CANVAS_SIZE / rect.height;
-
+    const sx = CS / rect.width;
+    const sy = CS / rect.height;
     if ("touches" in e) {
       if (e.touches.length === 0) return null;
-      const touch = e.touches[0];
-      return {
-        x: (touch.clientX - rect.left) * scaleX,
-        y: (touch.clientY - rect.top) * scaleY,
-      };
+      const t = e.touches[0];
+      return { x: (t.clientX - rect.left) * sx, y: (t.clientY - rect.top) * sy };
     }
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    };
+    return { x: (e.clientX - rect.left) * sx, y: (e.clientY - rect.top) * sy };
   };
 
   const startDraw = (e: React.TouchEvent | React.MouseEvent) => {
@@ -100,27 +71,18 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
   const draw = (e: React.TouchEvent | React.MouseEvent) => {
     e.preventDefault();
     if (!isDrawing.current) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-
     const pos = getPos(e);
-    if (!pos || !lastPos.current) {
-      lastPos.current = pos;
-      return;
-    }
-
-    // Detect Apple Pencil force if available (PointerEvent)
-    let lineWidth = 4;
+    if (!pos || !lastPos.current) { lastPos.current = pos; return; }
+    let lw = 4;
     if ("pressure" in (e.nativeEvent as PointerEvent)) {
-      const pressure = (e.nativeEvent as PointerEvent).pressure;
-      if (pressure > 0) lineWidth = Math.max(2, pressure * 10);
+      const p = (e.nativeEvent as PointerEvent).pressure;
+      if (p > 0) lw = Math.max(2, p * 10);
     }
-
     ctx.save();
     ctx.strokeStyle = "#1e293b";
-    ctx.lineWidth = lineWidth;
+    ctx.lineWidth = lw;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.beginPath();
@@ -128,7 +90,6 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
     ctx.lineTo(pos.x, pos.y);
     ctx.stroke();
     ctx.restore();
-
     lastPos.current = pos;
   };
 
@@ -138,25 +99,58 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
     lastPos.current = null;
   };
 
-  const handleClear = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+  const clear = () => {
+    const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
-    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    ctx.clearRect(0, 0, CS, CS);
     drawGuide();
   };
 
   return (
+    <div className="flex flex-col items-center gap-2">
+      <span className="text-[10px] font-black text-orange-400 uppercase tracking-wide">
+        練習 {index + 1}
+      </span>
+      <canvas
+        ref={canvasRef}
+        width={CS}
+        height={CS}
+        className="w-full rounded-2xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
+        onMouseDown={startDraw}
+        onMouseMove={draw}
+        onMouseUp={endDraw}
+        onMouseLeave={endDraw}
+        onTouchStart={startDraw}
+        onTouchMove={draw}
+        onTouchEnd={endDraw}
+      />
+      <button
+        onClick={clear}
+        className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-500 font-bold text-xs transition-colors active:scale-95"
+      >
+        🗑️ Clear
+      </button>
+    </div>
+  );
+}
+
+// ── Modal ──────────────────────────────────────────────────────────────────
+export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderModalProps) {
+  const [showCongrats, setShowCongrats] = useState(false);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Panel */}
-      <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
+      {/* Panel — sm: narrow, md+: wide 3-column */}
+      <div className="relative z-10 w-full max-w-sm md:max-w-3xl bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-fade-in">
 
         {/* Header */}
         <div className="flex items-center gap-4 px-6 py-5 border-b border-orange-100 bg-gradient-to-r from-yellow-50 to-orange-50 flex-shrink-0">
@@ -169,55 +163,46 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
               <p className="text-sm text-gray-400">Draw to practice ✏️</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="ml-auto p-2 rounded-2xl bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors text-lg font-black shadow-sm border border-gray-100"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-
-        {/* Drawing canvas */}
-        <div className="flex flex-col items-center gap-4 px-6 py-6">
-          <canvas
-            ref={canvasRef}
-            width={CANVAS_SIZE}
-            height={CANVAS_SIZE}
-            className="w-full rounded-2xl border-2 border-orange-200 touch-none cursor-crosshair shadow-inner"
-            style={{ maxWidth: CANVAS_SIZE }}
-            onMouseDown={startDraw}
-            onMouseMove={draw}
-            onMouseUp={endDraw}
-            onMouseLeave={endDraw}
-            onTouchStart={startDraw}
-            onTouchMove={draw}
-            onTouchEnd={endDraw}
-          />
-
-          <p className="text-xs text-center text-gray-400">
-            Trace the faint character using your pencil or finger
-          </p>
-
-          {/* Action buttons */}
-          <div className="flex gap-3 w-full">
-            <button
-              onClick={handleClear}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm transition-colors active:scale-95"
-            >
-              🗑️ Clear
-            </button>
+          <div className="ml-auto flex items-center gap-2">
             <a
               href={`https://jisho.org/search/${encodeURIComponent(char)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+              className="px-3 py-2 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold text-xs transition-colors shadow-md active:scale-95"
             >
               📖 Stroke Guide
             </a>
             <button
+              onClick={onClose}
+              className="p-2 rounded-2xl bg-white hover:bg-red-50 text-gray-400 hover:text-red-500 transition-colors text-lg font-black shadow-sm border border-gray-100"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+
+        {/* Canvas area */}
+        <div className="px-6 py-6">
+          {/* Mobile: 1 canvas */}
+          <div className="md:hidden flex flex-col gap-4">
+            <PracticeCanvas char={char} index={0} />
+            <p className="text-xs text-center text-gray-400">
+              Trace the faint character using your pencil or finger
+            </p>
+          </div>
+
+          {/* Tablet / Desktop: 3 canvases side-by-side */}
+          <div className="hidden md:grid grid-cols-3 gap-6">
+            {[0, 1, 2].map((i) => (
+              <PracticeCanvas key={i} char={char} index={i} />
+            ))}
+          </div>
+
+          {/* Done button */}
+          <div className="flex justify-center mt-5">
+            <button
               onClick={() => setShowCongrats(true)}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
+              className="flex items-center justify-center gap-2 py-3 px-10 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-bold text-sm transition-colors shadow-md active:scale-95"
             >
               ✓ Done
             </button>
@@ -234,7 +219,7 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
             <div className="text-xl text-orange-500 font-bold mb-8">{romaji}</div>
             <div className="flex gap-3">
               <button
-                onClick={() => { setShowCongrats(false); handleClear(); }}
+                onClick={() => setShowCongrats(false)}
                 className="px-6 py-3 rounded-2xl bg-orange-400 hover:bg-orange-500 text-white font-bold transition-colors shadow-md active:scale-95"
               >
                 ✏️ Try Again
