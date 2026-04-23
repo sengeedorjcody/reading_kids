@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const HIDDEN_PATTERNS = [/^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//];
+const HIDDEN_PATTERNS = [/^\/$/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//];
 
 export default function BottomNav() {
   const pathname = usePathname();
