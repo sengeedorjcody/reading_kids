@@ -21,6 +21,15 @@ body {
     Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #ffffff;
+}
+
+/* ── Dark-theme: white cards restore dark text for readability ── */
+.bg-white,
+.bg-gray-50,
+.bg-gray-100,
+.bg-slate-50 {
+  color: #1e293b;
 }
 
 /* ── Book / reading font (serif for authentic feel) ── */

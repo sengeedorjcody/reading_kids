@@ -30,13 +30,13 @@ export const metadata: Metadata = {
   icons: {
     apple: "/icons/icon-192x192.png",
   },
-  themeColor: "#f472b6",
+  themeColor: "#0f3460",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" className={`${notoSansJP.variable} ${notoSerifJP.variable}`}>
-      <body className="bg-gradient-to-br from-pink-50 via-white to-blue-50 min-h-screen">
+      <body className="min-h-screen" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)", minHeight: "100dvh" }}>
         <DevInspector>
         <main className="min-h-screen">{children}</main>
 
