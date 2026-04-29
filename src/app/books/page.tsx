@@ -27,18 +27,18 @@ export default async function BooksPage({
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-black text-gray-800 mb-2">📚 Book Library</h1>
-        <p className="text-xl text-gray-500">ほん を えらんで よみましょう！</p>
+        <h1 className="text-4xl font-black text-white mb-2">📚 Book Library</h1>
+        <p className="text-xl text-white/60">ほん を えらんで よみましょう！</p>
       </div>
 
       {/* Level filter */}
       <div className="flex flex-wrap gap-3 mb-8">
         <Link
           href="/books"
-          className={`px-4 py-2 rounded-2xl font-bold text-base transition-all ${
+          className={`px-4 py-2 rounded-2xl font-bold text-sm transition-all ${
             level === "all"
               ? "bg-pink-500 text-white shadow-lg"
-              : "bg-white text-gray-600 border-2 border-gray-200 hover:border-pink-300"
+              : "bg-white/10 text-white/70 border border-white/20 hover:bg-white/20"
           }`}
         >
           📚 All
@@ -49,10 +49,10 @@ export default async function BooksPage({
             <Link
               key={lvl}
               href={`/books?level=${lvl}`}
-              className={`px-4 py-2 rounded-2xl font-bold text-base transition-all ${
+              className={`px-4 py-2 rounded-2xl font-bold text-sm transition-all ${
                 level === lvl
-                  ? `${cfg.bg} ${cfg.color} shadow-lg border-2 border-current`
-                  : "bg-white text-gray-600 border-2 border-gray-200 hover:border-pink-300"
+                  ? `${cfg.bg} ${cfg.color} shadow-lg`
+                  : "bg-white/10 text-white/70 border border-white/20 hover:bg-white/20"
               }`}
             >
               {cfg.emoji} {cfg.label}
@@ -71,7 +71,7 @@ export default async function BooksPage({
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
           {books.map((book) => (
             <BookCard key={book._id} book={book} />
           ))}
