@@ -3,8 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { IBook } from "@/types";
-import LevelBadge from "./LevelBadge";
-import { BookLevel } from "@/types";
 
 interface BookCardProps {
   book: IBook;
@@ -32,8 +30,7 @@ export default function BookCard({ book }: BookCardProps) {
       </div>
 
       {/* Info */}
-      <div className="px-3 py-2 flex flex-col gap-1">
-        <LevelBadge level={book.level as BookLevel} />
+      <div className="px-3 py-2 flex flex-col gap-0.5">
         <h3 className="text-sm font-bold text-white leading-tight line-clamp-1">
           {book.title}
         </h3>
