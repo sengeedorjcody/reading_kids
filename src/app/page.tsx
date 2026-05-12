@@ -4,6 +4,7 @@ import Link from "next/link";
 
 const APPS = [
   // Row 1 — core learning
+  { href: "/exam",       icon: "📝", label: "Exam",        color: "#f97316", bg: "from-orange-500 to-rose-500" },
   { href: "/flashcards", icon: "🃏", label: "Flashcards",  color: "#ec4899", bg: "from-pink-400 to-rose-500" },
   { href: "/alphabet",   icon: "あ", label: "Alphabet",    color: "#f97316", bg: "from-orange-400 to-amber-500" },
   { href: "/writing",    icon: "✍️", label: "Writing",     color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },
