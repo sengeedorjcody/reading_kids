@@ -232,12 +232,7 @@ function ExamScreen({
             {currentIndex + 1} / {deck.length}
           </span>
         </div>
-        <button
-          onClick={() => speak(card.romaji)}
-          className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl active:scale-90"
-        >
-          🔊
-        </button>
+        <div className="w-10 h-10" />
       </div>
 
       {/* Progress bar */}
@@ -305,15 +300,25 @@ function ExamScreen({
             </span>
 
             {/* Big character */}
-            <span className="text-[120px] leading-none font-black text-white mb-4"
+            <span className="text-[120px] leading-none font-black text-white mb-6"
               style={{ textShadow: "0 4px 30px rgba(255,255,255,0.2)" }}>
               {card.char}
             </span>
 
-            {/* Romaji hint (small) */}
-            <span className="text-white/30 text-base font-bold tracking-widest">
-              {card.romaji}
-            </span>
+            {/* Speak button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); speak(card.char); }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm active:scale-90 transition-transform"
+              style={{
+                background: card.type === "hiragana"
+                  ? "rgba(249,115,22,0.25)"
+                  : "rgba(139,92,246,0.25)",
+                border: `1px solid ${card.type === "hiragana" ? "rgba(249,115,22,0.5)" : "rgba(139,92,246,0.5)"}`,
+                color: card.type === "hiragana" ? "#fb923c" : "#c084fc",
+              }}
+            >
+              🔊 きく
+            </button>
           </div>
         </div>
       </div>
