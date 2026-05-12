@@ -232,7 +232,12 @@ function ExamScreen({
             {currentIndex + 1} / {deck.length}
           </span>
         </div>
-        <div className="w-10 h-10" />
+        <button
+          onClick={() => speak(card.char)}
+          className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl active:scale-90"
+        >
+          🔊
+        </button>
       </div>
 
       {/* Progress bar */}
