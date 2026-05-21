@@ -242,7 +242,7 @@ function ExamScreen({
   const dontOpacity = Math.min(1, Math.max(0, -dragX / 100));
 
   return (
-    <div className="flex flex-col px-4 pt-6 pb-4 select-none overflow-hidden"
+    <div className="flex flex-col px-4 pt-6 pb-28 select-none overflow-hidden"
       style={{ height: "100dvh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
