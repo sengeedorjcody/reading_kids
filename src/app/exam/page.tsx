@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
@@ -174,6 +174,8 @@ function ExamScreen({
   const [dragX, setDragX] = useState(0);
   const [flyDir, setFlyDir] = useState<"left" | "right" | null>(null);
   const isDragging = useRef(false);
+  const dragXRef = useRef(0);
+  const cardRef = useRef<HTMLDivElement>(null);
   const card = deck[currentIndex];
   const progress = currentIndex / deck.length;
 
@@ -182,32 +184,51 @@ function ExamScreen({
     setTimeout(() => {
       setFlyDir(null);
       setDragX(0);
+      dragXRef.current = 0;
       onSwipe(dir);
     }, 280);
   };
 
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    isDragging.current = true;
-  };
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging.current || flyDir) return;
-    const dx = e.touches[0].clientX - touchStartX.current;
-    const dy = e.touches[0].clientY - touchStartY.current;
-    if (Math.abs(dx) > Math.abs(dy)) {
-      e.preventDefault();
-      setDragX(dx);
-    }
-  };
-  const onTouchEnd = () => {
-    isDragging.current = false;
-    if (Math.abs(dragX) > 70) {
-      triggerSwipe(dragX > 0 ? "right" : "left");
-    } else {
-      setDragX(0);
-    }
-  };
+  // Non-passive touch listeners so preventDefault() actually works
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+      isDragging.current = true;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging.current) return;
+      const dx = e.touches[0].clientX - touchStartX.current;
+      const dy = e.touches[0].clientY - touchStartY.current;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        e.preventDefault(); // works because listener is non-passive
+        dragXRef.current = dx;
+        setDragX(dx);
+      }
+    };
+    const handleTouchEnd = () => {
+      isDragging.current = false;
+      if (Math.abs(dragXRef.current) > 70) {
+        triggerSwipe(dragXRef.current > 0 ? "right" : "left");
+      } else {
+        setDragX(0);
+        dragXRef.current = 0;
+      }
+    };
+
+    el.addEventListener("touchstart", handleTouchStart, { passive: true });
+    el.addEventListener("touchmove", handleTouchMove, { passive: false });
+    el.addEventListener("touchend", handleTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", handleTouchStart);
+      el.removeEventListener("touchmove", handleTouchMove);
+      el.removeEventListener("touchend", handleTouchEnd);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [card]);
 
   const rotation = flyDir
     ? (flyDir === "right" ? 25 : -25)
@@ -221,7 +242,8 @@ function ExamScreen({
   const dontOpacity = Math.min(1, Math.max(0, -dragX / 100));
 
   return (
-    <div className="min-h-screen flex flex-col px-4 pt-6 pb-28 select-none">
+    <div className="flex flex-col px-4 pt-6 pb-4 select-none overflow-hidden"
+      style={{ height: "100dvh" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
@@ -275,15 +297,14 @@ function ExamScreen({
 
         {/* The card */}
         <div
+          ref={cardRef}
           className="w-full max-w-xs"
           style={{
             transform: `translateX(${translateX}px) rotate(${rotation}deg)`,
             opacity: cardOpacity,
             transition: flyDir ? "transform 0.28s ease-out, opacity 0.28s ease-out" : "none",
+            touchAction: "pan-y",
           }}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
         >
           <div
             className="rounded-3xl flex flex-col items-center justify-center py-12 px-8 shadow-2xl"
