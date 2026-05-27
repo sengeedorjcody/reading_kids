@@ -266,23 +266,30 @@ export default function WordsPage() {
       </div>
 
       {/* ══ SCROLLABLE CHARACTER GRID ══════════════════════════════════════════ */}
-      <div className="flex-1 overflow-y-auto pb-28 px-4 pt-2">
+      <div className="flex-1 overflow-y-auto pb-28 px-2 pt-1">
         {rows.map((row, ri) => (
-          <div key={ri} className="flex gap-1 mb-1 justify-center">
+          <div key={ri} className="flex gap-0.5 mb-0.5 justify-center">
             {row.map((c, ci) => (
               <button key={ci} onClick={() => addChar(c)}
                 disabled={c === "　"}
-                className={`w-[18%] aspect-square rounded-xl flex items-center justify-center text-xl font-black transition-all active:scale-90 ${
+                className={`flex items-center justify-center font-black transition-all active:scale-90 ${
                   c === "　"
                     ? "opacity-0 pointer-events-none"
                     : c === lastChar
-                      ? "text-yellow-300 scale-110"
+                      ? "text-yellow-300"
                       : "text-white"
                 }`}
-                style={c !== "　" ? {
-                  background: c === lastChar ? "rgba(251,191,36,0.25)" : "rgba(255,255,255,0.07)",
-                  border: c === lastChar ? "2px solid rgba(251,191,36,0.6)" : "1px solid rgba(255,255,255,0.1)",
-                } : {}}
+                style={{
+                  width: "19%",
+                  height: 38,
+                  fontSize: 16,
+                  borderRadius: 8,
+                  ...(c !== "　" ? {
+                    background: c === lastChar ? "rgba(251,191,36,0.25)" : "rgba(255,255,255,0.1)",
+                    border: c === lastChar ? "1.5px solid rgba(251,191,36,0.6)" : "1px solid rgba(255,255,255,0.12)",
+                    boxShadow: "0 2px 0 rgba(0,0,0,0.3)",
+                  } : {})
+                }}
               >
                 {c === "　" ? "" : c}
               </button>
