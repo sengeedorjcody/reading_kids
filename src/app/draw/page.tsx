@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-type Tool = "pen" | "eraser" | "fill" | "line" | "rect" | "circle";
+type Tool = "pen" | "eraser" | "fill" | "line" | "rect" | "circle" | "pan";
 type View  = "draw" | "gallery";
 
 interface SavedDrawing { id: string; dataUrl: string; date: string; }
@@ -17,6 +17,7 @@ const COLORS = [
 ];
 const SIZES = [3, 7, 14, 28];
 const TOOLS: { id: Tool; icon: string; label: string }[] = [
+  { id:"pan",    icon:"✋", label:"Pan"    },
   { id:"pen",    icon:"✏️", label:"Pen"    },
   { id:"eraser", icon:"🧽", label:"Eraser" },
   { id:"fill",   icon:"🪣", label:"Fill"   },
@@ -401,8 +402,23 @@ export default function DrawPage() {
   const lastPos   = useRef<{x:number;y:number}|null>(null);
   const startPos  = useRef<{x:number;y:number}|null>(null);
   const snapshot  = useRef<ImageData|null>(null);
+  const panStart  = useRef<{cx:number;cy:number;sl:number;st:number}|null>(null);
+  const [bucketCursor, setBucketCursor] = useState<string>("crosshair");
 
   useEffect(() => { localStorage.setItem(LS_COLOR, color); }, [color]);
+
+  // Build emoji bucket cursor after mount
+  useEffect(() => {
+    const c = document.createElement("canvas");
+    c.width = 44; c.height = 44;
+    const cx = c.getContext("2d");
+    if (!cx) return;
+    cx.font = "36px serif";
+    cx.textAlign = "center";
+    cx.textBaseline = "middle";
+    cx.fillText("🪣", 22, 22);
+    setBucketCursor(`url(${c.toDataURL()}) 4 40, crosshair`);
+  }, []);
 
   // Auto-fit canvas to screen on load
   useLayoutEffect(() => {
@@ -423,18 +439,32 @@ export default function DrawPage() {
 
   const ctx = useCallback(() => canvasRef.current?.getContext("2d") ?? null, []);
 
+  // ── Client coords helper (for pan) ──────────────────────────────────────
+  const clientXY = (e: TouchEvent | MouseEvent) => {
+    if ("touches" in e) {
+      const t = (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
+      return { cx: t.clientX, cy: t.clientY };
+    }
+    return { cx: (e as MouseEvent).clientX, cy: (e as MouseEvent).clientY };
+  };
+
   // ── Drawing handlers ─────────────────────────────────────────────────────
   const startDraw = useCallback((e: TouchEvent | MouseEvent) => {
     e.preventDefault();
     if ("touches" in e && (e as TouchEvent).touches.length !== 1) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const p = getPos(e, canvas);
 
-    if (tool === "fill") {
-      floodFill(canvas, p.x, p.y, color);
+    // Pan tool — record scroll anchor
+    if (tool === "pan") {
+      const wrapper = wrapperRef.current; if (!wrapper) return;
+      const { cx, cy } = clientXY(e);
+      panStart.current = { cx, cy, sl: wrapper.scrollLeft, st: wrapper.scrollTop };
       return;
     }
+
+    const canvas = canvasRef.current; if (!canvas) return;
+    const p = getPos(e, canvas);
+
+    if (tool === "fill") { floodFill(canvas, p.x, p.y, color); return; }
 
     isDrawing.current = true;
     lastPos.current   = p;
@@ -446,6 +476,17 @@ export default function DrawPage() {
 
   const moveDraw = useCallback((e: TouchEvent | MouseEvent) => {
     e.preventDefault();
+
+    // Pan tool — scroll wrapper
+    if (tool === "pan") {
+      if (!panStart.current) return;
+      const wrapper = wrapperRef.current; if (!wrapper) return;
+      const { cx, cy } = clientXY(e);
+      wrapper.scrollLeft = panStart.current.sl - (cx - panStart.current.cx);
+      wrapper.scrollTop  = panStart.current.st - (cy - panStart.current.cy);
+      return;
+    }
+
     if (!isDrawing.current) return;
     const canvas = canvasRef.current; if (!canvas) return;
     const c = ctx(); if (!c) return;
@@ -480,6 +521,7 @@ export default function DrawPage() {
 
   const endDraw = useCallback((e: TouchEvent | MouseEvent) => {
     e.preventDefault();
+    panStart.current  = null;
     isDrawing.current = false; lastPos.current = null; snapshot.current = null;
   }, []);
 
@@ -626,7 +668,7 @@ export default function DrawPage() {
               width:W, height:H,
               transform:`scale(${zoom})`, transformOrigin:"top left",
               touchAction:"none",
-              cursor: tool==="fill" ? "crosshair" : tool==="eraser" ? "cell" : "crosshair",
+              cursor: tool==="fill" ? bucketCursor : tool==="pan" ? "grab" : tool==="eraser" ? "cell" : "crosshair",
             }}
           />
         </div>
