@@ -309,8 +309,8 @@ function DrawModal({
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Sheet */}
-      <div className="relative z-10 w-full max-w-sm rounded-t-3xl px-4 pt-4 pb-6 flex flex-col gap-3"
+      {/* Sheet — pb-24 lifts content above the fixed BottomNav */}
+      <div className="relative z-10 w-full max-w-sm rounded-t-3xl px-4 pt-4 pb-24 flex flex-col gap-3"
         style={{ background: "linear-gradient(160deg,#1a1a2e,#16213e)", border: "1px solid rgba(255,255,255,0.1)" }}>
 
         {/* Handle */}
