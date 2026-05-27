@@ -52,8 +52,8 @@ const TOOLS: { id: Tool; icon: string; label: string }[] = [
   { id: "circle", icon: "○", label: "Circle" },
 ];
 
-const W = 1080,
-  H = 1440;
+// Default canvas resolution — may swap to landscape (1440×1080) per template
+const W = 1080, H = 1440;
 const LS_COLOR = "draw_color";
 const LS_DRAWINGS = "draw_saved";
 
@@ -358,8 +358,9 @@ function floodFill(
 // ── Coordinate helper ─────────────────────────────────────────────────────────
 function getPos(e: TouchEvent | MouseEvent, canvas: HTMLCanvasElement) {
   const rect = canvas.getBoundingClientRect();
-  const sx = W / rect.width,
-    sy = H / rect.height;
+  // Use actual canvas pixel dimensions so coordinates are correct at any orientation
+  const sx = canvas.width  / rect.width;
+  const sy = canvas.height / rect.height;
   if ("touches" in e) {
     const t =
       (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
@@ -629,6 +630,7 @@ export default function DrawPage() {
   );
   const [size, setSize] = useState(7);
   const [zoom, setZoom] = useState(1);
+  const [cDim, setCDim] = useState({ w: W, h: H }); // canvas pixel dimensions, swaps per template orientation
   const [showColors, setShowColors] = useState(false);
   const [showTpl, setShowTpl] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -652,7 +654,8 @@ export default function DrawPage() {
   const pushHistory = useCallback(() => {
     const c = canvasRef.current?.getContext("2d");
     if (!c) return;
-    const snap = c.getImageData(0, 0, W, H);
+    const cw = canvasRef.current?.width ?? W, ch = canvasRef.current?.height ?? H;
+    const snap = c.getImageData(0, 0, cw, ch);
     historyRef.current.push(snap);
     if (historyRef.current.length > 20) historyRef.current.shift();
     setCanUndo(true);
@@ -691,21 +694,19 @@ export default function DrawPage() {
     setBucketCursor(`url(${c.toDataURL()}) 4 40, crosshair`);
   }, []);
 
-  // Auto-fit canvas to screen on load
+  // Auto-fit canvas to screen on load (and when canvas orientation changes)
   useLayoutEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    const cw = el.clientWidth,
-      ch = el.clientHeight;
-    const fit = Math.min(cw / W, ch / H);
+    const fit = Math.min(el.clientWidth / cDim.w, el.clientHeight / cDim.h);
     setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
-  }, []);
+  }, [cDim]);
 
   const initCanvas = useCallback(() => {
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
+    const canvas = canvasRef.current; const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
     ctx.fillStyle = "#fff9f0";
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
   useEffect(() => {
     initCanvas();
@@ -762,7 +763,8 @@ export default function DrawPage() {
       lastPos.current = p;
       startPos.current = p;
       if (["line", "rect", "circle"].includes(tool)) {
-        snapshot.current = ctx()?.getImageData(0, 0, W, H) ?? null;
+        const cw = canvasRef.current?.width ?? W, ch = canvasRef.current?.height ?? H;
+        snapshot.current = ctx()?.getImageData(0, 0, cw, ch) ?? null;
       }
     },
     [tool, color, ctx, pushHistory],
@@ -879,15 +881,27 @@ export default function DrawPage() {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      // Fill white background first
+      const iw = img.naturalWidth, ih = img.naturalHeight;
+      // Auto-detect orientation: match canvas to image's aspect ratio
+      const landscape = iw > ih;
+      const newW = landscape ? H : W;   // H=1440 wide, W=1080 tall
+      const newH = landscape ? W : H;
+      // Resize canvas element directly (clears it) then sync state
+      canvas.width  = newW;
+      canvas.height = newH;
+      setCDim({ w: newW, h: newH });
+      // Auto-fit zoom to the new canvas orientation
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        const fit = Math.min(wrapper.clientWidth / newW, wrapper.clientHeight / newH);
+        setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
+      }
+      // Fill white, then draw image to fill new canvas (contain, centered)
       c.fillStyle = "#ffffff";
-      c.fillRect(0, 0, W, H);
-      // Contain: scale proportionally, center on canvas — no stretching
-      const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
-      const dw = img.naturalWidth  * scale;
-      const dh = img.naturalHeight * scale;
-      const dx = (W - dw) / 2;
-      const dy = (H - dh) / 2;
+      c.fillRect(0, 0, newW, newH);
+      const scale = Math.min(newW / iw, newH / ih);
+      const dw = iw * scale, dh = ih * scale;
+      const dx = (newW - dw) / 2, dy = (newH - dh) / 2;
       c.imageSmoothingEnabled = true;
       c.imageSmoothingQuality = "high";
       c.drawImage(img, dx, dy, dw, dh);
@@ -1114,8 +1128,8 @@ export default function DrawPage() {
       >
         <div
           style={{
-            width: W * zoom,
-            height: H * zoom,
+            width: cDim.w * zoom,
+            height: cDim.h * zoom,
             position: "relative",
             flexShrink: 0,
             margin: "0 auto",
@@ -1123,14 +1137,14 @@ export default function DrawPage() {
         >
           <canvas
             ref={canvasRef}
-            width={W}
-            height={H}
+            width={cDim.w}
+            height={cDim.h}
             style={{
               position: "absolute",
               top: 0,
               left: 0,
-              width: W,
-              height: H,
+              width: cDim.w,
+              height: cDim.h,
               transform: `scale(${zoom})`,
               transformOrigin: "top left",
               touchAction: "none",
