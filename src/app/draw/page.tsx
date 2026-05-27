@@ -31,6 +31,15 @@ const LS_COLOR    = "draw_color";
 const LS_DRAWINGS = "draw_saved";
 
 // ── Coloring templates ────────────────────────────────────────────────────────
+// Image-based Kuromi templates (files go in /public/templates/)
+const KUROMI_TEMPLATES = [
+  { id:"kuromi1", name:"クルミ1", emoji:"🍰", src:"/templates/kuromi1.jpg" },
+  { id:"kuromi2", name:"クルミ2", emoji:"🏖️", src:"/templates/kuromi2.jpg" },
+  { id:"kuromi3", name:"クルミ3", emoji:"💜", src:"/templates/kuromi3.jpg" },
+  { id:"kuromi4", name:"クルミ4", emoji:"⭐", src:"/templates/kuromi4.jpg" },
+  { id:"kuromi5", name:"クルミ5", emoji:"🎃", src:"/templates/kuromi5.jpg" },
+];
+
 const TEMPLATES = [
   {
     id:"cat", name:"ねこ", emoji:"🐱",
@@ -346,15 +355,34 @@ function Gallery({ onClose }: { onClose: () => void }) {
 }
 
 // ── Template picker ───────────────────────────────────────────────────────────
-function TemplatePicker({ onSelect, onClose }: { onSelect:(svg:string)=>void; onClose:()=>void }) {
+function TemplatePicker({ onSelect, onClose }: { onSelect:(src:string)=>void; onClose:()=>void }) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
-      <div className="relative z-10 w-full max-w-sm rounded-t-3xl px-4 pt-4 pb-8"
+      <div className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[70dvh]"
         style={{ background:"linear-gradient(160deg,#1a1a2e,#16213e)", border:"1px solid rgba(255,255,255,0.1)" }}>
         <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4"/>
-        <h3 className="text-white font-black text-center text-lg mb-4">🎨 ぬりえ テンプレート</h3>
-        <div className="grid grid-cols-5 gap-3">
+        <h3 className="text-white font-black text-center text-lg mb-3">🎨 ぬりえ テンプレート</h3>
+
+        {/* ── Kuromi image templates ── */}
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">クルミ</p>
+        <div className="grid grid-cols-5 gap-2 mb-4">
+          {KUROMI_TEMPLATES.map(t => (
+            <button key={t.id} onClick={() => onSelect(t.src)}
+              className="flex flex-col items-center gap-1 rounded-xl overflow-hidden active:scale-90 transition-all"
+              style={{ border:"2px solid rgba(255,255,255,0.15)" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={t.src} alt={t.name}
+                className="w-full aspect-[3/4] object-cover bg-white"
+                onError={e => { (e.target as HTMLImageElement).style.display="none"; }}/>
+              <span className="text-white/70 text-[10px] font-bold pb-1">{t.name}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* ── SVG kawaii templates ── */}
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">かわいい</p>
+        <div className="grid grid-cols-5 gap-2 mb-4">
           {TEMPLATES.map(t => (
             <button key={t.id} onClick={() => onSelect(t.svg)}
               className="flex flex-col items-center gap-1 p-2 rounded-2xl active:scale-90 transition-all"
@@ -546,13 +574,17 @@ export default function DrawPage() {
   }, [startDraw, moveDraw, endDraw]);
 
   // ── Load template ────────────────────────────────────────────────────────
-  const loadTemplate = (svgOrDataUrl: string) => {
+  const loadTemplate = (svgOrUrl: string) => {
     const canvas = canvasRef.current; const c = ctx(); if (!canvas || !c) return;
     c.fillStyle = "#ffffff"; c.fillRect(0, 0, W, H);
     const img = new Image();
+    img.crossOrigin = "anonymous";
     img.onload = () => { c.drawImage(img, 0, 0, W, H); };
-    img.src = svgOrDataUrl.startsWith("data:") ? svgOrDataUrl
-      : "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgOrDataUrl);
+    if (svgOrUrl.startsWith("data:") || svgOrUrl.startsWith("/") || svgOrUrl.startsWith("http")) {
+      img.src = svgOrUrl;                                                       // image file path or data URL
+    } else {
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgOrUrl); // raw SVG string
+    }
     setShowTpl(false);
   };
 
