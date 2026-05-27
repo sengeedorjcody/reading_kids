@@ -58,39 +58,7 @@ const LS_COLOR = "draw_color";
 const LS_DRAWINGS = "draw_saved";
 
 // ── Coloring templates ────────────────────────────────────────────────────────
-// Image-based Kuromi templates (files go in /public/templates/)
-const KUROMI_TEMPLATES = [
-  {
-    id: "kuromi1",
-    name: "クルミ1",
-    emoji: "🍰",
-    src: "/templates/kuromi1.jpeg",
-  },
-  {
-    id: "kuromi2",
-    name: "クルミ2",
-    emoji: "🏖️",
-    src: "/templates/kuromi2.jpeg",
-  },
-  {
-    id: "kuromi3",
-    name: "クルミ3",
-    emoji: "💜",
-    src: "/templates/kuromi3.jpeg",
-  },
-  {
-    id: "kuromi4",
-    name: "クルミ4",
-    emoji: "⭐",
-    src: "/templates/kuromi4.jpeg",
-  },
-  {
-    id: "kuromi5",
-    name: "クルミ5",
-    emoji: "🎃",
-    src: "/templates/kuromi5.jpeg",
-  },
-];
+// (Image templates are loaded dynamically from /public/templates/ via API)
 
 const TEMPLATES = [
   {
@@ -549,6 +517,11 @@ function Gallery({ onClose }: { onClose: () => void }) {
 }
 
 // ── Template picker ───────────────────────────────────────────────────────────
+// Derives a display name from filename: "kuromi1.jpeg" → "kuromi1"
+function fileLabel(filename: string) {
+  return filename.replace(/\.[^.]+$/, "");
+}
+
 function TemplatePicker({
   onSelect,
   onClose,
@@ -556,97 +529,84 @@ function TemplatePicker({
   onSelect: (src: string) => void;
   onClose: () => void;
 }) {
+  const [imageFiles, setImageFiles] = useState<string[]>([]);
+  const [loading, setLoading]       = useState(true);
+
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((r) => r.json())
+      .then((files: string[]) => { setImageFiles(files); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-      <div
-        className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[70dvh]"
-        style={{
-          background: "linear-gradient(160deg,#1a1a2e,#16213e)",
-          border: "1px solid rgba(255,255,255,0.1)",
-        }}
+        className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[75dvh]"
+        style={{ background:"linear-gradient(160deg,#1a1a2e,#16213e)", border:"1px solid rgba(255,255,255,0.1)" }}
       >
-        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4" />
-        <h3 className="text-white font-black text-center text-lg mb-3">
-          🎨 ぬりえ テンプレート
-        </h3>
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4"/>
+        <h3 className="text-white font-black text-center text-lg mb-3">🎨 ぬりえ テンプレート</h3>
 
-        {/* ── Kuromi image templates ── */}
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
-          クルミ
-        </p>
-        <div className="grid grid-cols-5 gap-2 mb-4">
-          {KUROMI_TEMPLATES.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => onSelect(t.src)}
-              className="flex flex-col items-center gap-1 rounded-xl overflow-hidden active:scale-90 transition-all"
-              style={{ border: "2px solid rgba(255,255,255,0.15)" }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={t.src}
-                alt={t.name}
-                className="w-full aspect-[3/4] object-cover bg-white"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-              <span className="text-white/70 text-[10px] font-bold pb-1">
-                {t.name}
-              </span>
-            </button>
-          ))}
-        </div>
+        {/* ── Dynamic image templates from /public/templates/ ── */}
+        {imageFiles.length > 0 && (
+          <>
+            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">📁 テンプレ画像</p>
+            <div className="grid grid-cols-4 gap-2 mb-4">
+              {imageFiles.map((file) => (
+                <button
+                  key={file}
+                  onClick={() => onSelect(`/templates/${file}`)}
+                  className="flex flex-col items-center gap-1 rounded-xl overflow-hidden active:scale-90 transition-all"
+                  style={{ border:"2px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.05)" }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`/templates/${file}`}
+                    alt={fileLabel(file)}
+                    className="w-full aspect-square object-contain bg-white p-0.5"
+                  />
+                  <span className="text-white/60 text-[9px] font-bold pb-1 px-1 text-center leading-tight line-clamp-1 w-full">
+                    {fileLabel(file)}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {loading && (
+          <p className="text-white/30 text-xs text-center mb-4">読み込み中…</p>
+        )}
 
         {/* ── SVG kawaii templates ── */}
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
-          かわいい
-        </p>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">かわいい</p>
         <div className="grid grid-cols-5 gap-2 mb-4">
           {TEMPLATES.map((t) => (
             <button
               key={t.id}
               onClick={() => onSelect(t.svg)}
               className="flex flex-col items-center gap-1 p-2 rounded-2xl active:scale-90 transition-all"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                border: "1px solid rgba(255,255,255,0.15)",
-              }}
+              style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}
             >
               <span className="text-3xl">{t.emoji}</span>
-              <span className="text-white/70 text-[10px] font-bold">
-                {t.name}
-              </span>
+              <span className="text-white/70 text-[10px] font-bold">{t.name}</span>
             </button>
           ))}
-          {/* Upload option */}
+          {/* Upload from device */}
           <label
             className="flex flex-col items-center gap-1 p-2 rounded-2xl cursor-pointer active:scale-90"
-            style={{
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.15)",
-            }}
+            style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}
           >
             <span className="text-3xl">📁</span>
             <span className="text-white/70 text-[10px] font-bold">Upload</span>
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
+            <input type="file" accept="image/*" className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
+                const file = e.target.files?.[0]; if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (ev) => {
-                  onSelect(ev.target?.result as string);
-                };
+                reader.onload = (ev) => { onSelect(ev.target?.result as string); };
                 reader.readAsDataURL(file);
-              }}
-            />
+              }}/>
           </label>
         </div>
       </div>
