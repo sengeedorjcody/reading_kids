@@ -630,7 +630,8 @@ export default function DrawPage() {
   );
   const [size, setSize] = useState(7);
   const [zoom, setZoom] = useState(1);
-  const [cDim, setCDim] = useState({ w: W, h: H }); // canvas pixel dimensions, swaps per template orientation
+  // Wrapper size state — canvas DOM dimensions are set directly (never via React props)
+  const [cDim, setCDim] = useState({ w: W, h: H });
   const [showColors, setShowColors] = useState(false);
   const [showTpl, setShowTpl] = useState(false);
   const [saved, setSaved] = useState(false);
