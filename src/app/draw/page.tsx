@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 type Tool = "pen" | "eraser" | "fill" | "line" | "rect" | "circle";
 type View  = "draw" | "gallery";
@@ -382,6 +383,7 @@ function TemplatePicker({ onSelect, onClose }: { onSelect:(svg:string)=>void; on
 
 // ── Main Draw Page ─────────────────────────────────────────────────────────────
 export default function DrawPage() {
+  const router     = useRouter();
   const canvasRef  = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -401,6 +403,15 @@ export default function DrawPage() {
   const snapshot  = useRef<ImageData|null>(null);
 
   useEffect(() => { localStorage.setItem(LS_COLOR, color); }, [color]);
+
+  // Auto-fit canvas to screen on load
+  useLayoutEffect(() => {
+    const el = wrapperRef.current;
+    if (!el) return;
+    const cw = el.clientWidth, ch = el.clientHeight;
+    const fit = Math.min(cw / W, ch / H);
+    setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
+  }, []);
 
   const initCanvas = useCallback(() => {
     const ctx = canvasRef.current?.getContext("2d");
@@ -526,6 +537,13 @@ export default function DrawPage() {
       <div className="flex-shrink-0 flex items-center gap-1.5 px-2 py-1.5 overflow-x-auto scrollbar-none"
         style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
 
+        {/* Back button */}
+        <button onClick={() => router.back()}
+          className="flex-shrink-0 w-9 h-9 rounded-xl bg-white/10 text-white font-black flex items-center justify-center active:scale-90 mr-1">
+          ←
+        </button>
+        <div className="w-px h-7 bg-white/20 flex-shrink-0"/>
+
         {TOOLS.map(t => (
           <button key={t.id} onClick={() => setTool(t.id)}
             className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-90 ${
@@ -598,8 +616,8 @@ export default function DrawPage() {
       )}
 
       {/* ── Zoomable canvas ── */}
-      <div ref={wrapperRef} className="flex-1 overflow-auto" style={{ background:"#334155" }}>
-        <div style={{ width:W*zoom, height:H*zoom, position:"relative", flexShrink:0 }}>
+      <div ref={wrapperRef} className="flex-1 overflow-auto flex justify-center" style={{ background:"#334155" }}>
+        <div style={{ width:W*zoom, height:H*zoom, position:"relative", flexShrink:0, margin:"0 auto" }}>
           <canvas
             ref={canvasRef}
             width={W} height={H}
