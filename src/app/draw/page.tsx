@@ -575,74 +575,67 @@ export default function DrawPage() {
   return (
     <div className="flex flex-col overflow-hidden" style={{ height:"100dvh" }}>
 
-      {/* ── Toolbar ── */}
-      <div className="flex-shrink-0 flex items-center gap-1.5 px-2 py-1.5 overflow-x-auto scrollbar-none"
-        style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
+      {/* ── Controls: 2 fixed rows, no scroll ── */}
+      <div className="flex-shrink-0" style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
 
-        {/* Back button */}
-        <button onClick={() => router.back()}
-          className="flex-shrink-0 w-9 h-9 rounded-xl bg-white/10 text-white font-black flex items-center justify-center active:scale-90 mr-1">
-          ←
-        </button>
-        <div className="w-px h-7 bg-white/20 flex-shrink-0"/>
-
-        {TOOLS.map(t => (
-          <button key={t.id} onClick={() => setTool(t.id)}
-            className={`flex-shrink-0 flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-xl text-xs font-black transition-all active:scale-90 ${
-              tool===t.id ? "bg-white/25 text-white" : "text-white/40"
-            }`}>
-            <span className="text-xl leading-none">{t.icon}</span>
-            {t.label}
+        {/* Row 1: back | tools (icons) | color */}
+        <div className="flex items-center gap-1 px-2 pt-2 pb-1">
+          <button onClick={() => router.back()}
+            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">
+            ←
           </button>
-        ))}
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
+          {/* Tools spread across remaining space */}
+          <div className="flex-1 flex items-center justify-between">
+            {TOOLS.map(t => (
+              <button key={t.id} onClick={() => setTool(t.id)}
+                className={`flex flex-col items-center justify-center w-9 h-9 rounded-xl transition-all active:scale-90 ${
+                  tool===t.id ? "bg-white/25" : "opacity-40"
+                }`}>
+                <span className="text-xl leading-none">{t.icon}</span>
+              </button>
+            ))}
+          </div>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
+          {/* Color picker dot */}
+          <button onClick={() => setShowColors(v => !v)}
+            className={`flex-shrink-0 w-9 h-9 rounded-full border-[3px] transition-all active:scale-90 ${showColors ? "border-white scale-110" : "border-white/30"}`}
+            style={{ backgroundColor:color }}/>
+        </div>
 
-        <div className="w-px h-7 bg-white/20 flex-shrink-0 mx-0.5"/>
-
-        {/* Sizes */}
-        {SIZES.map(s => (
-          <button key={s} onClick={() => setSize(s)}
-            className={`flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all active:scale-90 ${size===s ? "bg-white/20 ring-2 ring-white/50" : ""}`}>
-            <div className="rounded-full bg-white/80" style={{ width:Math.min(s*1.5,22), height:Math.min(s*1.5,22) }}/>
-          </button>
-        ))}
-
-        <div className="w-px h-7 bg-white/20 flex-shrink-0 mx-0.5"/>
-
-        {/* Color */}
-        <button onClick={() => setShowColors(v => !v)}
-          className={`flex-shrink-0 w-9 h-9 rounded-full border-4 transition-all active:scale-90 ${showColors ? "border-white scale-110" : "border-white/30"}`}
-          style={{ backgroundColor:color }}/>
-
-        <div className="w-px h-7 bg-white/20 flex-shrink-0 mx-0.5"/>
-
-        {/* Zoom */}
-        <button onClick={zoomOut} className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/10 text-white font-black flex items-center justify-center active:scale-90">−</button>
-        <span className="flex-shrink-0 text-white/60 text-xs font-bold w-8 text-center">{zoom}×</span>
-        <button onClick={zoomIn}  className="flex-shrink-0 w-8 h-8 rounded-lg bg-white/10 text-white font-black flex items-center justify-center active:scale-90">+</button>
-
-        <div className="w-px h-7 bg-white/20 flex-shrink-0 mx-0.5"/>
-
-        {/* Actions */}
-        <button onClick={() => setShowTpl(true)}
-          className="flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-black text-violet-300 active:scale-90"
-          style={{ background:"rgba(139,92,246,0.2)", border:"1px solid rgba(139,92,246,0.4)" }}>
-          🎨 Template
-        </button>
-        <button onClick={clear}
-          className="flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-black text-red-300 active:scale-90"
-          style={{ background:"rgba(239,68,68,0.2)", border:"1px solid rgba(239,68,68,0.4)" }}>
-          🗑️ Clear
-        </button>
-        <button onClick={saveToGallery}
-          className={`flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-black active:scale-90 ${saved ? "text-green-200" : "text-green-300"}`}
-          style={{ background:saved?"rgba(34,197,94,0.4)":"rgba(34,197,94,0.2)", border:"1px solid rgba(34,197,94,0.4)" }}>
-          {saved ? "✅ Saved!" : "💾 Save"}
-        </button>
-        <button onClick={() => setView("gallery")}
-          className="flex-shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-black text-sky-300 active:scale-90"
-          style={{ background:"rgba(14,165,233,0.2)", border:"1px solid rgba(14,165,233,0.4)" }}>
-          🖼️ Gallery
-        </button>
+        {/* Row 2: sizes | zoom | actions */}
+        <div className="flex items-center gap-1 px-2 pb-2">
+          {/* Brush sizes */}
+          {SIZES.map(s => (
+            <button key={s} onClick={() => setSize(s)}
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 ${size===s ? "bg-white/20 ring-2 ring-white/50" : ""}`}>
+              <div className="rounded-full bg-white/80" style={{ width:Math.min(s*1.4,20), height:Math.min(s*1.4,20) }}/>
+            </button>
+          ))}
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
+          {/* Zoom */}
+          <button onClick={zoomOut} className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">−</button>
+          <span className="flex-shrink-0 text-white/60 text-[11px] font-bold w-8 text-center">{zoom}×</span>
+          <button onClick={zoomIn}  className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">+</button>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
+          {/* Action icon buttons */}
+          <button onClick={() => setShowTpl(true)}
+            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
+            style={{ background:"rgba(139,92,246,0.25)", border:"1px solid rgba(139,92,246,0.5)" }}
+            title="Templates">🎨</button>
+          <button onClick={clear}
+            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
+            style={{ background:"rgba(239,68,68,0.2)", border:"1px solid rgba(239,68,68,0.4)" }}
+            title="Clear">🗑️</button>
+          <button onClick={saveToGallery}
+            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
+            style={{ background:saved?"rgba(34,197,94,0.45)":"rgba(34,197,94,0.2)", border:"1px solid rgba(34,197,94,0.4)" }}
+            title="Save">{saved ? "✅" : "💾"}</button>
+          <button onClick={() => setView("gallery")}
+            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
+            style={{ background:"rgba(14,165,233,0.2)", border:"1px solid rgba(14,165,233,0.4)" }}
+            title="Gallery">🖼️</button>
+        </div>
       </div>
 
       {/* ── Color palette ── */}
