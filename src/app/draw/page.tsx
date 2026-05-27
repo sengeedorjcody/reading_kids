@@ -426,12 +426,39 @@ export default function DrawPage() {
   const [showTpl,    setShowTpl]    = useState(false);
   const [saved,      setSaved]      = useState(false);
 
-  const isDrawing = useRef(false);
-  const lastPos   = useRef<{x:number;y:number}|null>(null);
-  const startPos  = useRef<{x:number;y:number}|null>(null);
-  const snapshot  = useRef<ImageData|null>(null);
-  const panStart  = useRef<{cx:number;cy:number;sl:number;st:number}|null>(null);
+  const isDrawing  = useRef(false);
+  const lastPos    = useRef<{x:number;y:number}|null>(null);
+  const startPos   = useRef<{x:number;y:number}|null>(null);
+  const snapshot   = useRef<ImageData|null>(null);
+  const panStart   = useRef<{cx:number;cy:number;sl:number;st:number}|null>(null);
+  const historyRef = useRef<ImageData[]>([]);
+  const [canUndo,      setCanUndo]      = useState(false);
+  const [showPreview,  setShowPreview]  = useState(false);
+  const [previewUrl,   setPreviewUrl]   = useState<string>("");
   const [bucketCursor, setBucketCursor] = useState<string>("crosshair");
+
+  const pushHistory = useCallback(() => {
+    const c = canvasRef.current?.getContext("2d");
+    if (!c) return;
+    const snap = c.getImageData(0, 0, W, H);
+    historyRef.current.push(snap);
+    if (historyRef.current.length > 20) historyRef.current.shift();
+    setCanUndo(true);
+  }, []);
+
+  const undo = useCallback(() => {
+    const c = canvasRef.current?.getContext("2d");
+    if (!c || historyRef.current.length === 0) return;
+    const prev = historyRef.current.pop()!;
+    c.putImageData(prev, 0, 0);
+    setCanUndo(historyRef.current.length > 0);
+  }, []);
+
+  const openPreview = useCallback(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    setPreviewUrl(canvas.toDataURL("image/png"));
+    setShowPreview(true);
+  }, []);
 
   useEffect(() => { localStorage.setItem(LS_COLOR, color); }, [color]);
 
@@ -492,6 +519,9 @@ export default function DrawPage() {
     const canvas = canvasRef.current; if (!canvas) return;
     const p = getPos(e, canvas);
 
+    // Save history before any paint action
+    pushHistory();
+
     if (tool === "fill") { floodFill(canvas, p.x, p.y, color); return; }
 
     isDrawing.current = true;
@@ -500,7 +530,7 @@ export default function DrawPage() {
     if (["line","rect","circle"].includes(tool)) {
       snapshot.current = ctx()?.getImageData(0, 0, W, H) ?? null;
     }
-  }, [tool, color, ctx]);
+  }, [tool, color, ctx, pushHistory]);
 
   const moveDraw = useCallback((e: TouchEvent | MouseEvent) => {
     e.preventDefault();
@@ -576,6 +606,7 @@ export default function DrawPage() {
   // ── Load template ────────────────────────────────────────────────────────
   const loadTemplate = (svgOrUrl: string) => {
     const canvas = canvasRef.current; const c = ctx(); if (!canvas || !c) return;
+    pushHistory();
     c.fillStyle = "#ffffff"; c.fillRect(0, 0, W, H);
     const img = new Image();
     img.crossOrigin = "anonymous";
@@ -588,7 +619,7 @@ export default function DrawPage() {
     setShowTpl(false);
   };
 
-  const clear = () => { initCanvas(); };
+  const clear = () => { pushHistory(); initCanvas(); };
 
   const saveToGallery = () => {
     const canvas = canvasRef.current; if (!canvas) return;
@@ -610,12 +641,15 @@ export default function DrawPage() {
       {/* ── Controls: 2 fixed rows, no scroll ── */}
       <div className="flex-shrink-0" style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
 
-        {/* Row 1: back | tools (icons) | color */}
+        {/* Row 1: back | undo | tools (icons) | color */}
         <div className="flex items-center gap-1 px-2 pt-2 pb-1">
           <button onClick={() => router.back()}
             className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">
             ←
           </button>
+          <button onClick={undo} disabled={!canUndo}
+            className={`flex-shrink-0 w-8 h-8 rounded-xl text-lg flex items-center justify-center active:scale-90 transition-all ${canUndo ? "bg-white/10 opacity-100" : "opacity-25"}`}
+            title="Undo">↩️</button>
           <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
           {/* Tools spread across remaining space */}
           <div className="flex-1 flex items-center justify-between">
@@ -667,6 +701,10 @@ export default function DrawPage() {
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
             style={{ background:"rgba(14,165,233,0.2)", border:"1px solid rgba(14,165,233,0.4)" }}
             title="Gallery">🖼️</button>
+          <button onClick={openPreview}
+            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
+            style={{ background:"rgba(251,191,36,0.2)", border:"1px solid rgba(251,191,36,0.4)" }}
+            title="Preview">👁️</button>
         </div>
       </div>
 
@@ -701,6 +739,45 @@ export default function DrawPage() {
 
       {/* ── Template picker ── */}
       {showTpl && <TemplatePicker onSelect={loadTemplate} onClose={() => setShowTpl(false)}/>}
+
+      {/* ── Preview modal ── */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
+          onClick={() => setShowPreview(false)}>
+          <div className="relative w-full h-full flex flex-col items-center justify-center p-4 gap-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl} alt="Preview"
+              className="max-w-full max-h-[80dvh] rounded-2xl shadow-2xl object-contain"
+              style={{ border:"3px solid rgba(255,255,255,0.2)" }}
+              onClick={e => e.stopPropagation()}
+            />
+            <div className="flex gap-3" onClick={e => e.stopPropagation()}>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
+                style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)" }}>
+                ✕ Close
+              </button>
+              <button
+                onClick={() => { saveToGallery(); setShowPreview(false); }}
+                className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
+                style={{ background:"rgba(34,197,94,0.4)", border:"1px solid rgba(34,197,94,0.6)" }}>
+                💾 Save
+              </button>
+              <button
+                onClick={() => {
+                  const a = document.createElement("a");
+                  a.href = previewUrl; a.download = `drawing-${Date.now()}.png`; a.click();
+                }}
+                className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
+                style={{ background:"rgba(14,165,233,0.4)", border:"1px solid rgba(14,165,233,0.6)" }}>
+                ⬇️ Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
