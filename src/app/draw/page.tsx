@@ -706,6 +706,8 @@ export default function DrawPage() {
   const initCanvas = useCallback(() => {
     const canvas = canvasRef.current; const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
+    // Set initial dimensions via DOM on first call (canvas has no width/height JSX props)
+    if (canvas.width === 300) { canvas.width = W; canvas.height = H; }
     ctx.fillStyle = "#fff9f0";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
@@ -883,21 +885,15 @@ export default function DrawPage() {
     img.crossOrigin = "anonymous";
     img.onload = () => {
       const iw = img.naturalWidth, ih = img.naturalHeight;
-      // Auto-detect orientation: match canvas to image's aspect ratio
+      // Auto-detect orientation
       const landscape = iw > ih;
-      const newW = landscape ? H : W;   // H=1440 wide, W=1080 tall
+      const newW = landscape ? H : W;
       const newH = landscape ? W : H;
-      // Resize canvas element directly (clears it) then sync state
+      // Set canvas DOM dimensions directly — this clears the canvas
+      // but we draw immediately after, BEFORE React can re-render and clear again
       canvas.width  = newW;
       canvas.height = newH;
-      setCDim({ w: newW, h: newH });
-      // Auto-fit zoom to the new canvas orientation
-      const wrapper = wrapperRef.current;
-      if (wrapper) {
-        const fit = Math.min(wrapper.clientWidth / newW, wrapper.clientHeight / newH);
-        setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
-      }
-      // Fill white, then draw image to fill new canvas (contain, centered)
+      // Draw right away (same synchronous tick — React hasn't re-rendered yet)
       c.fillStyle = "#ffffff";
       c.fillRect(0, 0, newW, newH);
       const scale = Math.min(newW / iw, newH / ih);
@@ -906,6 +902,13 @@ export default function DrawPage() {
       c.imageSmoothingEnabled = true;
       c.imageSmoothingQuality = "high";
       c.drawImage(img, dx, dy, dw, dh);
+      // Update wrapper size state + recalculate zoom (only triggers wrapper re-render, not canvas)
+      setCDim({ w: newW, h: newH });
+      const wrapper = wrapperRef.current;
+      if (wrapper) {
+        const fit = Math.min(wrapper.clientWidth / newW, wrapper.clientHeight / newH);
+        setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
+      }
     };
     if (
       svgOrUrl.startsWith("data:") ||
@@ -1138,8 +1141,6 @@ export default function DrawPage() {
         >
           <canvas
             ref={canvasRef}
-            width={cDim.w}
-            height={cDim.h}
             style={{
               position: "absolute",
               top: 0,
