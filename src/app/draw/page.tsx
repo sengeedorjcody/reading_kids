@@ -916,12 +916,21 @@ export default function DrawPage() {
     const c = ctx();
     if (!canvas || !c) return;
     pushHistory();
-    c.fillStyle = "#ffffff";
-    c.fillRect(0, 0, W, H);
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      c.drawImage(img, 0, 0, W, H);
+      // Fill white background first
+      c.fillStyle = "#ffffff";
+      c.fillRect(0, 0, W, H);
+      // Contain: scale proportionally, center on canvas — no stretching
+      const scale = Math.min(W / img.naturalWidth, H / img.naturalHeight);
+      const dw = img.naturalWidth  * scale;
+      const dh = img.naturalHeight * scale;
+      const dx = (W - dw) / 2;
+      const dy = (H - dh) / 2;
+      c.imageSmoothingEnabled = true;
+      c.imageSmoothingQuality = "high";
+      c.drawImage(img, dx, dy, dw, dh);
     };
     if (
       svgOrUrl.startsWith("data:") ||
