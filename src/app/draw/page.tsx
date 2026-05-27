@@ -1,49 +1,103 @@
 "use client";
 
-import { useRef, useState, useEffect, useLayoutEffect, useCallback } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import { useRouter } from "next/navigation";
 
 type Tool = "pen" | "eraser" | "fill" | "line" | "rect" | "circle" | "pan";
-type View  = "draw" | "gallery";
+type View = "draw" | "gallery";
 
-interface SavedDrawing { id: string; dataUrl: string; date: string; }
+interface SavedDrawing {
+  id: string;
+  dataUrl: string;
+  date: string;
+}
 
 // ── Color & size constants ────────────────────────────────────────────────────
 const COLORS = [
-  "#1e293b","#ffffff","#ef4444","#f97316","#f59e0b",
-  "#84cc16","#22c55e","#06b6d4","#3b82f6","#6366f1",
-  "#8b5cf6","#ec4899","#f43f5e","#94a3b8","#713f12",
-  "#fbbf24","#a3e635","#34d399","#38bdf8","#f0abfc",
+  "#1e293b",
+  "#ffffff",
+  "#ef4444",
+  "#f97316",
+  "#f59e0b",
+  "#84cc16",
+  "#22c55e",
+  "#06b6d4",
+  "#3b82f6",
+  "#6366f1",
+  "#8b5cf6",
+  "#ec4899",
+  "#f43f5e",
+  "#94a3b8",
+  "#713f12",
+  "#fbbf24",
+  "#a3e635",
+  "#34d399",
+  "#38bdf8",
+  "#f0abfc",
 ];
 const SIZES = [3, 7, 14, 28];
 const TOOLS: { id: Tool; icon: string; label: string }[] = [
-  { id:"pan",    icon:"✋", label:"Pan"    },
-  { id:"pen",    icon:"✏️", label:"Pen"    },
-  { id:"eraser", icon:"🧽", label:"Eraser" },
-  { id:"fill",   icon:"🪣", label:"Fill"   },
-  { id:"line",   icon:"╱",  label:"Line"   },
-  { id:"rect",   icon:"▭",  label:"Rect"   },
-  { id:"circle", icon:"○",  label:"Circle" },
+  { id: "pan", icon: "✋", label: "Pan" },
+  { id: "pen", icon: "✏️", label: "Pen" },
+  { id: "eraser", icon: "🧽", label: "Eraser" },
+  { id: "fill", icon: "🪣", label: "Fill" },
+  { id: "line", icon: "╱", label: "Line" },
+  { id: "rect", icon: "▭", label: "Rect" },
+  { id: "circle", icon: "○", label: "Circle" },
 ];
 
-const W = 1080, H = 1440;
-const LS_COLOR    = "draw_color";
+const W = 1080,
+  H = 1440;
+const LS_COLOR = "draw_color";
 const LS_DRAWINGS = "draw_saved";
 
 // ── Coloring templates ────────────────────────────────────────────────────────
 // Image-based Kuromi templates (files go in /public/templates/)
 const KUROMI_TEMPLATES = [
-  { id:"kuromi1", name:"クルミ1", emoji:"🍰", src:"/templates/kuromi1.jpg" },
-  { id:"kuromi2", name:"クルミ2", emoji:"🏖️", src:"/templates/kuromi2.jpg" },
-  { id:"kuromi3", name:"クルミ3", emoji:"💜", src:"/templates/kuromi3.jpg" },
-  { id:"kuromi4", name:"クルミ4", emoji:"⭐", src:"/templates/kuromi4.jpg" },
-  { id:"kuromi5", name:"クルミ5", emoji:"🎃", src:"/templates/kuromi5.jpg" },
+  {
+    id: "kuromi1",
+    name: "クルミ1",
+    emoji: "🍰",
+    src: "/templates/kuromi1.jpeg",
+  },
+  {
+    id: "kuromi2",
+    name: "クルミ2",
+    emoji: "🏖️",
+    src: "/templates/kuromi2.jpeg",
+  },
+  {
+    id: "kuromi3",
+    name: "クルミ3",
+    emoji: "💜",
+    src: "/templates/kuromi3.jpeg",
+  },
+  {
+    id: "kuromi4",
+    name: "クルミ4",
+    emoji: "⭐",
+    src: "/templates/kuromi4.jpeg",
+  },
+  {
+    id: "kuromi5",
+    name: "クルミ5",
+    emoji: "🎃",
+    src: "/templates/kuromi5.jpeg",
+  },
 ];
 
 const TEMPLATES = [
   {
-    id:"cat", name:"ねこ", emoji:"🐱",
-    svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
+    id: "cat",
+    name: "ねこ",
+    emoji: "🐱",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
 <rect width="360" height="480" fill="white"/>
 <path d="M75 175 L95 100 L140 155" fill="white" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
 <path d="M220 155 L265 100 L285 175" fill="white" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
@@ -77,8 +131,10 @@ const TEMPLATES = [
 </svg>`,
   },
   {
-    id:"bunny", name:"うさぎ", emoji:"🐰",
-    svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
+    id: "bunny",
+    name: "うさぎ",
+    emoji: "🐰",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
 <rect width="360" height="480" fill="white"/>
 <ellipse cx="140" cy="88" rx="22" ry="62" fill="white" stroke="#111" stroke-width="3"/>
 <ellipse cx="220" cy="88" rx="22" ry="62" fill="white" stroke="#111" stroke-width="3"/>
@@ -108,8 +164,10 @@ const TEMPLATES = [
 </svg>`,
   },
   {
-    id:"star", name:"ほし", emoji:"⭐",
-    svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
+    id: "star",
+    name: "ほし",
+    emoji: "⭐",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
 <rect width="360" height="480" fill="white"/>
 <polygon points="180,30 210,120 305,120 230,178 258,268 180,215 102,268 130,178 55,120 150,120"
   fill="white" stroke="#111" stroke-width="4" stroke-linejoin="round"/>
@@ -138,8 +196,10 @@ const TEMPLATES = [
 </svg>`,
   },
   {
-    id:"flower", name:"はな", emoji:"🌸",
-    svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
+    id: "flower",
+    name: "はな",
+    emoji: "🌸",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
 <rect width="360" height="480" fill="white"/>
 <ellipse cx="180" cy="100" rx="35" ry="55" fill="white" stroke="#111" stroke-width="2.5"/>
 <ellipse cx="270" cy="130" rx="35" ry="55" fill="white" stroke="#111" stroke-width="2.5" transform="rotate(60,270,130)"/>
@@ -176,8 +236,10 @@ const TEMPLATES = [
 </svg>`,
   },
   {
-    id:"bear", name:"くま", emoji:"🐻",
-    svg:`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
+    id: "bear",
+    name: "くま",
+    emoji: "🐻",
+    svg: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 480">
 <rect width="360" height="480" fill="white"/>
 <circle cx="108" cy="148" r="38" fill="white" stroke="#111" stroke-width="3"/>
 <circle cx="252" cy="148" r="38" fill="white" stroke="#111" stroke-width="3"/>
@@ -212,8 +274,11 @@ const TEMPLATES = [
 
 // ── LocalStorage helpers ──────────────────────────────────────────────────────
 function loadDrawings(): SavedDrawing[] {
-  try { return JSON.parse(localStorage.getItem(LS_DRAWINGS) ?? "[]"); }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(LS_DRAWINGS) ?? "[]");
+  } catch {
+    return [];
+  }
 }
 function saveDrawings(list: SavedDrawing[]) {
   localStorage.setItem(LS_DRAWINGS, JSON.stringify(list));
@@ -221,11 +286,21 @@ function saveDrawings(list: SavedDrawing[]) {
 
 // ── Flood fill ────────────────────────────────────────────────────────────────
 function hexToRgb(hex: string): [number, number, number] {
-  const h = hex.replace("#","");
-  return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  const h = hex.replace("#", "");
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
 }
 
-function floodFill(canvas: HTMLCanvasElement, startX: number, startY: number, fillHex: string, tolerance = 45) {
+function floodFill(
+  canvas: HTMLCanvasElement,
+  startX: number,
+  startY: number,
+  fillHex: string,
+  tolerance = 45,
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const { width: W, height: H } = canvas;
@@ -233,19 +308,29 @@ function floodFill(canvas: HTMLCanvasElement, startX: number, startY: number, fi
   const data = imageData.data;
 
   const si = (Math.round(startY) * W + Math.round(startX)) * 4;
-  const tr = data[si], tg = data[si+1], tb = data[si+2];
+  const tr = data[si],
+    tg = data[si + 1],
+    tb = data[si + 2];
   const [fr, fg, fb] = hexToRgb(fillHex);
 
   // Already same color
-  if (Math.abs(tr-fr)<=3 && Math.abs(tg-fg)<=3 && Math.abs(tb-fb)<=3) return;
+  if (
+    Math.abs(tr - fr) <= 3 &&
+    Math.abs(tg - fg) <= 3 &&
+    Math.abs(tb - fb) <= 3
+  )
+    return;
 
   const matches = (i: number) =>
-    Math.abs(data[i]  -tr) <= tolerance &&
-    Math.abs(data[i+1]-tg) <= tolerance &&
-    Math.abs(data[i+2]-tb) <= tolerance;
+    Math.abs(data[i] - tr) <= tolerance &&
+    Math.abs(data[i + 1] - tg) <= tolerance &&
+    Math.abs(data[i + 2] - tb) <= tolerance;
 
   const paint = (i: number) => {
-    data[i]=fr; data[i+1]=fg; data[i+2]=fb; data[i+3]=255;
+    data[i] = fr;
+    data[i + 1] = fg;
+    data[i + 2] = fb;
+    data[i + 3] = 255;
   };
 
   const visited = new Uint8Array(W * H);
@@ -256,22 +341,47 @@ function floodFill(canvas: HTMLCanvasElement, startX: number, startY: number, fi
     iters++;
     const pos = stack.pop()!;
     if (visited[pos]) continue;
-    const y = Math.floor(pos / W), x = pos % W;
+    const y = Math.floor(pos / W),
+      x = pos % W;
     const i = pos * 4;
     if (!matches(i)) continue;
 
     // Scan left & right
-    let left = x, right = x;
-    while (left > 0 && !visited[y*W + left-1] && matches((y*W + left-1)*4)) left--;
-    while (right < W-1 && !visited[y*W + right+1] && matches((y*W + right+1)*4)) right++;
+    let left = x,
+      right = x;
+    while (
+      left > 0 &&
+      !visited[y * W + left - 1] &&
+      matches((y * W + left - 1) * 4)
+    )
+      left--;
+    while (
+      right < W - 1 &&
+      !visited[y * W + right + 1] &&
+      matches((y * W + right + 1) * 4)
+    )
+      right++;
 
     for (let cx = left; cx <= right; cx++) {
       const cp = y * W + cx;
-      if (!visited[cp]) { visited[cp]=1; paint(cp*4); }
+      if (!visited[cp]) {
+        visited[cp] = 1;
+        paint(cp * 4);
+      }
     }
     for (let cx = left; cx <= right; cx++) {
-      if (y > 0   && !visited[(y-1)*W+cx] && matches(((y-1)*W+cx)*4)) stack.push((y-1)*W+cx);
-      if (y < H-1 && !visited[(y+1)*W+cx] && matches(((y+1)*W+cx)*4)) stack.push((y+1)*W+cx);
+      if (
+        y > 0 &&
+        !visited[(y - 1) * W + cx] &&
+        matches(((y - 1) * W + cx) * 4)
+      )
+        stack.push((y - 1) * W + cx);
+      if (
+        y < H - 1 &&
+        !visited[(y + 1) * W + cx] &&
+        matches(((y + 1) * W + cx) * 4)
+      )
+        stack.push((y + 1) * W + cx);
     }
   }
   ctx.putImageData(imageData, 0, 0);
@@ -280,73 +390,157 @@ function floodFill(canvas: HTMLCanvasElement, startX: number, startY: number, fi
 // ── Coordinate helper ─────────────────────────────────────────────────────────
 function getPos(e: TouchEvent | MouseEvent, canvas: HTMLCanvasElement) {
   const rect = canvas.getBoundingClientRect();
-  const sx = W / rect.width, sy = H / rect.height;
+  const sx = W / rect.width,
+    sy = H / rect.height;
   if ("touches" in e) {
-    const t = (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
-    return { x: (t.clientX-rect.left)*sx, y: (t.clientY-rect.top)*sy };
+    const t =
+      (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
+    return { x: (t.clientX - rect.left) * sx, y: (t.clientY - rect.top) * sy };
   }
   const m = e as MouseEvent;
-  return { x: (m.clientX-rect.left)*sx, y: (m.clientY-rect.top)*sy };
+  return { x: (m.clientX - rect.left) * sx, y: (m.clientY - rect.top) * sy };
 }
 
 // ── Gallery ───────────────────────────────────────────────────────────────────
 function Gallery({ onClose }: { onClose: () => void }) {
   const [drawings, setDrawings] = useState<SavedDrawing[]>([]);
-  const [preview, setPreview]   = useState<SavedDrawing | null>(null);
+  const [preview, setPreview] = useState<SavedDrawing | null>(null);
 
-  useEffect(() => { setDrawings(loadDrawings()); }, []);
+  useEffect(() => {
+    setDrawings(loadDrawings());
+  }, []);
 
   const del = (id: string) => {
-    const next = drawings.filter(d => d.id !== id);
-    setDrawings(next); saveDrawings(next);
+    const next = drawings.filter((d) => d.id !== id);
+    setDrawings(next);
+    saveDrawings(next);
     if (preview?.id === id) setPreview(null);
   };
   const download = (d: SavedDrawing) => {
     const a = document.createElement("a");
-    a.download = `drawing-${d.id}.png`; a.href = d.dataUrl; a.click();
+    a.download = `drawing-${d.id}.png`;
+    a.href = d.dataUrl;
+    a.click();
   };
 
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height:"100dvh" }}>
-      <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3"
-        style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
-        <button onClick={onClose} className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white font-black active:scale-90">←</button>
-        <h2 className="text-white font-black text-lg flex-1">🖼️ Saved Drawings</h2>
+    <div className="flex flex-col overflow-hidden" style={{ height: "100dvh" }}>
+      <div
+        className="flex-shrink-0 flex items-center gap-3 px-4 py-3"
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <button
+          onClick={onClose}
+          className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white font-black active:scale-90"
+        >
+          ←
+        </button>
+        <h2 className="text-white font-black text-lg flex-1">
+          🖼️ Saved Drawings
+        </h2>
         <span className="text-white/40 text-sm">{drawings.length}</span>
       </div>
-      {drawings.length === 0
-        ? <div className="flex-1 flex flex-col items-center justify-center gap-3">
-            <div className="text-6xl">🎨</div>
-            <p className="text-white/40 font-bold">No saved drawings yet</p>
-            <button onClick={onClose} className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95" style={{ background:"linear-gradient(135deg,#a855f7,#6366f1)" }}>Start Drawing</button>
-          </div>
-        : <div className="flex-1 overflow-y-auto p-3">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {drawings.map(d => (
-                <div key={d.id} className="relative rounded-2xl overflow-hidden"
-                  style={{ border:"2px solid rgba(255,255,255,0.1)", aspectRatio:"3/4" }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={d.dataUrl} alt="drawing" className="w-full h-full object-cover cursor-pointer" onClick={() => setPreview(d)}/>
-                  <div className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-center"
-                    style={{ background:"linear-gradient(transparent,rgba(0,0,0,0.6))" }}>
-                    <span className="text-white/70 text-[10px] font-bold">{d.date}</span>
-                    <div className="flex gap-1">
-                      <button onClick={() => download(d)} className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-sm active:scale-90">💾</button>
-                      <button onClick={() => del(d.id)} className="w-7 h-7 rounded-lg bg-red-500/40 flex items-center justify-center text-sm active:scale-90">🗑️</button>
-                    </div>
+      {drawings.length === 0 ? (
+        <div className="flex-1 flex flex-col items-center justify-center gap-3">
+          <div className="text-6xl">🎨</div>
+          <p className="text-white/40 font-bold">No saved drawings yet</p>
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95"
+            style={{ background: "linear-gradient(135deg,#a855f7,#6366f1)" }}
+          >
+            Start Drawing
+          </button>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {drawings.map((d) => (
+              <div
+                key={d.id}
+                className="relative rounded-2xl overflow-hidden"
+                style={{
+                  border: "2px solid rgba(255,255,255,0.1)",
+                  aspectRatio: "3/4",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={d.dataUrl}
+                  alt="drawing"
+                  className="w-full h-full object-cover cursor-pointer"
+                  onClick={() => setPreview(d)}
+                />
+                <div
+                  className="absolute bottom-0 left-0 right-0 p-2 flex justify-between items-center"
+                  style={{
+                    background: "linear-gradient(transparent,rgba(0,0,0,0.6))",
+                  }}
+                >
+                  <span className="text-white/70 text-[10px] font-bold">
+                    {d.date}
+                  </span>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => download(d)}
+                      className="w-7 h-7 rounded-lg bg-white/20 flex items-center justify-center text-sm active:scale-90"
+                    >
+                      💾
+                    </button>
+                    <button
+                      onClick={() => del(d.id)}
+                      className="w-7 h-7 rounded-lg bg-red-500/40 flex items-center justify-center text-sm active:scale-90"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
           </div>
-      }
+        </div>
+      )}
       {preview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80" onClick={() => setPreview(null)}>
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80"
+          onClick={() => setPreview(null)}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={preview.dataUrl} alt="preview" className="max-w-full max-h-[80dvh] rounded-2xl shadow-2xl object-contain"/>
+          <img
+            src={preview.dataUrl}
+            alt="preview"
+            className="max-w-full max-h-[80dvh] rounded-2xl shadow-2xl object-contain"
+          />
           <div className="flex gap-3 mt-4">
-            <button onClick={e => { e.stopPropagation(); download(preview); }} className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95" style={{ background:"rgba(34,197,94,0.4)", border:"1px solid rgba(34,197,94,0.6)" }}>💾 Download</button>
-            <button onClick={e => { e.stopPropagation(); del(preview.id); }} className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95" style={{ background:"rgba(239,68,68,0.4)", border:"1px solid rgba(239,68,68,0.6)" }}>🗑️ Delete</button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                download(preview);
+              }}
+              className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95"
+              style={{
+                background: "rgba(34,197,94,0.4)",
+                border: "1px solid rgba(34,197,94,0.6)",
+              }}
+            >
+              💾 Download
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                del(preview.id);
+              }}
+              className="px-5 py-2.5 rounded-2xl font-black text-white active:scale-95"
+              style={{
+                background: "rgba(239,68,68,0.4)",
+                border: "1px solid rgba(239,68,68,0.6)",
+              }}
+            >
+              🗑️ Delete
+            </button>
           </div>
         </div>
       )}
@@ -355,54 +549,104 @@ function Gallery({ onClose }: { onClose: () => void }) {
 }
 
 // ── Template picker ───────────────────────────────────────────────────────────
-function TemplatePicker({ onSelect, onClose }: { onSelect:(src:string)=>void; onClose:()=>void }) {
+function TemplatePicker({
+  onSelect,
+  onClose,
+}: {
+  onSelect: (src: string) => void;
+  onClose: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
-      <div className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[70dvh]"
-        style={{ background:"linear-gradient(160deg,#1a1a2e,#16213e)", border:"1px solid rgba(255,255,255,0.1)" }}>
-        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4"/>
-        <h3 className="text-white font-black text-center text-lg mb-3">🎨 ぬりえ テンプレート</h3>
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div
+        className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[70dvh]"
+        style={{
+          background: "linear-gradient(160deg,#1a1a2e,#16213e)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4" />
+        <h3 className="text-white font-black text-center text-lg mb-3">
+          🎨 ぬりえ テンプレート
+        </h3>
 
         {/* ── Kuromi image templates ── */}
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">クルミ</p>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
+          クルミ
+        </p>
         <div className="grid grid-cols-5 gap-2 mb-4">
-          {KUROMI_TEMPLATES.map(t => (
-            <button key={t.id} onClick={() => onSelect(t.src)}
+          {KUROMI_TEMPLATES.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => onSelect(t.src)}
               className="flex flex-col items-center gap-1 rounded-xl overflow-hidden active:scale-90 transition-all"
-              style={{ border:"2px solid rgba(255,255,255,0.15)" }}>
+              style={{ border: "2px solid rgba(255,255,255,0.15)" }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={t.src} alt={t.name}
+              <img
+                src={t.src}
+                alt={t.name}
                 className="w-full aspect-[3/4] object-cover bg-white"
-                onError={e => { (e.target as HTMLImageElement).style.display="none"; }}/>
-              <span className="text-white/70 text-[10px] font-bold pb-1">{t.name}</span>
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <span className="text-white/70 text-[10px] font-bold pb-1">
+                {t.name}
+              </span>
             </button>
           ))}
         </div>
 
         {/* ── SVG kawaii templates ── */}
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">かわいい</p>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
+          かわいい
+        </p>
         <div className="grid grid-cols-5 gap-2 mb-4">
-          {TEMPLATES.map(t => (
-            <button key={t.id} onClick={() => onSelect(t.svg)}
+          {TEMPLATES.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => onSelect(t.svg)}
               className="flex flex-col items-center gap-1 p-2 rounded-2xl active:scale-90 transition-all"
-              style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}>
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
+            >
               <span className="text-3xl">{t.emoji}</span>
-              <span className="text-white/70 text-[10px] font-bold">{t.name}</span>
+              <span className="text-white/70 text-[10px] font-bold">
+                {t.name}
+              </span>
             </button>
           ))}
           {/* Upload option */}
-          <label className="flex flex-col items-center gap-1 p-2 rounded-2xl cursor-pointer active:scale-90"
-            style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}>
+          <label
+            className="flex flex-col items-center gap-1 p-2 rounded-2xl cursor-pointer active:scale-90"
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
+          >
             <span className="text-3xl">📁</span>
             <span className="text-white/70 text-[10px] font-bold">Upload</span>
-            <input type="file" accept="image/*" className="hidden"
-              onChange={e => {
-                const file = e.target.files?.[0]; if(!file) return;
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
                 const reader = new FileReader();
-                reader.onload = ev => { onSelect(ev.target?.result as string); };
+                reader.onload = (ev) => {
+                  onSelect(ev.target?.result as string);
+                };
                 reader.readAsDataURL(file);
-              }}/>
+              }}
+            />
           </label>
         </div>
       </div>
@@ -412,29 +656,37 @@ function TemplatePicker({ onSelect, onClose }: { onSelect:(src:string)=>void; on
 
 // ── Main Draw Page ─────────────────────────────────────────────────────────────
 export default function DrawPage() {
-  const router     = useRouter();
-  const canvasRef  = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
-  const [view,       setView]       = useState<View>("draw");
-  const [tool,       setTool]       = useState<Tool>("pen");
-  const [color,      setColor]      = useState<string>(() =>
-    typeof window !== "undefined" ? localStorage.getItem(LS_COLOR) ?? "#1e293b" : "#1e293b");
-  const [size,       setSize]       = useState(7);
-  const [zoom,       setZoom]       = useState(1);
+  const [view, setView] = useState<View>("draw");
+  const [tool, setTool] = useState<Tool>("pen");
+  const [color, setColor] = useState<string>(() =>
+    typeof window !== "undefined"
+      ? (localStorage.getItem(LS_COLOR) ?? "#1e293b")
+      : "#1e293b",
+  );
+  const [size, setSize] = useState(7);
+  const [zoom, setZoom] = useState(1);
   const [showColors, setShowColors] = useState(false);
-  const [showTpl,    setShowTpl]    = useState(false);
-  const [saved,      setSaved]      = useState(false);
+  const [showTpl, setShowTpl] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const isDrawing  = useRef(false);
-  const lastPos    = useRef<{x:number;y:number}|null>(null);
-  const startPos   = useRef<{x:number;y:number}|null>(null);
-  const snapshot   = useRef<ImageData|null>(null);
-  const panStart   = useRef<{cx:number;cy:number;sl:number;st:number}|null>(null);
+  const isDrawing = useRef(false);
+  const lastPos = useRef<{ x: number; y: number } | null>(null);
+  const startPos = useRef<{ x: number; y: number } | null>(null);
+  const snapshot = useRef<ImageData | null>(null);
+  const panStart = useRef<{
+    cx: number;
+    cy: number;
+    sl: number;
+    st: number;
+  } | null>(null);
   const historyRef = useRef<ImageData[]>([]);
-  const [canUndo,      setCanUndo]      = useState(false);
-  const [showPreview,  setShowPreview]  = useState(false);
-  const [previewUrl,   setPreviewUrl]   = useState<string>("");
+  const [canUndo, setCanUndo] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string>("");
   const [bucketCursor, setBucketCursor] = useState<string>("crosshair");
 
   const pushHistory = useCallback(() => {
@@ -455,17 +707,21 @@ export default function DrawPage() {
   }, []);
 
   const openPreview = useCallback(() => {
-    const canvas = canvasRef.current; if (!canvas) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
     setPreviewUrl(canvas.toDataURL("image/png"));
     setShowPreview(true);
   }, []);
 
-  useEffect(() => { localStorage.setItem(LS_COLOR, color); }, [color]);
+  useEffect(() => {
+    localStorage.setItem(LS_COLOR, color);
+  }, [color]);
 
   // Build emoji bucket cursor after mount
   useEffect(() => {
     const c = document.createElement("canvas");
-    c.width = 44; c.height = 44;
+    c.width = 44;
+    c.height = 44;
     const cx = c.getContext("2d");
     if (!cx) return;
     cx.font = "36px serif";
@@ -479,7 +735,8 @@ export default function DrawPage() {
   useLayoutEffect(() => {
     const el = wrapperRef.current;
     if (!el) return;
-    const cw = el.clientWidth, ch = el.clientHeight;
+    const cw = el.clientWidth,
+      ch = el.clientHeight;
     const fit = Math.min(cw / W, ch / H);
     setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
   }, []);
@@ -490,288 +747,497 @@ export default function DrawPage() {
     ctx.fillStyle = "#fff9f0";
     ctx.fillRect(0, 0, W, H);
   }, []);
-  useEffect(() => { initCanvas(); }, [initCanvas]);
+  useEffect(() => {
+    initCanvas();
+  }, [initCanvas]);
 
-  const ctx = useCallback(() => canvasRef.current?.getContext("2d") ?? null, []);
+  const ctx = useCallback(
+    () => canvasRef.current?.getContext("2d") ?? null,
+    [],
+  );
 
   // ── Client coords helper (for pan) ──────────────────────────────────────
   const clientXY = (e: TouchEvent | MouseEvent) => {
     if ("touches" in e) {
-      const t = (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
+      const t =
+        (e as TouchEvent).touches[0] ?? (e as TouchEvent).changedTouches[0];
       return { cx: t.clientX, cy: t.clientY };
     }
     return { cx: (e as MouseEvent).clientX, cy: (e as MouseEvent).clientY };
   };
 
   // ── Drawing handlers ─────────────────────────────────────────────────────
-  const startDraw = useCallback((e: TouchEvent | MouseEvent) => {
-    e.preventDefault();
-    if ("touches" in e && (e as TouchEvent).touches.length !== 1) return;
+  const startDraw = useCallback(
+    (e: TouchEvent | MouseEvent) => {
+      e.preventDefault();
+      if ("touches" in e && (e as TouchEvent).touches.length !== 1) return;
 
-    // Pan tool — record scroll anchor
-    if (tool === "pan") {
-      const wrapper = wrapperRef.current; if (!wrapper) return;
-      const { cx, cy } = clientXY(e);
-      panStart.current = { cx, cy, sl: wrapper.scrollLeft, st: wrapper.scrollTop };
-      return;
-    }
-
-    const canvas = canvasRef.current; if (!canvas) return;
-    const p = getPos(e, canvas);
-
-    // Save history before any paint action
-    pushHistory();
-
-    if (tool === "fill") { floodFill(canvas, p.x, p.y, color); return; }
-
-    isDrawing.current = true;
-    lastPos.current   = p;
-    startPos.current  = p;
-    if (["line","rect","circle"].includes(tool)) {
-      snapshot.current = ctx()?.getImageData(0, 0, W, H) ?? null;
-    }
-  }, [tool, color, ctx, pushHistory]);
-
-  const moveDraw = useCallback((e: TouchEvent | MouseEvent) => {
-    e.preventDefault();
-
-    // Pan tool — scroll wrapper
-    if (tool === "pan") {
-      if (!panStart.current) return;
-      const wrapper = wrapperRef.current; if (!wrapper) return;
-      const { cx, cy } = clientXY(e);
-      wrapper.scrollLeft = panStart.current.sl - (cx - panStart.current.cx);
-      wrapper.scrollTop  = panStart.current.st - (cy - panStart.current.cy);
-      return;
-    }
-
-    if (!isDrawing.current) return;
-    const canvas = canvasRef.current; if (!canvas) return;
-    const c = ctx(); if (!c) return;
-    const p = getPos(e, canvas);
-
-    if (tool === "pen" || tool === "eraser") {
-      c.save();
-      c.lineCap = "round"; c.lineJoin = "round";
-      c.lineWidth   = tool === "eraser" ? size * 3 : size;
-      c.strokeStyle = tool === "eraser" ? "#fff9f0" : color;
-      c.beginPath();
-      c.moveTo(lastPos.current!.x, lastPos.current!.y);
-      c.lineTo(p.x, p.y);
-      c.stroke(); c.restore();
-      lastPos.current = p;
-    } else if (snapshot.current && startPos.current) {
-      c.putImageData(snapshot.current, 0, 0);
-      c.save(); c.strokeStyle = color; c.lineWidth = size; c.lineCap = "round";
-      if (tool === "line") {
-        c.beginPath(); c.moveTo(startPos.current.x, startPos.current.y); c.lineTo(p.x, p.y); c.stroke();
-      } else if (tool === "rect") {
-        c.strokeRect(startPos.current.x, startPos.current.y, p.x-startPos.current.x, p.y-startPos.current.y);
-      } else if (tool === "circle") {
-        const rx = (p.x-startPos.current.x)/2, ry = (p.y-startPos.current.y)/2;
-        c.beginPath();
-        c.ellipse(startPos.current.x+rx, startPos.current.y+ry, Math.abs(rx), Math.abs(ry), 0, 0, Math.PI*2);
-        c.stroke();
+      // Pan tool — record scroll anchor
+      if (tool === "pan") {
+        const wrapper = wrapperRef.current;
+        if (!wrapper) return;
+        const { cx, cy } = clientXY(e);
+        panStart.current = {
+          cx,
+          cy,
+          sl: wrapper.scrollLeft,
+          st: wrapper.scrollTop,
+        };
+        return;
       }
-      c.restore();
-    }
-  }, [tool, color, size, ctx]);
+
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const p = getPos(e, canvas);
+
+      // Save history before any paint action
+      pushHistory();
+
+      if (tool === "fill") {
+        floodFill(canvas, p.x, p.y, color);
+        return;
+      }
+
+      isDrawing.current = true;
+      lastPos.current = p;
+      startPos.current = p;
+      if (["line", "rect", "circle"].includes(tool)) {
+        snapshot.current = ctx()?.getImageData(0, 0, W, H) ?? null;
+      }
+    },
+    [tool, color, ctx, pushHistory],
+  );
+
+  const moveDraw = useCallback(
+    (e: TouchEvent | MouseEvent) => {
+      e.preventDefault();
+
+      // Pan tool — scroll wrapper
+      if (tool === "pan") {
+        if (!panStart.current) return;
+        const wrapper = wrapperRef.current;
+        if (!wrapper) return;
+        const { cx, cy } = clientXY(e);
+        wrapper.scrollLeft = panStart.current.sl - (cx - panStart.current.cx);
+        wrapper.scrollTop = panStart.current.st - (cy - panStart.current.cy);
+        return;
+      }
+
+      if (!isDrawing.current) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const c = ctx();
+      if (!c) return;
+      const p = getPos(e, canvas);
+
+      if (tool === "pen" || tool === "eraser") {
+        c.save();
+        c.lineCap = "round";
+        c.lineJoin = "round";
+        c.lineWidth = tool === "eraser" ? size * 3 : size;
+        c.strokeStyle = tool === "eraser" ? "#fff9f0" : color;
+        c.beginPath();
+        c.moveTo(lastPos.current!.x, lastPos.current!.y);
+        c.lineTo(p.x, p.y);
+        c.stroke();
+        c.restore();
+        lastPos.current = p;
+      } else if (snapshot.current && startPos.current) {
+        c.putImageData(snapshot.current, 0, 0);
+        c.save();
+        c.strokeStyle = color;
+        c.lineWidth = size;
+        c.lineCap = "round";
+        if (tool === "line") {
+          c.beginPath();
+          c.moveTo(startPos.current.x, startPos.current.y);
+          c.lineTo(p.x, p.y);
+          c.stroke();
+        } else if (tool === "rect") {
+          c.strokeRect(
+            startPos.current.x,
+            startPos.current.y,
+            p.x - startPos.current.x,
+            p.y - startPos.current.y,
+          );
+        } else if (tool === "circle") {
+          const rx = (p.x - startPos.current.x) / 2,
+            ry = (p.y - startPos.current.y) / 2;
+          c.beginPath();
+          c.ellipse(
+            startPos.current.x + rx,
+            startPos.current.y + ry,
+            Math.abs(rx),
+            Math.abs(ry),
+            0,
+            0,
+            Math.PI * 2,
+          );
+          c.stroke();
+        }
+        c.restore();
+      }
+    },
+    [tool, color, size, ctx],
+  );
 
   const endDraw = useCallback((e: TouchEvent | MouseEvent) => {
     e.preventDefault();
-    panStart.current  = null;
-    isDrawing.current = false; lastPos.current = null; snapshot.current = null;
+    panStart.current = null;
+    isDrawing.current = false;
+    lastPos.current = null;
+    snapshot.current = null;
   }, []);
 
   useEffect(() => {
-    const el = canvasRef.current; if (!el) return;
-    el.addEventListener("mousedown",  startDraw);
-    el.addEventListener("mousemove",  moveDraw);
-    el.addEventListener("mouseup",    endDraw);
+    const el = canvasRef.current;
+    if (!el) return;
+    el.addEventListener("mousedown", startDraw);
+    el.addEventListener("mousemove", moveDraw);
+    el.addEventListener("mouseup", endDraw);
     el.addEventListener("mouseleave", endDraw);
-    el.addEventListener("touchstart", startDraw, { passive:false });
-    el.addEventListener("touchmove",  moveDraw,  { passive:false });
-    el.addEventListener("touchend",   endDraw,   { passive:false });
+    el.addEventListener("touchstart", startDraw, { passive: false });
+    el.addEventListener("touchmove", moveDraw, { passive: false });
+    el.addEventListener("touchend", endDraw, { passive: false });
     return () => {
-      el.removeEventListener("mousedown",  startDraw);
-      el.removeEventListener("mousemove",  moveDraw);
-      el.removeEventListener("mouseup",    endDraw);
+      el.removeEventListener("mousedown", startDraw);
+      el.removeEventListener("mousemove", moveDraw);
+      el.removeEventListener("mouseup", endDraw);
       el.removeEventListener("mouseleave", endDraw);
       el.removeEventListener("touchstart", startDraw);
-      el.removeEventListener("touchmove",  moveDraw);
-      el.removeEventListener("touchend",   endDraw);
+      el.removeEventListener("touchmove", moveDraw);
+      el.removeEventListener("touchend", endDraw);
     };
   }, [startDraw, moveDraw, endDraw]);
 
   // ── Load template ────────────────────────────────────────────────────────
   const loadTemplate = (svgOrUrl: string) => {
-    const canvas = canvasRef.current; const c = ctx(); if (!canvas || !c) return;
+    const canvas = canvasRef.current;
+    const c = ctx();
+    if (!canvas || !c) return;
     pushHistory();
-    c.fillStyle = "#ffffff"; c.fillRect(0, 0, W, H);
+    c.fillStyle = "#ffffff";
+    c.fillRect(0, 0, W, H);
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => { c.drawImage(img, 0, 0, W, H); };
-    if (svgOrUrl.startsWith("data:") || svgOrUrl.startsWith("/") || svgOrUrl.startsWith("http")) {
-      img.src = svgOrUrl;                                                       // image file path or data URL
+    img.onload = () => {
+      c.drawImage(img, 0, 0, W, H);
+    };
+    if (
+      svgOrUrl.startsWith("data:") ||
+      svgOrUrl.startsWith("/") ||
+      svgOrUrl.startsWith("http")
+    ) {
+      img.src = svgOrUrl; // image file path or data URL
     } else {
-      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgOrUrl); // raw SVG string
+      img.src =
+        "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgOrUrl); // raw SVG string
     }
     setShowTpl(false);
   };
 
-  const clear = () => { pushHistory(); initCanvas(); };
-
-  const saveToGallery = () => {
-    const canvas = canvasRef.current; if (!canvas) return;
-    const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
-    const now = new Date();
-    const date = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,"0")}`;
-    saveDrawings([{ id:Date.now().toString(), dataUrl, date }, ...loadDrawings()]);
-    setSaved(true); setTimeout(() => setSaved(false), 1500);
+  const clear = () => {
+    pushHistory();
+    initCanvas();
   };
 
-  const zoomIn  = () => setZoom(z => Math.min(4, parseFloat((z+0.5).toFixed(1))));
-  const zoomOut = () => setZoom(z => Math.max(0.5, parseFloat((z-0.5).toFixed(1))));
+  const saveToGallery = () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+    const now = new Date();
+    const date = `${now.getMonth() + 1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
+    saveDrawings([
+      { id: Date.now().toString(), dataUrl, date },
+      ...loadDrawings(),
+    ]);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1500);
+  };
 
-  if (view === "gallery") return <Gallery onClose={() => setView("draw")}/>;
+  const zoomIn = () =>
+    setZoom((z) => Math.min(4, parseFloat((z + 0.5).toFixed(1))));
+  const zoomOut = () =>
+    setZoom((z) => Math.max(0.5, parseFloat((z - 0.5).toFixed(1))));
+
+  if (view === "gallery") return <Gallery onClose={() => setView("draw")} />;
 
   return (
-    <div className="flex flex-col overflow-hidden" style={{ height:"100dvh" }}>
-
+    <div className="flex flex-col overflow-hidden" style={{ height: "100dvh" }}>
       {/* ── Controls: 2 compact left-aligned rows ── */}
-      <div className="flex-shrink-0" style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
-
+      <div
+        className="flex-shrink-0"
+        style={{
+          background: "rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.1)",
+        }}
+      >
         {/* Row 1: back | undo | divider | tools | divider | color */}
         <div className="flex items-center gap-1 px-2 pt-2 pb-1">
           {/* Nav */}
-          <button onClick={() => router.back()}
-            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">
+          <button
+            onClick={() => router.back()}
+            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90"
+          >
             ←
           </button>
-          <button onClick={undo} disabled={!canUndo}
+          <button
+            onClick={undo}
+            disabled={!canUndo}
             className={`flex-shrink-0 w-8 h-8 rounded-xl text-lg flex items-center justify-center active:scale-90 transition-all ${canUndo ? "bg-white/10" : "opacity-20"}`}
-            title="Undo">↩️</button>
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+            title="Undo"
+          >
+            ↩️
+          </button>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5" />
           {/* Tool buttons — left-aligned, compact */}
-          {TOOLS.map(t => (
-            <button key={t.id} onClick={() => setTool(t.id)}
+          {TOOLS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setTool(t.id)}
               className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 ${
-                tool===t.id ? "bg-white/25 ring-1 ring-white/40" : "opacity-40"
-              }`}>
+                tool === t.id
+                  ? "bg-white/25 ring-1 ring-white/40"
+                  : "opacity-40"
+              }`}
+            >
               <span className="text-xl leading-none">{t.icon}</span>
             </button>
           ))}
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5" />
           {/* Color picker */}
-          <button onClick={() => setShowColors(v => !v)}
+          <button
+            onClick={() => setShowColors((v) => !v)}
             className={`flex-shrink-0 w-9 h-9 rounded-full border-[3px] transition-all active:scale-90 ${showColors ? "border-white scale-110" : "border-white/30"}`}
-            style={{ backgroundColor:color }}/>
+            style={{ backgroundColor: color }}
+          />
         </div>
 
         {/* Row 2: sizes | divider | zoom | divider | Template | Clear | Save | Gallery | Preview */}
         <div className="flex items-center gap-1 px-2 pb-2">
           {/* Brush sizes */}
-          {SIZES.map(s => (
-            <button key={s} onClick={() => setSize(s)}
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 ${size===s ? "bg-white/20 ring-2 ring-white/50" : ""}`}>
-              <div className="rounded-full bg-white/80" style={{ width:Math.min(s*1.4,20), height:Math.min(s*1.4,20) }}/>
+          {SIZES.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSize(s)}
+              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 ${size === s ? "bg-white/20 ring-2 ring-white/50" : ""}`}
+            >
+              <div
+                className="rounded-full bg-white/80"
+                style={{
+                  width: Math.min(s * 1.4, 20),
+                  height: Math.min(s * 1.4, 20),
+                }}
+              />
             </button>
           ))}
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5" />
           {/* Zoom */}
-          <button onClick={zoomOut} className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">−</button>
-          <span className="flex-shrink-0 text-white/60 text-[11px] font-bold w-9 text-center">{zoom}×</span>
-          <button onClick={zoomIn}  className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">+</button>
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          <button
+            onClick={zoomOut}
+            className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90"
+          >
+            −
+          </button>
+          <span className="flex-shrink-0 text-white/60 text-[11px] font-bold w-9 text-center">
+            {zoom}×
+          </span>
+          <button
+            onClick={zoomIn}
+            className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90"
+          >
+            +
+          </button>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5" />
           {/* Template — text label so it's easy to find */}
-          <button onClick={() => setShowTpl(true)}
+          <button
+            onClick={() => setShowTpl(true)}
             className="flex-shrink-0 flex items-center gap-1 px-2.5 h-9 rounded-xl text-xs font-black text-violet-300 active:scale-90"
-            style={{ background:"rgba(139,92,246,0.25)", border:"1px solid rgba(139,92,246,0.5)" }}>
+            style={{
+              background: "rgba(139,92,246,0.25)",
+              border: "1px solid rgba(139,92,246,0.5)",
+            }}
+          >
             🖼️ <span>テンプレ</span>
           </button>
-          <button onClick={clear}
+          <button
+            onClick={clear}
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
-            style={{ background:"rgba(239,68,68,0.2)", border:"1px solid rgba(239,68,68,0.4)" }}
-            title="Clear">🗑️</button>
-          <button onClick={saveToGallery}
+            style={{
+              background: "rgba(239,68,68,0.2)",
+              border: "1px solid rgba(239,68,68,0.4)",
+            }}
+            title="Clear"
+          >
+            🗑️
+          </button>
+          <button
+            onClick={saveToGallery}
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
-            style={{ background:saved?"rgba(34,197,94,0.45)":"rgba(34,197,94,0.2)", border:"1px solid rgba(34,197,94,0.4)" }}
-            title="Save">{saved ? "✅" : "💾"}</button>
-          <button onClick={() => setView("gallery")}
+            style={{
+              background: saved
+                ? "rgba(34,197,94,0.45)"
+                : "rgba(34,197,94,0.2)",
+              border: "1px solid rgba(34,197,94,0.4)",
+            }}
+            title="Save"
+          >
+            {saved ? "✅" : "💾"}
+          </button>
+          <button
+            onClick={() => setView("gallery")}
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
-            style={{ background:"rgba(14,165,233,0.2)", border:"1px solid rgba(14,165,233,0.4)" }}
-            title="Gallery">🖼️</button>
-          <button onClick={openPreview}
+            style={{
+              background: "rgba(14,165,233,0.2)",
+              border: "1px solid rgba(14,165,233,0.4)",
+            }}
+            title="Gallery"
+          >
+            🖼️
+          </button>
+          <button
+            onClick={openPreview}
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
-            style={{ background:"rgba(251,191,36,0.2)", border:"1px solid rgba(251,191,36,0.4)" }}
-            title="Preview">👁️</button>
+            style={{
+              background: "rgba(251,191,36,0.2)",
+              border: "1px solid rgba(251,191,36,0.4)",
+            }}
+            title="Preview"
+          >
+            👁️
+          </button>
         </div>
       </div>
 
       {/* ── Color palette ── */}
       {showColors && (
-        <div className="flex-shrink-0 flex flex-wrap gap-2 px-3 py-2"
-          style={{ background:"rgba(255,255,255,0.05)", borderBottom:"1px solid rgba(255,255,255,0.08)" }}>
-          {COLORS.map(c => (
-            <button key={c} onClick={() => { setColor(c); setShowColors(false); }}
-              className={`w-8 h-8 rounded-full transition-all active:scale-90 ${color===c ? "ring-2 ring-white ring-offset-1 ring-offset-transparent scale-110" : ""}`}
-              style={{ backgroundColor:c, border:["#ffffff","#fff9f0"].includes(c)?"2px solid rgba(255,255,255,0.4)":"none" }}/>
+        <div
+          className="flex-shrink-0 flex flex-wrap gap-2 px-3 py-2"
+          style={{
+            background: "rgba(255,255,255,0.05)",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          {COLORS.map((c) => (
+            <button
+              key={c}
+              onClick={() => {
+                setColor(c);
+                setShowColors(false);
+              }}
+              className={`w-8 h-8 rounded-full transition-all active:scale-90 ${color === c ? "ring-2 ring-white ring-offset-1 ring-offset-transparent scale-110" : ""}`}
+              style={{
+                backgroundColor: c,
+                border: ["#ffffff", "#fff9f0"].includes(c)
+                  ? "2px solid rgba(255,255,255,0.4)"
+                  : "none",
+              }}
+            />
           ))}
         </div>
       )}
 
       {/* ── Zoomable canvas ── */}
-      <div ref={wrapperRef} className="flex-1 overflow-auto flex justify-center" style={{ background:"#334155" }}>
-        <div style={{ width:W*zoom, height:H*zoom, position:"relative", flexShrink:0, margin:"0 auto" }}>
+      <div
+        ref={wrapperRef}
+        className="flex-1 overflow-auto flex justify-center"
+        style={{ background: "#334155" }}
+      >
+        <div
+          style={{
+            width: W * zoom,
+            height: H * zoom,
+            position: "relative",
+            flexShrink: 0,
+            margin: "0 auto",
+          }}
+        >
           <canvas
             ref={canvasRef}
-            width={W} height={H}
+            width={W}
+            height={H}
             style={{
-              position:"absolute", top:0, left:0,
-              width:W, height:H,
-              transform:`scale(${zoom})`, transformOrigin:"top left",
-              touchAction:"none",
-              cursor: tool==="fill" ? bucketCursor : tool==="pan" ? "grab" : tool==="eraser" ? "cell" : "crosshair",
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: W,
+              height: H,
+              transform: `scale(${zoom})`,
+              transformOrigin: "top left",
+              touchAction: "none",
+              cursor:
+                tool === "fill"
+                  ? bucketCursor
+                  : tool === "pan"
+                    ? "grab"
+                    : tool === "eraser"
+                      ? "cell"
+                      : "crosshair",
             }}
           />
         </div>
       </div>
 
       {/* ── Template picker ── */}
-      {showTpl && <TemplatePicker onSelect={loadTemplate} onClose={() => setShowTpl(false)}/>}
+      {showTpl && (
+        <TemplatePicker
+          onSelect={loadTemplate}
+          onClose={() => setShowTpl(false)}
+        />
+      )}
 
       {/* ── Preview modal ── */}
       {showPreview && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
-          onClick={() => setShowPreview(false)}>
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90"
+          onClick={() => setShowPreview(false)}
+        >
           <div className="relative w-full h-full flex flex-col items-center justify-center p-4 gap-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={previewUrl} alt="Preview"
+              src={previewUrl}
+              alt="Preview"
               className="max-w-full max-h-[80dvh] rounded-2xl shadow-2xl object-contain"
-              style={{ border:"3px solid rgba(255,255,255,0.2)" }}
-              onClick={e => e.stopPropagation()}
+              style={{ border: "3px solid rgba(255,255,255,0.2)" }}
+              onClick={(e) => e.stopPropagation()}
             />
-            <div className="flex gap-3" onClick={e => e.stopPropagation()}>
+            <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
               <button
                 onClick={() => setShowPreview(false)}
                 className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
-                style={{ background:"rgba(255,255,255,0.15)", border:"1px solid rgba(255,255,255,0.3)" }}>
+                style={{
+                  background: "rgba(255,255,255,0.15)",
+                  border: "1px solid rgba(255,255,255,0.3)",
+                }}
+              >
                 ✕ Close
               </button>
               <button
-                onClick={() => { saveToGallery(); setShowPreview(false); }}
+                onClick={() => {
+                  saveToGallery();
+                  setShowPreview(false);
+                }}
                 className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
-                style={{ background:"rgba(34,197,94,0.4)", border:"1px solid rgba(34,197,94,0.6)" }}>
+                style={{
+                  background: "rgba(34,197,94,0.4)",
+                  border: "1px solid rgba(34,197,94,0.6)",
+                }}
+              >
                 💾 Save
               </button>
               <button
                 onClick={() => {
                   const a = document.createElement("a");
-                  a.href = previewUrl; a.download = `drawing-${Date.now()}.png`; a.click();
+                  a.href = previewUrl;
+                  a.download = `drawing-${Date.now()}.png`;
+                  a.click();
                 }}
                 className="px-6 py-3 rounded-2xl font-black text-white text-sm active:scale-95"
-                style={{ background:"rgba(14,165,233,0.4)", border:"1px solid rgba(14,165,233,0.6)" }}>
+                style={{
+                  background: "rgba(14,165,233,0.4)",
+                  border: "1px solid rgba(14,165,233,0.6)",
+                }}
+              >
                 ⬇️ Download
               </button>
             </div>
