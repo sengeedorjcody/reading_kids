@@ -31,6 +31,8 @@ export default function BottomNav() {
           <BottomNavLink href="/clock" icon="🕐" label="Clock" />
           <BottomNavLink href="/themes" icon="🗂️" label="Themes" />
           <BottomNavLink href="/math" icon="🧮" label="Math" />
+          <BottomNavLink href="/words" icon="🔤" label="Words" />
+          <BottomNavLink href="/draw" icon="🎨" label="Draw" />
           <BottomNavLink href="/writing" icon="✍️" label="Writing" />
           <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />

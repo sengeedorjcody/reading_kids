@@ -176,18 +176,30 @@ function ExamScreen({
   const isDragging = useRef(false);
   const dragXRef = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
+  // Always-fresh ref so stale closures in native listeners never call old onSwipe
+  const onSwipeRef = useRef(onSwipe);
+  useEffect(() => { onSwipeRef.current = onSwipe; }, [onSwipe]);
+
   const card = deck[currentIndex];
   const progress = currentIndex / deck.length;
 
+  // Guard: if card is missing (transition moment), do nothing
+  if (!card) return null;
+
   const triggerSwipe = (dir: "left" | "right") => {
+    if (flyDir) return; // prevent double-trigger
     setFlyDir(dir);
     setTimeout(() => {
       setFlyDir(null);
       setDragX(0);
       dragXRef.current = 0;
-      onSwipe(dir);
+      onSwipeRef.current(dir);
     }, 280);
   };
+
+  // Use a ref so native event listener always calls the latest triggerSwipe
+  const triggerSwipeRef = useRef(triggerSwipe);
+  triggerSwipeRef.current = triggerSwipe;
 
   // Non-passive touch listeners so preventDefault() actually works
   useEffect(() => {
@@ -198,13 +210,14 @@ function ExamScreen({
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
       isDragging.current = true;
+      dragXRef.current = 0;
     };
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging.current) return;
       const dx = e.touches[0].clientX - touchStartX.current;
       const dy = e.touches[0].clientY - touchStartY.current;
       if (Math.abs(dx) > Math.abs(dy)) {
-        e.preventDefault(); // works because listener is non-passive
+        e.preventDefault();
         dragXRef.current = dx;
         setDragX(dx);
       }
@@ -212,7 +225,7 @@ function ExamScreen({
     const handleTouchEnd = () => {
       isDragging.current = false;
       if (Math.abs(dragXRef.current) > 70) {
-        triggerSwipe(dragXRef.current > 0 ? "right" : "left");
+        triggerSwipeRef.current(dragXRef.current > 0 ? "right" : "left");
       } else {
         setDragX(0);
         dragXRef.current = 0;
@@ -227,8 +240,9 @@ function ExamScreen({
       el.removeEventListener("touchmove", handleTouchMove);
       el.removeEventListener("touchend", handleTouchEnd);
     };
+  // Only re-bind when the card element mounts (cardRef stable, el never changes)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [card]);
+  }, []);
 
   const rotation = flyDir
     ? (flyDir === "right" ? 25 : -25)
