@@ -638,38 +638,37 @@ export default function DrawPage() {
   return (
     <div className="flex flex-col overflow-hidden" style={{ height:"100dvh" }}>
 
-      {/* ── Controls: 2 fixed rows, no scroll ── */}
+      {/* ── Controls: 2 compact left-aligned rows ── */}
       <div className="flex-shrink-0" style={{ background:"rgba(255,255,255,0.08)", borderBottom:"1px solid rgba(255,255,255,0.1)" }}>
 
-        {/* Row 1: back | undo | tools (icons) | color */}
+        {/* Row 1: back | undo | divider | tools | divider | color */}
         <div className="flex items-center gap-1 px-2 pt-2 pb-1">
+          {/* Nav */}
           <button onClick={() => router.back()}
             className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">
             ←
           </button>
           <button onClick={undo} disabled={!canUndo}
-            className={`flex-shrink-0 w-8 h-8 rounded-xl text-lg flex items-center justify-center active:scale-90 transition-all ${canUndo ? "bg-white/10 opacity-100" : "opacity-25"}`}
+            className={`flex-shrink-0 w-8 h-8 rounded-xl text-lg flex items-center justify-center active:scale-90 transition-all ${canUndo ? "bg-white/10" : "opacity-20"}`}
             title="Undo">↩️</button>
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
-          {/* Tools spread across remaining space */}
-          <div className="flex-1 flex items-center justify-between">
-            {TOOLS.map(t => (
-              <button key={t.id} onClick={() => setTool(t.id)}
-                className={`flex flex-col items-center justify-center w-9 h-9 rounded-xl transition-all active:scale-90 ${
-                  tool===t.id ? "bg-white/25" : "opacity-40"
-                }`}>
-                <span className="text-xl leading-none">{t.icon}</span>
-              </button>
-            ))}
-          </div>
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
-          {/* Color picker dot */}
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          {/* Tool buttons — left-aligned, compact */}
+          {TOOLS.map(t => (
+            <button key={t.id} onClick={() => setTool(t.id)}
+              className={`flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 ${
+                tool===t.id ? "bg-white/25 ring-1 ring-white/40" : "opacity-40"
+              }`}>
+              <span className="text-xl leading-none">{t.icon}</span>
+            </button>
+          ))}
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          {/* Color picker */}
           <button onClick={() => setShowColors(v => !v)}
             className={`flex-shrink-0 w-9 h-9 rounded-full border-[3px] transition-all active:scale-90 ${showColors ? "border-white scale-110" : "border-white/30"}`}
             style={{ backgroundColor:color }}/>
         </div>
 
-        {/* Row 2: sizes | zoom | actions */}
+        {/* Row 2: sizes | divider | zoom | divider | Template | Clear | Save | Gallery | Preview */}
         <div className="flex items-center gap-1 px-2 pb-2">
           {/* Brush sizes */}
           {SIZES.map(s => (
@@ -678,17 +677,18 @@ export default function DrawPage() {
               <div className="rounded-full bg-white/80" style={{ width:Math.min(s*1.4,20), height:Math.min(s*1.4,20) }}/>
             </button>
           ))}
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
           {/* Zoom */}
           <button onClick={zoomOut} className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">−</button>
-          <span className="flex-shrink-0 text-white/60 text-[11px] font-bold w-8 text-center">{zoom}×</span>
+          <span className="flex-shrink-0 text-white/60 text-[11px] font-bold w-9 text-center">{zoom}×</span>
           <button onClick={zoomIn}  className="flex-shrink-0 w-7 h-7 rounded-lg bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90">+</button>
-          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-1"/>
-          {/* Action icon buttons */}
+          <div className="w-px h-6 bg-white/20 flex-shrink-0 mx-0.5"/>
+          {/* Template — text label so it's easy to find */}
           <button onClick={() => setShowTpl(true)}
-            className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
-            style={{ background:"rgba(139,92,246,0.25)", border:"1px solid rgba(139,92,246,0.5)" }}
-            title="Templates">🎨</button>
+            className="flex-shrink-0 flex items-center gap-1 px-2.5 h-9 rounded-xl text-xs font-black text-violet-300 active:scale-90"
+            style={{ background:"rgba(139,92,246,0.25)", border:"1px solid rgba(139,92,246,0.5)" }}>
+            🖼️ <span>テンプレ</span>
+          </button>
           <button onClick={clear}
             className="flex-shrink-0 w-9 h-9 rounded-xl text-xl flex items-center justify-center active:scale-90"
             style={{ background:"rgba(239,68,68,0.2)", border:"1px solid rgba(239,68,68,0.4)" }}
