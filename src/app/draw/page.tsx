@@ -53,7 +53,8 @@ const TOOLS: { id: Tool; icon: string; label: string }[] = [
 ];
 
 // Default canvas resolution — may swap to landscape (1440×1080) per template
-const W = 1080, H = 1440;
+const W = 1080,
+  H = 1440;
 const LS_COLOR = "draw_color";
 const LS_DRAWINGS = "draw_saved";
 
@@ -359,7 +360,7 @@ function floodFill(
 function getPos(e: TouchEvent | MouseEvent, canvas: HTMLCanvasElement) {
   const rect = canvas.getBoundingClientRect();
   // Use actual canvas pixel dimensions so coordinates are correct at any orientation
-  const sx = canvas.width  / rect.width;
+  const sx = canvas.width / rect.width;
   const sy = canvas.height / rect.height;
   if ("touches" in e) {
     const t =
@@ -531,36 +532,52 @@ function TemplatePicker({
   onClose: () => void;
 }) {
   const [imageFiles, setImageFiles] = useState<string[]>([]);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/templates")
       .then((r) => r.json())
-      .then((files: string[]) => { setImageFiles(files); setLoading(false); })
+      .then((files: string[]) => {
+        setImageFiles(files);
+        setLoading(false);
+      })
       .catch(() => setLoading(false));
   }, []);
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
+      <div
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
       <div
         className="relative z-10 w-full max-w-lg rounded-t-3xl px-4 pt-4 pb-8 overflow-y-auto max-h-[75dvh]"
-        style={{ background:"linear-gradient(160deg,#1a1a2e,#16213e)", border:"1px solid rgba(255,255,255,0.1)" }}
+        style={{
+          background: "linear-gradient(160deg,#1a1a2e,#16213e)",
+          border: "1px solid rgba(255,255,255,0.1)",
+        }}
       >
-        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4"/>
-        <h3 className="text-white font-black text-center text-lg mb-3">🎨 ぬりえ テンプレート</h3>
+        <div className="w-10 h-1 rounded-full bg-white/20 mx-auto mb-4" />
+        <h3 className="text-white font-black text-center text-lg mb-3">
+          🎨 ぬりえ テンプレート
+        </h3>
 
         {/* ── Dynamic image templates from /public/templates/ ── */}
         {imageFiles.length > 0 && (
           <>
-            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">📁 テンプレ画像</p>
+            <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
+              📁 テンプレ画像
+            </p>
             <div className="grid grid-cols-4 gap-2 mb-4">
               {imageFiles.map((file) => (
                 <button
                   key={file}
                   onClick={() => onSelect(`/templates/${file}`)}
                   className="flex flex-col items-center gap-1 rounded-xl overflow-hidden active:scale-90 transition-all"
-                  style={{ border:"2px solid rgba(255,255,255,0.15)", background:"rgba(255,255,255,0.05)" }}
+                  style={{
+                    border: "2px solid rgba(255,255,255,0.15)",
+                    background: "rgba(255,255,255,0.05)",
+                  }}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -581,33 +598,50 @@ function TemplatePicker({
         )}
 
         {/* ── SVG kawaii templates ── */}
-        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">かわいい</p>
+        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest mb-2">
+          かわいい
+        </p>
         <div className="grid grid-cols-5 gap-2 mb-4">
           {TEMPLATES.map((t) => (
             <button
               key={t.id}
               onClick={() => onSelect(t.svg)}
               className="flex flex-col items-center gap-1 p-2 rounded-2xl active:scale-90 transition-all"
-              style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                border: "1px solid rgba(255,255,255,0.15)",
+              }}
             >
               <span className="text-3xl">{t.emoji}</span>
-              <span className="text-white/70 text-[10px] font-bold">{t.name}</span>
+              <span className="text-white/70 text-[10px] font-bold">
+                {t.name}
+              </span>
             </button>
           ))}
           {/* Upload from device */}
           <label
             className="flex flex-col items-center gap-1 p-2 rounded-2xl cursor-pointer active:scale-90"
-            style={{ background:"rgba(255,255,255,0.08)", border:"1px solid rgba(255,255,255,0.15)" }}
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              border: "1px solid rgba(255,255,255,0.15)",
+            }}
           >
             <span className="text-3xl">📁</span>
             <span className="text-white/70 text-[10px] font-bold">Upload</span>
-            <input type="file" accept="image/*" className="hidden"
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
               onChange={(e) => {
-                const file = e.target.files?.[0]; if (!file) return;
+                const file = e.target.files?.[0];
+                if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (ev) => { onSelect(ev.target?.result as string); };
+                reader.onload = (ev) => {
+                  onSelect(ev.target?.result as string);
+                };
                 reader.readAsDataURL(file);
-              }}/>
+              }}
+            />
           </label>
         </div>
       </div>
@@ -655,7 +689,8 @@ export default function DrawPage() {
   const pushHistory = useCallback(() => {
     const c = canvasRef.current?.getContext("2d");
     if (!c) return;
-    const cw = canvasRef.current?.width ?? W, ch = canvasRef.current?.height ?? H;
+    const cw = canvasRef.current?.width ?? W,
+      ch = canvasRef.current?.height ?? H;
     const snap = c.getImageData(0, 0, cw, ch);
     historyRef.current.push(snap);
     if (historyRef.current.length > 20) historyRef.current.shift();
@@ -704,10 +739,14 @@ export default function DrawPage() {
   }, [cDim]);
 
   const initCanvas = useCallback(() => {
-    const canvas = canvasRef.current; const ctx = canvas?.getContext("2d");
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
     // Set initial dimensions via DOM on first call (canvas has no width/height JSX props)
-    if (canvas.width === 300) { canvas.width = W; canvas.height = H; }
+    if (canvas.width === 300) {
+      canvas.width = W;
+      canvas.height = H;
+    }
     ctx.fillStyle = "#fff9f0";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
   }, []);
@@ -766,7 +805,8 @@ export default function DrawPage() {
       lastPos.current = p;
       startPos.current = p;
       if (["line", "rect", "circle"].includes(tool)) {
-        const cw = canvasRef.current?.width ?? W, ch = canvasRef.current?.height ?? H;
+        const cw = canvasRef.current?.width ?? W,
+          ch = canvasRef.current?.height ?? H;
         snapshot.current = ctx()?.getImageData(0, 0, cw, ch) ?? null;
       }
     },
@@ -884,21 +924,24 @@ export default function DrawPage() {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
-      const iw = img.naturalWidth, ih = img.naturalHeight;
+      const iw = img.naturalWidth,
+        ih = img.naturalHeight;
       // Auto-detect orientation
       const landscape = iw > ih;
       const newW = landscape ? H : W;
       const newH = landscape ? W : H;
       // Set canvas DOM dimensions directly — this clears the canvas
       // but we draw immediately after, BEFORE React can re-render and clear again
-      canvas.width  = newW;
+      canvas.width = newW;
       canvas.height = newH;
       // Draw right away (same synchronous tick — React hasn't re-rendered yet)
       c.fillStyle = "#ffffff";
       c.fillRect(0, 0, newW, newH);
       const scale = Math.min(newW / iw, newH / ih);
-      const dw = iw * scale, dh = ih * scale;
-      const dx = (newW - dw) / 2, dy = (newH - dh) / 2;
+      const dw = iw * scale,
+        dh = ih * scale;
+      const dx = (newW - dw) / 2,
+        dy = (newH - dh) / 2;
       c.imageSmoothingEnabled = true;
       c.imageSmoothingQuality = "high";
       c.drawImage(img, dx, dy, dw, dh);
@@ -906,7 +949,10 @@ export default function DrawPage() {
       setCDim({ w: newW, h: newH });
       const wrapper = wrapperRef.current;
       if (wrapper) {
-        const fit = Math.min(wrapper.clientWidth / newW, wrapper.clientHeight / newH);
+        const fit = Math.min(
+          wrapper.clientWidth / newW,
+          wrapper.clientHeight / newH,
+        );
         setZoom(parseFloat(Math.max(0.5, Math.min(4, fit)).toFixed(2)));
       }
     };
@@ -964,7 +1010,7 @@ export default function DrawPage() {
           {/* Nav */}
           <button
             onClick={() => router.back()}
-            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90 mr-1"
+            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90 mr-6"
           >
             ←
           </button>
