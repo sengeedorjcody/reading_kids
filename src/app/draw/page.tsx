@@ -960,11 +960,11 @@ export default function DrawPage() {
         }}
       >
         {/* Row 1: back | undo | divider | tools | divider | color */}
-        <div className="flex items-center gap-1 px-2 pt-2 pb-1">
+        <div className="flex items-center gap-1 px-2 pt-2 pb-1 overflow-x-auto scrollbar-none">
           {/* Nav */}
           <button
             onClick={() => router.back()}
-            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90"
+            className="flex-shrink-0 w-8 h-8 rounded-xl bg-white/10 text-white font-black text-sm flex items-center justify-center active:scale-90 mr-1"
           >
             ←
           </button>
@@ -1001,7 +1001,7 @@ export default function DrawPage() {
         </div>
 
         {/* Row 2: sizes | divider | zoom | divider | Template | Clear | Save | Gallery | Preview */}
-        <div className="flex items-center gap-1 px-2 pb-2">
+        <div className="flex items-center gap-1 px-2 pb-2 overflow-x-auto scrollbar-none">
           {/* Brush sizes */}
           {SIZES.map((s) => (
             <button

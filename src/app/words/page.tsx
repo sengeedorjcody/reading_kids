@@ -4,6 +4,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
 
 // ── Character grids ───────────────────────────────────────────────────────────
+// Romaji label for the first character of each row
+const ROW_ROMAJI = ["a","ka","sa","ta","na","ha","ma","ya","ra","wa","n","ga","za","da","ba","pa","(s)"];
+
 const HIRAGANA_ROWS = [
   ["あ","い","う","え","お"],
   ["か","き","く","け","こ"],
@@ -550,18 +553,23 @@ export default function WordsPage() {
             {row.map((c, ci) => (
               <button key={ci} onClick={() => addChar(c)}
                 disabled={c === "　"}
-                className={`flex items-center justify-center font-black transition-all active:scale-90 ${
+                className={`flex flex-col items-center justify-center font-black transition-all active:scale-90 ${
                   c === "　" ? "opacity-0 pointer-events-none"
                   : c === lastChar ? "text-yellow-300" : "text-white"
                 }`}
                 style={{
-                  width: "19%", height: 38, fontSize: 16, borderRadius: 8,
+                  width: "19%", height: ci === 0 ? 44 : 38, fontSize: 16, borderRadius: 8,
                   ...(c !== "　" ? {
                     background: c === lastChar ? "rgba(251,191,36,0.25)" : "rgba(255,255,255,0.1)",
                     border: c === lastChar ? "1.5px solid rgba(251,191,36,0.6)" : "1px solid rgba(255,255,255,0.12)",
                     boxShadow: "0 2px 0 rgba(0,0,0,0.3)",
                   } : {})
                 }}>
+                {ci === 0 && c !== "　" && (
+                  <span style={{ fontSize: 9, color: "rgba(255,255,255,0.38)", lineHeight: 1, marginBottom: 1 }}>
+                    {ROW_ROMAJI[ri]}
+                  </span>
+                )}
                 {c === "　" ? "" : c}
               </button>
             ))}
