@@ -27,6 +27,10 @@ const APPS = [
   // Row 5 — creative
   { href: "/words",      icon: "🔤", label: "Words",       color: "#f59e0b", bg: "from-yellow-400 to-orange-500" },
   { href: "/draw",       icon: "🎨", label: "Draw",        color: "#a855f7", bg: "from-fuchsia-400 to-purple-600" },
+  // Row 6 — sports & food
+  { href: "/food",       icon: "🍽️", label: "Food",        color: "#f97316", bg: "from-orange-400 to-yellow-400" },
+  { href: "/badminton",  icon: "🏸", label: "Badminton",   color: "#3b82f6", bg: "from-blue-400 to-cyan-500" },
+  { href: "/swimming",   icon: "🏊", label: "Swimming",    color: "#06b6d4", bg: "from-cyan-400 to-blue-500" },
 ];
 
 const DOCK = [
