@@ -48,7 +48,7 @@ export default function EnglishAlphabetGrid() {
   const { speak } = useSpeech();
 
   const handleTap = (letter: Letter) => {
-    speak(letter.upper, "en-US");
+    speak(letter.lower, "en-US");
     setActive(letter);
     setTimeout(() => setActive(null), 2500);
   };

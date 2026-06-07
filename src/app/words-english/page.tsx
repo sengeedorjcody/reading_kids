@@ -314,7 +314,7 @@ export default function WordsEnglishPage() {
     const next = [...word, c];
     setWord(next);
     setLastChar(c);
-    speak(c, "en-US");
+    speak(c.toLowerCase(), "en-US");
   };
 
   const backspace = () => {
