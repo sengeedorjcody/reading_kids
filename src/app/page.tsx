@@ -31,7 +31,10 @@ const APPS = [
   { href: "/food",       icon: "🍽️", label: "Food",        color: "#f97316", bg: "from-orange-400 to-yellow-400" },
   { href: "/badminton",  icon: "🏸", label: "Badminton",   color: "#3b82f6", bg: "from-blue-400 to-cyan-500" },
   { href: "/swimming",   icon: "🏊", label: "Swimming",    color: "#06b6d4", bg: "from-cyan-400 to-blue-500" },
-  { href: "/volleyball", icon: "🏐", label: "Volleyball",  color: "#f59e0b", bg: "from-yellow-400 to-orange-400" },
+  { href: "/volleyball",    icon: "🏐", label: "Volleyball",  color: "#f59e0b", bg: "from-yellow-400 to-orange-400" },
+  // Row 7 — English
+  { href: "/english",       icon: "🇬🇧", label: "English",    color: "#6366f1", bg: "from-indigo-400 to-blue-500" },
+  { href: "/words-english", icon: "⌨️",  label: "Words EN",   color: "#8b5cf6", bg: "from-violet-400 to-indigo-500" },
 ];
 
 const DOCK = [

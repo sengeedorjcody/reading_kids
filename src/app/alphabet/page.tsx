@@ -6,14 +6,15 @@ import { KATAKANA } from "@/constants/katakana";
 import { MONGOLIAN } from "@/constants/mongolian";
 import AlphabetGrid from "@/components/alphabet/AlphabetGrid";
 import MongolianGrid from "@/components/alphabet/MongolianGrid";
+import EnglishAlphabetGrid from "@/components/alphabet/EnglishAlphabetGrid";
 
-type Tab = "hiragana" | "katakana" | "mongolian";
+type Tab = "hiragana" | "katakana" | "mongolian" | "english";
 
 export default function AlphabetPage() {
   const [tab, setTab] = useState<Tab>("hiragana");
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-black text-gray-800 mb-2">
@@ -26,7 +27,7 @@ export default function AlphabetPage() {
       <div className="flex flex-wrap gap-3 justify-center mb-10">
         <button
           onClick={() => setTab("hiragana")}
-          className={`px-8 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
+          className={`px-6 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
             tab === "hiragana"
               ? "bg-pink-500 text-white shadow-lg shadow-pink-200 scale-105"
               : "bg-white text-gray-500 border-2 border-gray-200 hover:border-pink-300"
@@ -36,7 +37,7 @@ export default function AlphabetPage() {
         </button>
         <button
           onClick={() => setTab("katakana")}
-          className={`px-8 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
+          className={`px-6 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
             tab === "katakana"
               ? "bg-blue-500 text-white shadow-lg shadow-blue-200 scale-105"
               : "bg-white text-gray-500 border-2 border-gray-200 hover:border-blue-300"
@@ -46,13 +47,23 @@ export default function AlphabetPage() {
         </button>
         <button
           onClick={() => setTab("mongolian")}
-          className={`px-8 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
+          className={`px-6 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
             tab === "mongolian"
               ? "bg-green-500 text-white shadow-lg shadow-green-200 scale-105"
               : "bg-white text-gray-500 border-2 border-gray-200 hover:border-green-300"
           }`}
         >
           А Монгол
+        </button>
+        <button
+          onClick={() => setTab("english")}
+          className={`px-6 py-4 rounded-3xl text-xl font-black transition-all duration-200 ${
+            tab === "english"
+              ? "bg-indigo-500 text-white shadow-lg shadow-indigo-200 scale-105"
+              : "bg-white text-gray-500 border-2 border-gray-200 hover:border-indigo-300"
+          }`}
+        >
+          A English
         </button>
       </div>
 
@@ -67,6 +78,7 @@ export default function AlphabetPage() {
       {tab === "hiragana" && <AlphabetGrid kana={HIRAGANA} title="ひらがな (Hiragana)" />}
       {tab === "katakana" && <AlphabetGrid kana={KATAKANA} title="カタカナ (Katakana)" />}
       {tab === "mongolian" && <MongolianGrid chars={MONGOLIAN} />}
+      {tab === "english" && <EnglishAlphabetGrid />}
     </div>
   );
 }

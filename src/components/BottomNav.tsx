@@ -35,6 +35,8 @@ export default function BottomNav() {
           <BottomNavLink href="/badminton" icon="🏸" label="Badminton" />
           <BottomNavLink href="/swimming" icon="🏊" label="Swimming" />
           <BottomNavLink href="/volleyball" icon="🏐" label="Volleyball" />
+          <BottomNavLink href="/english" icon="🇬🇧" label="English" />
+          <BottomNavLink href="/words-english" icon="⌨️" label="Words EN" />
           <BottomNavLink href="/words" icon="🔤" label="Words" />
           <BottomNavLink href="/draw" icon="🎨" label="Draw" />
           <BottomNavLink href="/writing" icon="✍️" label="Writing" />

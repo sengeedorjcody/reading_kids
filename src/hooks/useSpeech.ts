@@ -5,12 +5,17 @@ import { useCallback, useRef } from "react";
 export function useSpeech() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const speak = useCallback((text: string, audioUrl?: string) => {
-    if (audioUrl) {
+  const speak = useCallback((text: string, audioUrlOrLang?: string) => {
+    // If second arg looks like a BCP-47 lang tag (e.g. "en-US"), use it as a lang override
+    const isLangTag = audioUrlOrLang
+      ? /^[a-z]{2}(-[A-Z]{2})?$/.test(audioUrlOrLang)
+      : false;
+
+    if (audioUrlOrLang && !isLangTag) {
       if (audioRef.current) {
         audioRef.current.pause();
       }
-      const audio = new Audio(audioUrl);
+      const audio = new Audio(audioUrlOrLang);
       audioRef.current = audio;
       audio.play().catch(() => {
         speakWithWebAPI(text);
@@ -18,7 +23,7 @@ export function useSpeech() {
       return;
     }
 
-    speakWithWebAPI(text);
+    speakWithWebAPI(text, isLangTag ? audioUrlOrLang : undefined);
   }, []);
 
   const stop = useCallback(() => {
@@ -48,13 +53,20 @@ function getBestVoice(lang: string): SpeechSynthesisVoice | undefined {
     );
   }
 
+  if (lang.startsWith("en")) {
+    return (
+      voices.find((v) => v.lang === "en-US") ??
+      voices.find((v) => v.lang.startsWith("en"))
+    );
+  }
+
   return (
     voices.find((v) => v.lang === lang) ??
     voices.find((v) => v.lang.startsWith(lang.split("-")[0]))
   );
 }
 
-function doSpeak(text: string) {
+function doSpeak(text: string, langOverride?: string) {
   const ss = window.speechSynthesis;
 
   // iOS Safari: if synthesis is paused/stuck, resume it first
@@ -63,11 +75,11 @@ function doSpeak(text: string) {
   // Cancel any ongoing speech
   ss.cancel();
 
-  const lang = detectLang(text);
+  const lang = langOverride ?? detectLang(text);
   const utteranceLang = lang === "mn-MN" ? "ru-RU" : lang;
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = utteranceLang;
-  utterance.rate = lang === "mn-MN" ? 0.75 : 0.8;
+  utterance.rate = lang === "mn-MN" ? 0.75 : (lang.startsWith("en") ? 0.85 : 0.8);
   utterance.pitch = 1.1;
 
   const voice = getBestVoice(lang);
@@ -77,7 +89,7 @@ function doSpeak(text: string) {
   setTimeout(() => ss.speak(utterance), 50);
 }
 
-function speakWithWebAPI(text: string) {
+function speakWithWebAPI(text: string, langOverride?: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
 
   const voices = window.speechSynthesis.getVoices();
@@ -85,10 +97,10 @@ function speakWithWebAPI(text: string) {
     // { once: true } prevents multiple handlers stacking up on repeated calls
     window.speechSynthesis.addEventListener(
       "voiceschanged",
-      () => doSpeak(text),
+      () => doSpeak(text, langOverride),
       { once: true }
     );
   } else {
-    doSpeak(text);
+    doSpeak(text, langOverride);
   }
 }
