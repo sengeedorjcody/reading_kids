@@ -52,16 +52,6 @@ export default function HomePage() {
         background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)",
       }}
     >
-      {/* ── Status bar area ── */}
-      <div className="flex items-center justify-between px-6 pt-5 pb-2">
-        <div className="text-white/80 font-black text-sm tracking-wide">
-          にほんご 📱
-        </div>
-        <div className="flex items-center gap-2 text-white/70 text-xs font-bold">
-          <span>🔋</span>
-          <span>100%</span>
-        </div>
-      </div>
 
       {/* ── Date / greeting ── */}
       <div className="text-center px-6 pt-2 pb-6">
