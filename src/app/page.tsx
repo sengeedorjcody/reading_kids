@@ -8,7 +8,7 @@ const APPS = [
   { href: "/flashcards", icon: "🃏", label: "Flashcards",  color: "#ec4899", bg: "from-pink-400 to-rose-500" },
   { href: "/alphabet",   icon: "あ", label: "Alphabet",    color: "#f97316", bg: "from-orange-400 to-amber-500" },
   { href: "/writing",    icon: "✍️", label: "Writing",     color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },
-  { href: "/game",       icon: "🎮", label: "Game",        color: "#22c55e", bg: "from-green-400 to-emerald-500" },
+  { href: "/game",       icon: "🔍", label: "Find Letter", color: "#22c55e", bg: "from-green-400 to-emerald-500" },
   // Row 2 — vocabulary
   { href: "/animals",    icon: "🐾", label: "Animals",     color: "#f59e0b", bg: "from-amber-400 to-yellow-500" },
   { href: "/body",       icon: "🧑", label: "Body",        color: "#06b6d4", bg: "from-cyan-400 to-sky-500" },

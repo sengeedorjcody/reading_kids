@@ -7,15 +7,24 @@ import { MONGOLIAN } from "@/constants/mongolian";
 import { useSpeech } from "@/hooks/useSpeech";
 import { KanaChar } from "@/types";
 
-type Charset = "hiragana" | "katakana" | "mongolian";
+type Charset = "hiragana" | "katakana" | "mongolian" | "english";
+
+// A-Z as KanaChar entries
+const ENGLISH_LETTERS: KanaChar[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map((c) => ({
+  char: c,
+  romaji: c,
+  row: "en",
+  phonetic: c.toLowerCase(),
+}));
 
 const CHARSET_MAP: Record<Charset, KanaChar[]> = {
   hiragana: HIRAGANA,
   katakana: KATAKANA,
   mongolian: MONGOLIAN as unknown as KanaChar[],
+  english: ENGLISH_LETTERS,
 };
 
-const TOTAL_ITEMS = 50;
+const TOTAL_ITEMS = 30;   // fewer letters → less crowded on mobile
 const TARGET_COUNT = 4;
 
 const COLORS = [
@@ -31,6 +40,7 @@ interface GameItem {
   char: string;
   romaji: string;
   speakText: string;
+  speakLang?: string;
   x: number;
   y: number;
   size: number;
@@ -42,6 +52,7 @@ interface GameItem {
 interface Round {
   target: KanaChar;
   targetSpeakText: string;
+  targetSpeakLang?: string;
   items: GameItem[];
 }
 
@@ -50,20 +61,22 @@ function randomItem<T>(arr: T[]): T {
 }
 
 // Cyrillic → lowercase char for Russian TTS; Japanese → char itself
-function toSpeakText(k: KanaChar): string {
-  return /[\u0400-\u04FF]/.test(k.char) ? k.char.toLowerCase() : k.char;
+function toSpeakInfo(k: KanaChar): { text: string; lang?: string } {
+  if (/[\u0400-\u04FF]/.test(k.char)) return { text: k.char.toLowerCase() };
+  if (/^[A-Za-z]$/.test(k.char))      return { text: k.char.toLowerCase(), lang: "en-US" };
+  return { text: k.char };
 }
 
 function buildGrid(): Array<{ x: number; y: number }> {
-  const COLS = 8, ROWS = 7;
-  const cellW = 90 / COLS;
-  const cellH = 75 / ROWS;
+  const COLS = 6, ROWS = 6;
+  const cellW = 88 / COLS;
+  const cellH = 78 / ROWS;
   const cells: Array<{ x: number; y: number }> = [];
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       cells.push({
-        x: 5 + c * cellW + cellW * 0.2 + Math.random() * cellW * 0.6,
-        y: 5 + r * cellH + cellH * 0.2 + Math.random() * cellH * 0.6,
+        x: 6 + c * cellW + cellW * 0.15 + Math.random() * cellW * 0.7,
+        y: 4 + r * cellH + cellH * 0.15 + Math.random() * cellH * 0.7,
       });
     }
   }
@@ -74,7 +87,7 @@ function buildGrid(): Array<{ x: number; y: number }> {
 function buildRound(charset: Charset): Round {
   const chars = CHARSET_MAP[charset];
   const target = randomItem(chars);
-  const targetSpeakText = toSpeakText(target);
+  const { text: targetSpeakText, lang: targetSpeakLang } = toSpeakInfo(target);
   const others = chars.filter((c) => c.char !== target.char);
   const positions = buildGrid();
   const items: GameItem[] = [];
@@ -86,9 +99,10 @@ function buildRound(charset: Charset): Round {
       char: target.char,
       romaji: target.romaji,
       speakText: targetSpeakText,
+      speakLang: targetSpeakLang,
       x: pos.x,
       y: pos.y,
-      size: 28 + Math.floor(Math.random() * 40),
+      size: 22 + Math.floor(Math.random() * 22),
       rotate: (Math.random() - 0.5) * 30,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
@@ -98,21 +112,23 @@ function buildRound(charset: Charset): Round {
   for (let i = TARGET_COUNT; i < TOTAL_ITEMS; i++) {
     const pos = positions[i];
     const other = randomItem(others);
+    const { text: otherText, lang: otherLang } = toSpeakInfo(other);
     items.push({
       id: i,
       char: other.char,
       romaji: other.romaji,
-      speakText: toSpeakText(other),
+      speakText: otherText,
+      speakLang: otherLang,
       x: pos.x,
       y: pos.y,
-      size: 22 + Math.floor(Math.random() * 36),
+      size: 16 + Math.floor(Math.random() * 18),
       rotate: (Math.random() - 0.5) * 30,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       state: "default",
     });
   }
 
-  return { target, targetSpeakText, items: items.sort(() => Math.random() - 0.5) };
+  return { target, targetSpeakText, targetSpeakLang, items: items.sort(() => Math.random() - 0.5) };
 }
 
 function CharGlyph({ char }: { char: string }) {
@@ -165,7 +181,7 @@ export default function GamePage() {
     return () => { if (hintTimer.current) clearTimeout(hintTimer.current); };
   }, [round.target.char, scheduleHint]);
 
-  const { target, targetSpeakText, items } = round;
+  const { target, targetSpeakText, targetSpeakLang, items } = round;
 
   const startRound = useCallback((cs: Charset) => {
     setRound(buildRound(cs));
@@ -182,7 +198,7 @@ export default function GamePage() {
 
   const handleTap = (item: GameItem) => {
     if (item.state === "correct") return;
-    speak(item.speakText);
+    speak(item.speakText, item.speakLang);
 
     if (item.char === target.char) {
       setHintItemId(null);
@@ -222,9 +238,10 @@ export default function GamePage() {
   };
 
   const charsetColors: Record<Charset, { active: string; ring: string }> = {
-    hiragana: { active: "bg-pink-500 text-white shadow-pink-200", ring: "border-pink-400" },
-    katakana: { active: "bg-blue-500 text-white shadow-blue-200", ring: "border-blue-400" },
-    mongolian: { active: "bg-green-500 text-white shadow-green-200", ring: "border-green-400" },
+    hiragana: { active: "bg-pink-500 text-white shadow-pink-200",   ring: "border-pink-400" },
+    katakana: { active: "bg-blue-500 text-white shadow-blue-200",   ring: "border-blue-400" },
+    mongolian:{ active: "bg-green-500 text-white shadow-green-200", ring: "border-green-400" },
+    english:  { active: "bg-indigo-500 text-white shadow-indigo-200", ring: "border-indigo-400" },
   };
 
   return (
@@ -234,7 +251,7 @@ export default function GamePage() {
       <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm">
         <div className="flex items-center justify-between px-3 pt-3 pb-1 gap-2">
           <div className="flex gap-1.5">
-            {(["hiragana", "katakana", "mongolian"] as Charset[]).map((cs) => (
+            {(["hiragana", "katakana", "mongolian", "english"] as Charset[]).map((cs) => (
               <button
                 key={cs}
                 onClick={() => switchCharset(cs)}
@@ -244,7 +261,7 @@ export default function GamePage() {
                     : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {cs === "hiragana" ? "あ" : cs === "katakana" ? "ア" : "А"}
+                {cs === "hiragana" ? "あ" : cs === "katakana" ? "ア" : cs === "mongolian" ? "А" : "A"}
               </button>
             ))}
           </div>
@@ -278,7 +295,7 @@ export default function GamePage() {
 
             {/* Speaker button */}
             <button
-              onClick={() => speak(targetSpeakText)}
+              onClick={() => speak(targetSpeakText, targetSpeakLang)}
               className="w-10 h-10 rounded-2xl bg-purple-100 hover:bg-purple-200 flex items-center justify-center text-xl active:scale-90 transition-all shadow-sm"
               aria-label="Hear pronunciation"
             >

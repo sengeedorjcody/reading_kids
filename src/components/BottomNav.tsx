@@ -21,7 +21,7 @@ export default function BottomNav() {
           <BottomNavLink href="/books" icon="📖" label="Books" />
           <BottomNavLink href="/conversations" icon="💬" label="会話" />
           <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
-          <BottomNavLink href="/game" icon="🎮" label="Game" />
+          <BottomNavLink href="/game" icon="🔍" label="Find" />
           <BottomNavLink href="/family" icon="👨‍👩‍👧" label="Family" />
           <BottomNavLink href="/animals" icon="🐾" label="Animals" />
           <BottomNavLink href="/body" icon="🧑" label="Body" />
