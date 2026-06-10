@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <circle cx="50" cy="50" r="50" fill="#e8302a"/>
+  <text
+    x="50"
+    y="68"
+    text-anchor="middle"
+    font-family="'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif"
+    font-weight="700"
+    font-size="58"
+    fill="white"
+  >本</text>
+</svg>
