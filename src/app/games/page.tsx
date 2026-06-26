@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { IGame } from "@/lib/db/models/Game";
 
 export default function GamesPage() {
   const [games, setGames] = useState<IGame[]>([]);
-  const [active, setActive] = useState<IGame | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     fetch("/api/games")
@@ -42,7 +43,7 @@ export default function GamesPage() {
         {games.map((game) => (
           <button
             key={game._id}
-            onClick={() => setActive(game)}
+            onClick={() => router.push(`/games/${game._id}`)}
             className="flex flex-col rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-all hover:shadow-2xl text-left"
             style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
           >
@@ -89,39 +90,6 @@ export default function GamesPage() {
         )}
       </div>
 
-      {/* Fullscreen game overlay */}
-      {active && (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col">
-          <div className="flex-shrink-0 flex items-center gap-3 px-4 py-3 bg-black/80 border-b border-white/10">
-            <button
-              onClick={() => setActive(null)}
-              className="w-9 h-9 rounded-2xl flex items-center justify-center text-white font-black text-lg active:scale-90 transition-all"
-              style={{ background: "rgba(239,68,68,0.3)", border: "1px solid rgba(239,68,68,0.5)" }}
-            >
-              ✕
-            </button>
-            <span className="text-lg">{active.emoji}</span>
-            <h2 className="text-white font-black text-base flex-1">{active.title}</h2>
-            <div className="flex gap-1">
-              {active.tags?.map((t) => (
-                <span key={t} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/10 text-white/60">
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <iframe
-            src={active.iframeSrc}
-            className="flex-1 w-full border-0 bg-white"
-            sandbox="allow-scripts allow-same-origin allow-pointer-lock"
-            allow="camera; microphone; pointer-lock; fullscreen"
-            referrerPolicy="no-referrer"
-            allowFullScreen
-            title={active.title}
-          />
-        </div>
-      )}
     </div>
   );
 }
