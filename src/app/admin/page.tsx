@@ -30,6 +30,7 @@ export default async function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <StatCard icon="📚" label="Total Books" value={bookCount} color="bg-pink-50 border-pink-200" href="/admin/books" />
         <StatCard icon="📝" label="Dictionary Words" value={wordCount} color="bg-purple-50 border-purple-200" href="/admin/dictionary" />
+        <StatCard icon="🎮" label="Games" value={null} color="bg-green-50 border-green-200" href="/admin/games" />
       </div>
 
       {/* Quick actions */}
@@ -80,12 +81,12 @@ export default async function AdminDashboard() {
 function StatCard({
   icon, label, value, color, href,
 }: {
-  icon: string; label: string; value: number; color: string; href: string;
+  icon: string; label: string; value: number | null; color: string; href: string;
 }) {
   return (
     <Link href={href} className={`${color} border-2 rounded-3xl p-6 hover:-translate-y-1 transition-all hover:shadow-md block`}>
       <div className="text-4xl mb-2">{icon}</div>
-      <div className="text-4xl font-black text-gray-800">{value}</div>
+      {value !== null && <div className="text-4xl font-black text-gray-800">{value}</div>}
       <div className="text-gray-500 font-medium mt-1">{label}</div>
     </Link>
   );
