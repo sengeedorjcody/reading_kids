@@ -24,6 +24,16 @@ const GAMES: Game[] = [
     color: "#22c55e",
     bg: "from-green-400 to-emerald-600",
   },
+  {
+    id: "yellow-dune",
+    title: "Yellow Dune",
+    description: "An adventure game on Higgsfield.",
+    emoji: "🏜️",
+    iframeSrc: "https://dev--yellow-dune-350.higgsfield.app/",
+    tags: ["Adventure"],
+    color: "#f59e0b",
+    bg: "from-yellow-400 to-orange-500",
+  },
   // Add more games here — paste the iframe src from Higgsfield
 ];
 
