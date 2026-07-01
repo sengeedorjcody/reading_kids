@@ -50,7 +50,7 @@ export default function HomePage() {
     >
 
       {/* ── Date / Week widget ── */}
-      <div className="pt-3 mb-4">
+      <div className="px-5 pt-3 mb-4 max-w-xl mx-auto w-full">
         <HomeDateWidget />
       </div>
 

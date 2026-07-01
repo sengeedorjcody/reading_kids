@@ -60,7 +60,7 @@ export default function HomeDateWidget() {
 
   return (
     <div
-      className="mx-4 mt-3 mb-1 rounded-3xl overflow-hidden"
+      className="rounded-3xl overflow-hidden"
       style={{
         background: "rgba(255,255,255,0.07)",
         border: "1px solid rgba(255,255,255,0.12)",
