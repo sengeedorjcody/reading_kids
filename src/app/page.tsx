@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import HomeDateWidget from "@/components/HomeDateWidget";
 
 const APPS = [
   // Row 1 — core learning
@@ -54,15 +55,18 @@ export default function HomePage() {
       }}
     >
 
-      {/* ── Date / greeting ── */}
-      <div className="text-center px-6 pt-2 pb-6">
-        <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-1">
+      {/* ── Header ── */}
+      <div className="text-center px-6 pt-3 pb-2">
+        <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-0.5">
           にほんご を まなぼう！
         </p>
-        <h1 className="text-white text-4xl font-black drop-shadow-lg">
+        <h1 className="text-white text-3xl font-black drop-shadow-lg">
           Japanese Learning
         </h1>
       </div>
+
+      {/* ── Date / Week widget ── */}
+      <HomeDateWidget />
 
       {/* ── App grid ── */}
       <div className="flex-1 px-5">
