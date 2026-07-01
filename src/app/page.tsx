@@ -39,12 +39,6 @@ const APPS = [
   { href: "/words-english", icon: "⌨️",  label: "Words EN",   color: "#8b5cf6", bg: "from-violet-400 to-indigo-500" },
 ];
 
-const DOCK = [
-  { href: "/books",       icon: "📖", label: "Books"      },
-  { href: "/dictionary",  icon: "📝", label: "Dictionary" },
-  { href: "/flashcards",  icon: "🃏", label: "Cards"      },
-  { href: "/admin",       icon: "⚙️", label: "Admin"      },
-];
 
 export default function HomePage() {
   return (
@@ -55,18 +49,10 @@ export default function HomePage() {
       }}
     >
 
-      {/* ── Header ── */}
-      <div className="text-center px-6 pt-3 pb-2">
-        <p className="text-white/50 text-xs font-bold uppercase tracking-widest mb-0.5">
-          にほんご を まなぼう！
-        </p>
-        <h1 className="text-white text-3xl font-black drop-shadow-lg">
-          Japanese Learning
-        </h1>
-      </div>
-
       {/* ── Date / Week widget ── */}
-      <HomeDateWidget />
+      <div className="pt-3 mb-4">
+        <HomeDateWidget />
+      </div>
 
       {/* ── App grid ── */}
       <div className="flex-1 px-5">
@@ -77,33 +63,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* ── Dock ── */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-4 px-6">
-        <div
-          className="flex items-center gap-4 px-6 py-3 rounded-3xl"
-          style={{
-            background: "rgba(255,255,255,0.15)",
-            backdropFilter: "blur(20px)",
-            WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.2)",
-          }}
-        >
-          {DOCK.map((app) => (
-            <Link key={app.href} href={app.href} className="flex flex-col items-center gap-1 active:scale-90 transition-transform">
-              <div
-                className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg"
-                style={{
-                  background: "rgba(255,255,255,0.2)",
-                  border: "1px solid rgba(255,255,255,0.25)",
-                }}
-              >
-                {app.icon}
-              </div>
-              <span className="text-white/70 text-[10px] font-bold">{app.label}</span>
-            </Link>
-          ))}
-        </div>
-      </div>
     </div>
   );
 }
