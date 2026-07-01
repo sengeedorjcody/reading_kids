@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import useSpeech from "@/hooks/useSpeech";
+import { useSpeech } from "@/hooks/useSpeech";
 
 const WEEKDAY_JP = ["日", "月", "火", "水", "木", "金", "土"];
 const WEEKDAY_FULL = ["にちようび", "げつようび", "かようび", "すいようび", "もくようび", "きんようび", "どようび"];
