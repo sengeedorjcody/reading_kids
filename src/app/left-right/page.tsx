@@ -68,7 +68,7 @@ export default function LeftRightPage() {
           <span className="text-white font-black text-xl tracking-wide uppercase drop-shadow">
             Баруун гар
           </span>
-          <span style={{ fontSize: 110 }} className="drop-shadow-lg">{rightShape}</span>
+          <span style={{ fontSize: 110, display: "inline-block", transform: "scaleX(-1)" }} className="drop-shadow-lg">{rightShape}</span>
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-white font-black text-2xl drop-shadow">みぎて</span>
             <span className="text-white/70 text-sm font-bold">migi te</span>

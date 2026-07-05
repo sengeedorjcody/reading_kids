@@ -43,7 +43,7 @@ export default function MemoryHandsGame() {
         <span className="font-black text-2xl tracking-wide uppercase" style={{ color: "#2c3e50" }}>
           Right Hand
         </span>
-        <span style={{ fontSize: 110, minHeight: 150, display: "flex", alignItems: "center" }}>
+        <span style={{ fontSize: 110, minHeight: 150, display: "flex", alignItems: "center", transform: "scaleX(-1)" }}>
           {right}
         </span>
       </div>
