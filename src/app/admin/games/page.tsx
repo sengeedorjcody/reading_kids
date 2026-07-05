@@ -18,6 +18,7 @@ const EMPTY_FORM = {
   title: "",
   description: "",
   emoji: "🎮",
+  bannerImageUrl: "",
   iframeSrc: "",
   tags: "",
   color: "#22c55e",
@@ -32,9 +33,10 @@ export default function AdminGamesPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
 
   const fetchGames = async () => {
-    const res = await fetch("/api/games");
+    const res = await fetch("/api/games?all=true");
     const data = await res.json();
     setGames(data);
     setLoading(false);
@@ -70,6 +72,7 @@ export default function AdminGamesPage() {
       title: game.title,
       description: game.description,
       emoji: game.emoji,
+      bannerImageUrl: game.bannerImageUrl || "",
       iframeSrc: game.iframeSrc,
       tags: (game.tags || []).join(", "),
       color: game.color,
@@ -87,6 +90,36 @@ export default function AdminGamesPage() {
 
   const setColor = (opt: (typeof COLOR_OPTIONS)[0]) => {
     setForm((f) => ({ ...f, color: opt.color, bg: opt.bg }));
+  };
+
+  // Drag & drop reordering
+  const handleDragStart = (i: number) => setDragIndex(i);
+
+  const handleDragOver = (e: React.DragEvent, i: number) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === i) return;
+    setGames((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(dragIndex, 1);
+      next.splice(i, 0, moved);
+      return next;
+    });
+    setDragIndex(i);
+  };
+
+  const handleDragEnd = async () => {
+    setDragIndex(null);
+    // Persist new order sequentially
+    await Promise.all(
+      games.map((g, i) =>
+        g.order === i ? null : fetch(`/api/games/${g._id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order: i }),
+        })
+      )
+    );
+    fetchGames();
   };
 
   return (
@@ -124,6 +157,23 @@ export default function AdminGamesPage() {
                 className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold text-gray-500 mb-1">Banner зурагны URL</label>
+            <input
+              type="url"
+              value={form.bannerImageUrl}
+              onChange={(e) => setForm((f) => ({ ...f, bannerImageUrl: e.target.value }))}
+              placeholder="https://.../banner.jpg"
+              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-300"
+            />
+            {form.bannerImageUrl && (
+              <div
+                className="mt-2 w-full aspect-video rounded-xl bg-cover bg-center border border-gray-200"
+                style={{ backgroundImage: `url(${form.bannerImageUrl})` }}
+              />
+            )}
           </div>
 
           <div>
@@ -214,6 +264,7 @@ export default function AdminGamesPage() {
       <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h2 className="font-black text-gray-700">Тоглоомуудын жагсаалт ({games.length})</h2>
+          <p className="text-xs text-gray-400 mt-0.5">⠿ дараад чирж дарааллыг өөрчилнө</p>
         </div>
         {loading && <p className="text-center py-8 text-gray-400">Loading…</p>}
         {!loading && games.length === 0 && (
@@ -222,14 +273,30 @@ export default function AdminGamesPage() {
         {games.map((game, i) => (
           <div
             key={game._id}
-            className={`flex items-center gap-4 px-6 py-4 ${i !== games.length - 1 ? "border-b border-gray-100" : ""}`}
+            draggable
+            onDragStart={() => handleDragStart(i)}
+            onDragOver={(e) => handleDragOver(e, i)}
+            onDragEnd={handleDragEnd}
+            className={`flex items-center gap-3 px-6 py-4 transition-all ${i !== games.length - 1 ? "border-b border-gray-100" : ""} ${
+              dragIndex === i ? "opacity-40" : ""
+            } ${!game.isActive ? "opacity-50" : ""}`}
           >
-            {/* Color swatch + emoji */}
-            <div
-              className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 bg-gradient-to-br ${game.bg}`}
-            >
-              {game.emoji}
-            </div>
+            {/* Drag handle */}
+            <span className="text-gray-300 cursor-grab active:cursor-grabbing select-none text-lg flex-shrink-0">⠿</span>
+
+            {/* Banner thumbnail or emoji swatch */}
+            {game.bannerImageUrl ? (
+              <div
+                className="w-16 h-12 rounded-xl bg-cover bg-center flex-shrink-0 border border-gray-100"
+                style={{ backgroundImage: `url(${game.bannerImageUrl})` }}
+              />
+            ) : (
+              <div
+                className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 bg-gradient-to-br ${game.bg}`}
+              >
+                {game.emoji}
+              </div>
+            )}
 
             <div className="flex-1 min-w-0">
               <div className="font-black text-gray-800 truncate">{game.title}</div>

@@ -5,6 +5,7 @@ export interface IGame {
   title: string;
   description: string;
   emoji: string;
+  bannerImageUrl?: string;
   iframeSrc: string;
   tags: string[];
   color: string;
@@ -20,6 +21,7 @@ const GameSchema = new Schema<IGame>(
     title:       { type: String, required: true },
     description: { type: String, default: "" },
     emoji:       { type: String, default: "🎮" },
+    bannerImageUrl: { type: String, default: "" },
     iframeSrc:   { type: String, required: true },
     tags:        [{ type: String }],
     color:       { type: String, default: "#22c55e" },

@@ -19,7 +19,7 @@ export default function GamesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-28">
       {/* Header */}
-      <div className="px-4 pt-6 pb-4">
+      <div className="px-5 pt-6 pb-4 max-w-xl mx-auto w-full">
         <h1 className="text-3xl font-black text-white">🎮 Games</h1>
         <p className="text-sm text-gray-400 mt-1">Тоглоом сонгоорой · Pick a game to play</p>
       </div>
@@ -39,7 +39,7 @@ export default function GamesPage() {
       )}
 
       {/* Game grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-xl mx-auto w-full">
         {games.map((game) => (
           <button
             key={game._id}
@@ -48,8 +48,15 @@ export default function GamesPage() {
             style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
           >
             {/* Thumbnail */}
-            <div className={`w-full aspect-video bg-gradient-to-br ${game.bg} flex items-center justify-center relative`}>
-              <span className="text-6xl drop-shadow-lg">{game.emoji}</span>
+            <div
+              className={`w-full aspect-video flex items-center justify-center relative ${game.bannerImageUrl ? "" : `bg-gradient-to-br ${game.bg}`}`}
+              style={game.bannerImageUrl ? {
+                backgroundImage: `url(${game.bannerImageUrl})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+              } : undefined}
+            >
+              {!game.bannerImageUrl && <span className="text-6xl drop-shadow-lg">{game.emoji}</span>}
               <div className="absolute bottom-2 right-2 flex gap-1 flex-wrap justify-end">
                 {game.tags?.map((t) => (
                   <span key={t} className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-black/40 text-white/80">
