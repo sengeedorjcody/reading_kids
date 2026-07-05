@@ -12,7 +12,7 @@ const JP = [
 ];
 
 type Op    = "+" | "−";
-type Level = 1 | 2 | 3;
+type Level = 1 | 2 | 3 | 4;
 
 interface Problem {
   a: number;
@@ -27,6 +27,7 @@ const LEVEL_CONFIG = {
   1: { label: "たし算 1〜5",  english: "Add up to 5",      color: "#22c55e", icon: "🌱" },
   2: { label: "たし算 1〜10", english: "Add up to 20",     color: "#3b82f6", icon: "⭐" },
   3: { label: "ひき算",       english: "Subtraction 1〜10", color: "#f97316", icon: "🔥" },
+  4: { label: "ぜろの計算",   english: "With zero",         color: "#8b5cf6", icon: "0️⃣" },
 };
 
 // ── Problem generator ─────────────────────────────────────────────────────
@@ -41,10 +42,18 @@ function makeProblem(level: Level): Problem {
     a  = Math.floor(Math.random() * 10) + 1;          // 1-10
     b  = Math.floor(Math.random() * 10) + 1;          // 1-10
     op = "+";
-  } else {
+  } else if (level === 3) {
     a  = Math.floor(Math.random() * 9) + 2;           // 2-10
     b  = Math.floor(Math.random() * (a - 1)) + 1;     // 1 to a-1
     op = "−";
+  } else {
+    // Level 4: zero operations — n+0, 0+n, n−0, n−n
+    const kind = Math.floor(Math.random() * 4);
+    const n = Math.floor(Math.random() * 10) + 1; // 1-10
+    if (kind === 0)      { a = n; b = 0; op = "+"; }   // n + 0 = n
+    else if (kind === 1) { a = 0; b = n; op = "+"; }   // 0 + n = n
+    else if (kind === 2) { a = n; b = 0; op = "−"; }   // n − 0 = n
+    else                 { a = n; b = n; op = "−"; }   // n − n = 0
   }
 
   const answer = op === "+" ? a + b : a - b;
@@ -162,20 +171,21 @@ export default function MathPage() {
       </div>
 
       {/* Level selector */}
-      <div className="flex gap-2 mb-5">
-        {([1, 2, 3] as Level[]).map((l) => {
+      <div className="grid grid-cols-2 gap-2 mb-5">
+        {([1, 2, 3, 4] as Level[]).map((l) => {
           const c = LEVEL_CONFIG[l];
           return (
             <button
               key={l}
               onClick={() => switchLevel(l)}
-              className="flex-1 py-3 rounded-2xl font-black text-xs transition-all active:scale-95 flex flex-col items-center gap-0.5"
+              className="py-3 rounded-2xl font-black text-xs transition-all active:scale-95 flex flex-col items-center gap-0.5"
               style={level === l
                 ? { backgroundColor: c.color, color: "#fff", boxShadow: `0 4px 12px ${c.color}55` }
                 : { backgroundColor: "#f3f4f6", color: "#6b7280" }}
             >
               <span className="text-lg">{c.icon}</span>
               <span>{c.label}</span>
+              <span className="text-[10px] font-bold opacity-70">{c.english}</span>
             </button>
           );
         })}
@@ -206,11 +216,18 @@ export default function MathPage() {
         {/* Dot visualizer */}
         {showDots && (
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Dots count={a} color={cfg.color} />
+            {a === 0
+              ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
+              : <Dots count={a} color={cfg.color} />
+            }
             {op === "+" && <span className="text-2xl font-black" style={{ color: cfg.color }}>+</span>}
             {op === "−"
-              ? <Dots count={b} color={cfg.color} crossed />
-              : <Dots count={b} color="#f97316" />
+              ? (b === 0
+                  ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
+                  : <Dots count={b} color={cfg.color} crossed />)
+              : (b === 0
+                  ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
+                  : <Dots count={b} color="#f97316" />)
             }
           </div>
         )}
