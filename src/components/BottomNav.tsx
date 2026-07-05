@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//, /^\/games\/.+/, /^\/animal-match/, /^\/left-right/];
+const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//, /^\/games\/.+/, /^\/animal-match/, /^\/left-right/, /^\/memory-hands/];
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -30,6 +30,7 @@ export default function BottomNav() {
           <BottomNavLink href="/colors" icon="🎨" label="Colors" />
           <BottomNavLink href="/directions" icon="🧭" label="Direction" />
           <BottomNavLink href="/left-right" icon="👈" label="Left/Right" />
+          <BottomNavLink href="/memory-hands" icon="🧠" label="Memory" />
           <BottomNavLink href="/clock" icon="🕐" label="Clock" />
           <BottomNavLink href="/themes" icon="🗂️" label="Themes" />
           <BottomNavLink href="/math" icon="🧮" label="Math" />
