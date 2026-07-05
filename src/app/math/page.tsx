@@ -77,21 +77,52 @@ function makeProblem(level: Level): Problem {
   };
 }
 
-// ── Dot visualizer ─────────────────────────────────────────────────────────
-function Dots({ count, color, crossed }: { count: number; color: string; crossed?: boolean }) {
+// ── Numberblocks-style character visualizer ────────────────────────────────
+// Each number has its own signature color, just like the Numberblocks show.
+const NUMBER_COLORS = [
+  "#94a3b8", "#ef4444", "#f97316", "#eab308", "#22c55e",
+  "#3b82f6", "#8b5cf6", "#ec4899", "#64748b", "#d946ef", "#f59e0b",
+];
+
+function BlockChar({ n, crossed }: { n: number; crossed?: boolean }) {
+  if (n === 0) {
+    return (
+      <div className="w-9 h-9 rounded-lg border-2 border-dashed flex items-center justify-center flex-shrink-0"
+        style={{ borderColor: "#cbd5e1" }}>
+        <span className="text-gray-300 font-black text-sm">0</span>
+      </div>
+    );
+  }
+
+  const color = NUMBER_COLORS[Math.min(n, NUMBER_COLORS.length - 1)];
+
   return (
-    <div className="flex flex-wrap justify-center gap-1.5" style={{ maxWidth: 160 }}>
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          className="w-7 h-7 rounded-full transition-all"
-          style={{
-            backgroundColor: crossed ? "#e2e8f0" : color,
-            opacity: crossed ? 0.35 : 1,
-            boxShadow: crossed ? "none" : `0 2px 6px ${color}55`,
-          }}
-        />
-      ))}
+    <div className="flex flex-wrap justify-center gap-1" style={{ maxWidth: 168 }}>
+      {Array.from({ length: n }).map((_, i) => {
+        const isFace = i === n - 1; // face + number on the last block, like a Numberblock's head
+        return (
+          <div
+            key={i}
+            className="rounded-md flex items-center justify-center transition-all"
+            style={{
+              width: 26, height: 26,
+              backgroundColor: crossed ? "#e2e8f0" : color,
+              opacity: crossed ? 0.35 : 1,
+              boxShadow: crossed ? "none" : `0 2px 5px ${color}55`,
+            }}
+          >
+            {isFace && !crossed && (
+              <div className="flex flex-col items-center">
+                <div className="flex gap-1 mb-0.5">
+                  <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#fff" }} />
+                  <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#fff" }} />
+                </div>
+                <span className="text-white font-black" style={{ fontSize: 11, lineHeight: 1 }}>{n}</span>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -213,31 +244,21 @@ export default function MathPage() {
           </span>
         </div>
 
-        {/* Dot visualizer */}
+        {/* Numberblocks-style visualizer */}
         {showDots && (
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            {a === 0
-              ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
-              : <Dots count={a} color={cfg.color} />
-            }
-            {op === "+" && <span className="text-2xl font-black" style={{ color: cfg.color }}>+</span>}
-            {op === "−"
-              ? (b === 0
-                  ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
-                  : <Dots count={b} color={cfg.color} crossed />)
-              : (b === 0
-                  ? <span className="text-4xl font-black text-gray-300 w-16 text-center">∅</span>
-                  : <Dots count={b} color="#f97316" />)
-            }
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <BlockChar n={a} />
+            <span className="text-2xl font-black flex-shrink-0" style={{ color: cfg.color }}>{op}</span>
+            <BlockChar n={b} crossed={op === "−"} />
           </div>
         )}
 
-        {/* Toggle dots */}
+        {/* Toggle visualizer */}
         <button
           onClick={() => setShowDots(d => !d)}
           className="mt-3 text-xs font-bold text-gray-300 active:text-gray-500"
         >
-          {showDots ? "ドットを隠す" : "ドットを見る"}
+          {showDots ? "ずをかくす" : "ずをみる"}
         </button>
       </div>
 
