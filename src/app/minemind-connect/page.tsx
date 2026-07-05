@@ -2,9 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 
-const SIZE = 6;
-const START: [number, number] = [0, 0];
-const FINISH: [number, number] = [SIZE - 1, SIZE - 1];
+const SIZE = 4;
+const MIN_DISTANCE = 3;
 
 type Status = "memorize" | "draw" | "won" | "lost" | "timeout";
 type Cell = [number, number];
@@ -13,20 +12,28 @@ function key(c: Cell) {
   return `${c[0]},${c[1]}`;
 }
 
+function manhattan(a: Cell, b: Cell) {
+  return Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
+}
+
 function levelConfig(level: number) {
   return {
-    mineCount: Math.min(3 + Math.floor((level - 1) / 2), 10),
+    mineCount: Math.min(3 + Math.floor((level - 1) / 2), 8),
     memorizeMs: Math.max(1200, 3000 - (level - 1) * 150),
     drawSeconds: Math.max(15, 40 - (level - 1) * 2),
   };
 }
 
-function pathExists(mines: Set<string>): boolean {
-  const visited = new Set<string>([key(START)]);
-  const queue: Cell[] = [START];
+function randomCell(): Cell {
+  return [Math.floor(Math.random() * SIZE), Math.floor(Math.random() * SIZE)];
+}
+
+function pathExists(start: Cell, finish: Cell, mines: Set<string>): boolean {
+  const visited = new Set<string>([key(start)]);
+  const queue: Cell[] = [start];
   while (queue.length) {
     const [r, c] = queue.shift()!;
-    if (r === FINISH[0] && c === FINISH[1]) return true;
+    if (r === finish[0] && c === finish[1]) return true;
     for (const [dr, dc] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       const nr = r + dr, nc = c + dc;
       if (nr < 0 || nc < 0 || nr >= SIZE || nc >= SIZE) continue;
@@ -39,26 +46,37 @@ function pathExists(mines: Set<string>): boolean {
   return false;
 }
 
-function generateMines(count: number): Set<string> {
-  for (let attempt = 0; attempt < 200; attempt++) {
+interface Board {
+  start: Cell;
+  finish: Cell;
+  mines: Set<string>;
+}
+
+function generateBoard(mineCount: number): Board {
+  for (let attempt = 0; attempt < 300; attempt++) {
+    const start = randomCell();
+    const finish = randomCell();
+    if (key(start) === key(finish)) continue;
+    if (manhattan(start, finish) < MIN_DISTANCE) continue;
+
     const mines = new Set<string>();
-    while (mines.size < count) {
-      const r = Math.floor(Math.random() * SIZE);
-      const c = Math.floor(Math.random() * SIZE);
-      const k = `${r},${c}`;
-      if (k === key(START) || k === key(FINISH)) continue;
-      mines.add(k);
+    let tries = 0;
+    while (mines.size < mineCount && tries < 200) {
+      const cell = randomCell();
+      const k = key(cell);
+      if (k !== key(start) && k !== key(finish)) mines.add(k);
+      tries++;
     }
-    if (pathExists(mines)) return mines;
+    if (pathExists(start, finish, mines)) return { start, finish, mines };
   }
-  return new Set();
+  return { start: [0, 0], finish: [SIZE - 1, SIZE - 1], mines: new Set() };
 }
 
 export default function MineMindConnect() {
   const [level, setLevel] = useState(1);
-  const [mines, setMines] = useState<Set<string>>(() => generateMines(levelConfig(1).mineCount));
+  const [board, setBoard] = useState<Board>(() => generateBoard(levelConfig(1).mineCount));
   const [status, setStatus] = useState<Status>("memorize");
-  const [path, setPath] = useState<Cell[]>([START]);
+  const [path, setPath] = useState<Cell[]>([board.start]);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(() => levelConfig(1).drawSeconds);
   const [hitMine, setHitMine] = useState<string | null>(null);
@@ -66,12 +84,14 @@ export default function MineMindConnect() {
 
   const gridRef = useRef<HTMLDivElement>(null);
   const cfg = levelConfig(level);
+  const { start, finish, mines } = board;
 
   const startLevel = useCallback((lvl: number) => {
     const c = levelConfig(lvl);
-    setMines(generateMines(c.mineCount));
+    const nextBoard = generateBoard(c.mineCount);
+    setBoard(nextBoard);
     setStatus("memorize");
-    setPath([START]);
+    setPath([nextBoard.start]);
     setTimeLeft(c.drawSeconds);
     setHitMine(null);
   }, []);
@@ -133,18 +153,18 @@ export default function MineMindConnect() {
       const next = [...p, cell];
       setScore((s) => s + 10);
 
-      if (cell[0] === FINISH[0] && cell[1] === FINISH[1]) {
+      if (cell[0] === finish[0] && cell[1] === finish[1]) {
         setStatus("won");
       }
       return next;
     });
-  }, [mines]);
+  }, [mines, finish]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (status !== "draw") return;
     const cell = cellFromPoint(e.clientX, e.clientY);
-    if (!cell || cell[0] !== START[0] || cell[1] !== START[1]) return;
-    setPath([START]);
+    if (!cell || cell[0] !== start[0] || cell[1] !== start[1]) return;
+    setPath([start]);
     setDragging(true);
   };
 
@@ -206,8 +226,8 @@ export default function MineMindConnect() {
             {Array.from({ length: SIZE * SIZE }).map((_, i) => {
               const r = Math.floor(i / SIZE), c = i % SIZE;
               const k = `${r},${c}`;
-              const isStart = r === START[0] && c === START[1];
-              const isFinish = r === FINISH[0] && c === FINISH[1];
+              const isStart = r === start[0] && c === start[1];
+              const isFinish = r === finish[0] && c === finish[1];
               const isMine = mines.has(k);
               const showMine = isMine && (status === "memorize" || (status === "lost" && hitMine));
               const inPath = path.some((p) => p[0] === r && p[1] === c);
@@ -222,14 +242,14 @@ export default function MineMindConnect() {
                   }}
                 >
                   {isStart && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white"
                       style={{ background: "#22c55e", boxShadow: "0 0 14px #22c55e" }}>A</div>
                   )}
                   {isFinish && (
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-black text-white"
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-black text-white"
                       style={{ background: "#f97316", boxShadow: "0 0 14px #f97316" }}>B</div>
                   )}
-                  {showMine && <span className="text-lg opacity-80">💣</span>}
+                  {showMine && <span className="text-2xl opacity-80">💣</span>}
                 </div>
               );
             })}
@@ -242,7 +262,7 @@ export default function MineMindConnect() {
               const to = cellCenter(c[0], c[1], rect);
               return (
                 <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                  stroke={status === "lost" ? "#ef4444" : "#facc15"} strokeWidth={6} strokeLinecap="round" />
+                  stroke={status === "lost" ? "#ef4444" : "#facc15"} strokeWidth={8} strokeLinecap="round" />
               );
             })}
           </svg>
