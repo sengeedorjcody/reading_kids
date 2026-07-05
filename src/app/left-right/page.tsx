@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
 
 const HAND_SHAPES = ["✋", "🖐️", "✌️", "✊", "👍", "☝️", "🤘", "👌"];
@@ -21,10 +21,13 @@ export default function LeftRightPage() {
     setTimeout(() => setFlash(null), 250);
   };
 
-  const next = () => {
-    setLeftShape(randomShape());
-    setRightShape(randomShape());
-  };
+  useEffect(() => {
+    const t = setInterval(() => {
+      setLeftShape(randomShape());
+      setRightShape(randomShape());
+    }, 5000);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
@@ -70,17 +73,6 @@ export default function LeftRightPage() {
             <span className="text-white font-black text-2xl drop-shadow">みぎて</span>
             <span className="text-white/70 text-sm font-bold">migi te</span>
           </div>
-        </button>
-      </div>
-
-      {/* Next button */}
-      <div className="flex-shrink-0 flex justify-center py-6 z-10" style={{ background: "#1e293b" }}>
-        <button
-          onClick={next}
-          className="flex items-center gap-2 px-8 py-4 rounded-full font-black text-white text-lg active:scale-95 transition-all shadow-xl"
-          style={{ background: "linear-gradient(135deg,#f97316,#ea580c)" }}
-        >
-          ДАРААГИЙН →
         </button>
       </div>
     </div>
