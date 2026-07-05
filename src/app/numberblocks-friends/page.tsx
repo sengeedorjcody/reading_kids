@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
 
 // ── Numberblocks characters (colors follow the show) ────────────────────────
@@ -13,6 +13,7 @@ interface Character {
 }
 
 const CHARACTERS: Character[] = [
+  { n: 0,  name: "Zero",  jp: "ぜろ",    color: "#f5b400", accent: "#ffe45e" },
   { n: 1,  name: "One",   jp: "いち",    color: "#d11a2a", accent: "#ff5a66" },
   { n: 2,  name: "Two",   jp: "に",      color: "#f37021", accent: "#ffa564" },
   { n: 3,  name: "Three", jp: "さん",    color: "#fbd000", accent: "#ffe45e" },
@@ -25,7 +26,9 @@ const CHARACTERS: Character[] = [
   { n: 10, name: "Ten",   jp: "じゅう",  color: "#d11a2a", accent: "#ffffff" },
 ];
 
-const BLOCK = 24; // px per body block
+function charFor(n: number) {
+  return CHARACTERS.find((c) => c.n === n)!;
+}
 
 // Column layout like the show: 1-5 stand tall, 6+ stack into two columns
 function columnsFor(n: number): number[] {
@@ -34,167 +37,253 @@ function columnsFor(n: number): number[] {
   return [tall, n - tall];
 }
 
-// ── One animated character ───────────────────────────────────────────────────
-function NumberFriend({
-  char, x, y, z, dragging, onPointerDown,
+// ── Character visual (blocks + face + arms/legs) ─────────────────────────────
+function FriendBody({
+  char, block = 20, dragging = false,
 }: {
-  char: Character;
-  x: number; y: number; z: number;
-  dragging: boolean;
-  onPointerDown: (e: React.PointerEvent) => void;
+  char: Character; block?: number; dragging?: boolean;
 }) {
-  const cols = columnsFor(char.n);
-  const maxRows = Math.max(...cols);
-  const bodyW = cols.length * (BLOCK + 2);
-  const bodyH = maxRows * (BLOCK + 2);
+  // Zero: a yellow ring character like the reference picture
+  if (char.n === 0) {
+    const size = block * 2.6;
+    return (
+      <div className={dragging ? "nb-bounce" : "nb-idle"} style={{ position: "relative", width: size + 30, paddingInline: 15 }}>
+        <div className="relative" style={{ width: size, height: size * 1.25 }}>
+          {/* Arms */}
+          <div className={`absolute rounded-full ${dragging ? "nb-arm-wave-l" : "nb-arm-idle-l"}`}
+            style={{ width: 14, height: 4, background: char.color, left: -13, top: size * 0.45, transformOrigin: "right center" }} />
+          <div className={`absolute rounded-full ${dragging ? "nb-arm-wave-r" : "nb-arm-idle-r"}`}
+            style={{ width: 14, height: 4, background: char.color, right: -13, top: size * 0.45, transformOrigin: "left center" }} />
 
-  return (
-    <div
-      onPointerDown={onPointerDown}
-      className="absolute cursor-grab active:cursor-grabbing touch-none select-none"
-      style={{
-        left: x, top: y, zIndex: z,
-        transform: dragging ? "scale(1.12)" : "scale(1)",
-        transition: dragging ? "none" : "transform 0.15s",
-        filter: dragging ? "drop-shadow(0 10px 16px rgba(0,0,0,0.35))" : "drop-shadow(0 4px 6px rgba(0,0,0,0.2))",
-      }}
-    >
-      <div className={dragging ? "nb-bounce" : "nb-idle"} style={{ width: bodyW + 28, paddingInline: 14 }}>
-        {/* Arms */}
-        <div className="relative" style={{ width: bodyW, height: bodyH }}>
+          {/* Ring body */}
           <div
-            className={`absolute rounded-full ${dragging ? "nb-arm-wave-l" : "nb-arm-idle-l"}`}
-            style={{ width: 16, height: 4, background: char.color, left: -15, top: 8, transformOrigin: "right center" }}
-          />
-          <div
-            className={`absolute rounded-full ${dragging ? "nb-arm-wave-r" : "nb-arm-idle-r"}`}
-            style={{ width: 16, height: 4, background: char.color, right: -15, top: 8, transformOrigin: "left center" }}
-          />
-
-          {/* Body blocks: columns bottom-aligned */}
-          <div className="flex items-end justify-center gap-0.5" style={{ height: bodyH }}>
-            {cols.map((rows, ci) => (
-              <div key={ci} className="flex flex-col gap-0.5">
-                {Array.from({ length: rows }).map((_, ri) => {
-                  const isHead = ci === 0 && ri === 0;
-                  const striped = char.n === 10 && ri % 2 === 1;
-                  return (
-                    <div
-                      key={ri}
-                      className="rounded-[5px] flex items-center justify-center"
-                      style={{
-                        width: BLOCK, height: BLOCK,
-                        background: striped ? char.accent : char.color,
-                        border: `1.5px solid rgba(0,0,0,0.15)`,
-                      }}
-                    >
-                      {isHead && (
-                        <div className="flex flex-col items-center" style={{ marginTop: -2 }}>
-                          <div className="flex gap-[5px]">
-                            <span className="nb-eye" />
-                            <span className="nb-eye" />
-                          </div>
-                          <div
-                            style={{
-                              width: 10, height: 5,
-                              borderBottom: "2px solid #fff",
-                              borderRadius: "0 0 10px 10px",
-                              marginTop: 1,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+            className="absolute left-1/2 -translate-x-1/2 flex items-start justify-center"
+            style={{
+              width: size, height: size * 1.25,
+              borderRadius: "50%",
+              border: `${Math.max(8, block * 0.55)}px solid ${char.color}`,
+              boxSizing: "border-box",
+              background: "transparent",
+            }}
+          >
+            {/* Face sits on top of the ring */}
+            <div className="flex flex-col items-center" style={{ marginTop: -4 }}>
+              <div className="flex gap-[5px]">
+                <span className="nb-eye nb-eye-dark" />
+                <span className="nb-eye nb-eye-dark" />
               </div>
-            ))}
+              <div style={{ width: 10, height: 5, borderBottom: "2px solid #7a5c00", borderRadius: "0 0 10px 10px", marginTop: 1 }} />
+            </div>
           </div>
 
           {/* Legs */}
           <div className="absolute flex justify-center gap-2" style={{ bottom: -10, left: 0, right: 0 }}>
-            <div
-              className={`rounded-full ${dragging ? "nb-leg-kick-l" : ""}`}
-              style={{ width: 4, height: 10, background: char.color, transformOrigin: "top center" }}
-            />
-            <div
-              className={`rounded-full ${dragging ? "nb-leg-kick-r" : ""}`}
-              style={{ width: 4, height: 10, background: char.color, transformOrigin: "top center" }}
-            />
+            <div className={`rounded-full ${dragging ? "nb-leg-kick-l" : ""}`}
+              style={{ width: 4, height: 10, background: "#333", transformOrigin: "top center" }} />
+            <div className={`rounded-full ${dragging ? "nb-leg-kick-r" : ""}`}
+              style={{ width: 4, height: 10, background: "#333", transformOrigin: "top center" }} />
           </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Name tag */}
-        <div className="text-center mt-4">
-          <span
-            className="px-2 py-0.5 rounded-full font-black text-[11px] text-white"
-            style={{ background: char.color }}
-          >
-            {char.n} · {char.name}
-          </span>
+  const cols = columnsFor(char.n);
+  const maxRows = Math.max(...cols);
+  const bodyW = cols.length * (block + 2);
+  const bodyH = maxRows * (block + 2);
+
+  return (
+    <div className={dragging ? "nb-bounce" : "nb-idle"} style={{ width: bodyW + 28, paddingInline: 14 }}>
+      <div className="relative" style={{ width: bodyW, height: bodyH }}>
+        {/* Arms */}
+        <div className={`absolute rounded-full ${dragging ? "nb-arm-wave-l" : "nb-arm-idle-l"}`}
+          style={{ width: 14, height: 4, background: char.color, left: -13, top: 8, transformOrigin: "right center" }} />
+        <div className={`absolute rounded-full ${dragging ? "nb-arm-wave-r" : "nb-arm-idle-r"}`}
+          style={{ width: 14, height: 4, background: char.color, right: -13, top: 8, transformOrigin: "left center" }} />
+
+        {/* Body blocks: columns bottom-aligned */}
+        <div className="flex items-end justify-center gap-0.5" style={{ height: bodyH }}>
+          {cols.map((rows, ci) => (
+            <div key={ci} className="flex flex-col gap-0.5">
+              {Array.from({ length: rows }).map((_, ri) => {
+                const isHead = ci === 0 && ri === 0;
+                const striped = char.n === 10 && ri % 2 === 1;
+                return (
+                  <div key={ri}
+                    className="rounded-[5px] flex items-center justify-center"
+                    style={{
+                      width: block, height: block,
+                      background: striped ? char.accent : char.color,
+                      border: "1.5px solid rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    {isHead && (
+                      <div className="flex flex-col items-center" style={{ marginTop: -2 }}>
+                        <div className="flex gap-[4px]">
+                          <span className="nb-eye" />
+                          <span className="nb-eye" />
+                        </div>
+                        <div style={{ width: 9, height: 4, borderBottom: "2px solid #fff", borderRadius: "0 0 10px 10px", marginTop: 1 }} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* Legs */}
+        <div className="absolute flex justify-center gap-2" style={{ bottom: -10, left: 0, right: 0 }}>
+          <div className={`rounded-full ${dragging ? "nb-leg-kick-l" : ""}`}
+            style={{ width: 4, height: 10, background: char.color, transformOrigin: "top center" }} />
+          <div className={`rounded-full ${dragging ? "nb-leg-kick-r" : ""}`}
+            style={{ width: 4, height: 10, background: char.color, transformOrigin: "top center" }} />
         </div>
       </div>
     </div>
   );
 }
 
+// ── Problem generation ───────────────────────────────────────────────────────
+type Op = "+" | "−";
+type Slot = "a" | "b" | "answer";
+
+interface Problem {
+  a: number;
+  b: number;
+  op: Op;
+  answer: number;
+  missing: Slot;
+  correct: number;
+}
+
+const JP_NUM = ["ぜろ","いち","に","さん","よん","ご","ろく","なな","はち","きゅう","じゅう"];
+
+function makeProblem(): Problem {
+  const op: Op = Math.random() < 0.5 ? "+" : "−";
+  let a: number, b: number;
+  if (op === "+") {
+    a = Math.floor(Math.random() * 11);          // 0-10
+    b = Math.floor(Math.random() * (11 - a));    // keep sum ≤ 10
+  } else {
+    a = Math.floor(Math.random() * 11);          // 0-10
+    b = Math.floor(Math.random() * (a + 1));     // 0..a, includes a−a=0 and n−0
+  }
+  const answer = op === "+" ? a + b : a - b;
+  const missing: Slot = (["a", "b", "answer"] as Slot[])[Math.floor(Math.random() * 3)];
+  const correct = missing === "a" ? a : missing === "b" ? b : answer;
+  return { a, b, op, answer, missing, correct };
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
-interface Pos { x: number; y: number; z: number }
+interface DragState {
+  char: Character;
+  x: number;
+  y: number;
+}
 
 export default function NumberblocksFriends() {
-  const areaRef = useRef<HTMLDivElement>(null);
-  const [positions, setPositions] = useState<Record<number, Pos>>({});
-  const [draggingId, setDraggingId] = useState<number | null>(null);
-  const zTop = useRef(10);
+  const [problem, setProblem] = useState<Problem>(() => makeProblem());
+  const [solved, setSolved] = useState(false);
+  const [score, setScore] = useState(0);
+  const [drag, setDrag] = useState<DragState | null>(null);
+  const [slotFlash, setSlotFlash] = useState<"good" | "bad" | null>(null);
+  const slotRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
 
-  // Scatter characters once the area has a size
+  const speakProblem = useCallback((p: Problem) => {
+    const opWord = p.op === "+" ? "たす" : "ひく";
+    if (p.missing === "a")       speak(`なに ${opWord} ${JP_NUM[p.b]} は ${JP_NUM[p.answer]} ですか？`);
+    else if (p.missing === "b")  speak(`${JP_NUM[p.a]} ${opWord} なに は ${JP_NUM[p.answer]} ですか？`);
+    else                         speak(`${JP_NUM[p.a]} ${opWord} ${JP_NUM[p.b]} は？`);
+  }, [speak]);
+
   useEffect(() => {
-    const area = areaRef.current;
-    if (!area) return;
-    const { clientWidth: w, clientHeight: h } = area;
-    const init: Record<number, Pos> = {};
-    CHARACTERS.forEach((c, i) => {
-      const col = i % 5, row = Math.floor(i / 5);
-      init[c.n] = {
-        x: 16 + col * ((w - 120) / 4) + Math.random() * 24,
-        y: 30 + row * (h / 2.4) + Math.random() * 30,
-        z: i + 1,
-      };
-    });
-    zTop.current = CHARACTERS.length + 1;
-    setPositions(init);
+    speakProblem(problem);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const newProblem = useCallback(() => {
+    const p = makeProblem();
+    setProblem(p);
+    setSolved(false);
+    setSlotFlash(null);
+    speakProblem(p);
+  }, [speakProblem]);
+
+  // ── Dragging from the palette ──
   const startDrag = (char: Character) => (e: React.PointerEvent) => {
     e.preventDefault();
-    const area = areaRef.current;
-    if (!area) return;
+    speak(char.jp); // speak Japanese name on grab
+    if (solved) return;
+    setDrag({ char, x: e.clientX, y: e.clientY });
 
-    speak(char.name.toLowerCase(), "en-US");
-
-    const areaRect = area.getBoundingClientRect();
-    const pos = positions[char.n];
-    if (!pos) return;
-    const offsetX = e.clientX - areaRect.left - pos.x;
-    const offsetY = e.clientY - areaRect.top - pos.y;
-    const z = ++zTop.current;
-
-    setDraggingId(char.n);
-    setPositions((p) => ({ ...p, [char.n]: { ...p[char.n], z } }));
-
-    const onMove = (ev: PointerEvent) => {
-      const nx = Math.max(0, Math.min(area.clientWidth - 90, ev.clientX - areaRect.left - offsetX));
-      const ny = Math.max(0, Math.min(area.clientHeight - 140, ev.clientY - areaRect.top - offsetY));
-      setPositions((p) => ({ ...p, [char.n]: { x: nx, y: ny, z } }));
-    };
-    const onUp = () => {
-      setDraggingId(null);
+    const onMove = (ev: PointerEvent) => setDrag({ char, x: ev.clientX, y: ev.clientY });
+    const onUp = (ev: PointerEvent) => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      setDrag(null);
+
+      const slot = slotRef.current?.getBoundingClientRect();
+      const inSlot = slot &&
+        ev.clientX >= slot.left && ev.clientX <= slot.right &&
+        ev.clientY >= slot.top && ev.clientY <= slot.bottom;
+      if (!inSlot) return;
+
+      if (char.n === problem.correct) {
+        setSolved(true);
+        setScore((s) => s + 1);
+        setSlotFlash("good");
+        speak(`せいかい！ ${JP_NUM[problem.correct]}`);
+        setTimeout(newProblem, 1800);
+      } else {
+        setSlotFlash("bad");
+        speak(`ざんねん…`);
+        setTimeout(() => setSlotFlash(null), 600);
+      }
     };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+  };
+
+  const { a, b, op, answer, missing } = problem;
+
+  // One equation slot: number on top, its character below (not draggable)
+  const EqSlot = ({ value, isMissing }: { value: number; isMissing: boolean }) => {
+    if (isMissing && !solved) {
+      return (
+        <div
+          ref={slotRef}
+          className="flex flex-col items-center justify-center rounded-2xl"
+          style={{
+            width: 96, height: 130,
+            border: `3px dashed ${slotFlash === "bad" ? "#ef4444" : "#8b5cf6"}`,
+            background: slotFlash === "bad" ? "rgba(239,68,68,0.1)" : "rgba(139,92,246,0.08)",
+            animation: slotFlash === "bad" ? "nbShake 0.3s" : undefined,
+          }}
+        >
+          <span className="font-black text-4xl text-purple-300 animate-pulse">?</span>
+          <span className="text-[10px] font-bold text-purple-400 mt-1">ここに おいてね</span>
+        </div>
+      );
+    }
+    const c = charFor(value);
+    return (
+      <div
+        className="flex flex-col items-center justify-end rounded-2xl"
+        style={{
+          width: 96, height: 130,
+          background: isMissing && solved ? "rgba(34,197,94,0.12)" : "transparent",
+          border: isMissing && solved ? "3px solid rgba(34,197,94,0.5)" : "3px solid transparent",
+        }}
+      >
+        <span className="font-black text-3xl mb-1" style={{ color: c.color }}>{value}</span>
+        <FriendBody char={c} block={13} />
+        <span className="text-[10px] font-bold text-gray-500 mt-3">{c.jp}</span>
+      </div>
+    );
   };
 
   return (
@@ -208,6 +297,7 @@ export default function NumberblocksFriends() {
           width: 5px; height: 5px; border-radius: 50%; background: #fff;
           animation: nbBlink 3.2s infinite;
         }
+        .nb-eye-dark { background: #5b4300; border: 1.5px solid #fff; width: 7px; height: 7px; }
         @keyframes nbBlink {
           0%, 92%, 100% { transform: scaleY(1); }
           95% { transform: scaleY(0.1); }
@@ -234,34 +324,71 @@ export default function NumberblocksFriends() {
         .nb-leg-kick-r { animation: nbKickR 0.25s ease-in-out infinite alternate; }
         @keyframes nbKickL { 0%,100% { transform: rotate(-25deg); } 50% { transform: rotate(25deg); } }
         @keyframes nbKickR { 0%,100% { transform: rotate(25deg); } 50% { transform: rotate(-25deg); } }
+        @keyframes nbShake {
+          0%, 100% { transform: translateX(0); }
+          25% { transform: translateX(-6px); }
+          75% { transform: translateX(6px); }
+        }
       `}</style>
 
       {/* Header */}
-      <div className="flex-shrink-0 text-center py-3">
-        <h1 className="font-black text-lg text-gray-700">🧱 ナンバーブロックスの ともだち</h1>
-        <p className="text-xs font-bold text-gray-500">Дүр дээр дарж, чирж хөдөлгөөрэй! 👆🔊</p>
+      <div className="flex-shrink-0 flex items-center justify-between px-4 py-3">
+        <div>
+          <h1 className="font-black text-lg text-gray-700">🧱 ナンバーブロックス</h1>
+          <p className="text-xs font-bold text-gray-500">Дутуу тоог доороос чирж оруулаарай! 👆</p>
+        </div>
+        <div className="px-3 py-1.5 rounded-2xl bg-white/70 shadow">
+          <span className="text-sm font-black text-orange-600">⭐ {score}</span>
+        </div>
       </div>
 
-      {/* Play area */}
+      {/* Equation with characters */}
+      <div className="flex-shrink-0 flex items-center justify-center gap-1 px-2 py-2">
+        <EqSlot value={a} isMissing={missing === "a"} />
+        <span className="font-black text-4xl text-gray-600 flex-shrink-0">{op}</span>
+        <EqSlot value={b} isMissing={missing === "b"} />
+        <span className="font-black text-4xl text-gray-400 flex-shrink-0">=</span>
+        <EqSlot value={answer} isMissing={missing === "answer"} />
+      </div>
+
+      {solved && (
+        <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 せいかい！</p>
+      )}
+
+      {/* Character palette — drag these into the "?" slot */}
       <div
-        ref={areaRef}
-        className="flex-1 relative mx-3 mb-3 rounded-3xl"
+        className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto"
         style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
       >
-        {CHARACTERS.map((c) => {
-          const pos = positions[c.n];
-          if (!pos) return null;
-          return (
-            <NumberFriend
+        <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-6 p-4 pt-8">
+          {CHARACTERS.map((c) => (
+            <div
               key={c.n}
-              char={c}
-              x={pos.x} y={pos.y} z={pos.z}
-              dragging={draggingId === c.n}
               onPointerDown={startDrag(c)}
-            />
-          );
-        })}
+              className="flex flex-col items-center cursor-grab active:cursor-grabbing touch-none select-none"
+              style={{ opacity: drag?.char.n === c.n ? 0.3 : 1 }}
+            >
+              <FriendBody char={c} block={15} />
+              <span
+                className="mt-3 px-2 py-0.5 rounded-full font-black text-[10px] text-white"
+                style={{ background: c.color }}
+              >
+                {c.n} · {c.jp}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
+
+      {/* Drag ghost following the pointer */}
+      {drag && (
+        <div
+          className="fixed z-50 pointer-events-none"
+          style={{ left: drag.x - 40, top: drag.y - 70 }}
+        >
+          <FriendBody char={drag.char} block={16} dragging />
+        </div>
+      )}
     </div>
   );
 }
