@@ -49,12 +49,13 @@ export default function AnimalMatchGame() {
   };
 
   const startDrag = useCallback((animal: Animal, clientX: number, clientY: number) => {
+    speak(animal.japanese);
     if (matched.has(animal.japanese)) return;
     const container = containerRef.current?.getBoundingClientRect();
     const cardEl = cardRefs.current.get(animal.japanese);
     if (!container || !cardEl) return;
     setDrag({ animal, from: centerOf(cardEl, container), pos: { x: clientX - container.left, y: clientY - container.top } });
-  }, [matched]);
+  }, [matched, speak]);
 
   const moveDrag = useCallback((clientX: number, clientY: number) => {
     const container = containerRef.current?.getBoundingClientRect();
@@ -78,15 +79,13 @@ export default function AnimalMatchGame() {
       if (hitWord && hitWord.japanese === d.animal.japanese) {
         setMatched((m) => new Set(m).add(d.animal.japanese));
         setScore((s) => s + 1);
-        speak(d.animal.japanese);
       } else if (hitWord) {
         setWrong(d.animal.japanese);
-        speak(d.animal.japanese);
         setTimeout(() => setWrong(null), 500);
       }
       return null;
     });
-  }, [round, speak]);
+  }, [round]);
 
   // Global pointer listeners while dragging
   useEffect(() => {
@@ -125,8 +124,16 @@ export default function AnimalMatchGame() {
           <h1 className="text-xl font-black text-gray-800">🐾 どうぶつマッチ</h1>
           <p className="text-xs text-gray-500 font-bold">Drag animal → matching word</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white shadow">
-          <span className="text-sm font-black text-purple-600">{score}/{round.length}</span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white shadow">
+            <span className="text-sm font-black text-purple-600">{score}/{round.length}</span>
+          </div>
+          <button
+            onClick={newRound}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-2xl bg-white shadow font-black text-xs text-gray-600 active:scale-95 transition-all"
+          >
+            🔀 Next
+          </button>
         </div>
       </div>
 
