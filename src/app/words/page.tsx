@@ -369,6 +369,15 @@ function DrawModal({
   );
 }
 
+interface DictEntry {
+  japanese_word: string;
+  hiragana?: string;
+  english_meaning?: string;
+  mongolian_meaning?: string;
+  example_image_url?: string;
+  pronunciation_audio_url?: string;
+}
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function WordsPage() {
   const [tab, setTab]           = useState<Tab>("hiragana");
@@ -376,11 +385,30 @@ export default function WordsPage() {
   const [lastChar, setLastChar] = useState<string | null>(null);
   const [inputVal, setInputVal] = useState("");
   const [showDraw, setShowDraw] = useState(false);
+  const [dictEntry, setDictEntry] = useState<DictEntry | null>(null);
   const inputRef                = useRef<HTMLInputElement>(null);
+  const lookupTimer             = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { speak }               = useSpeech();
 
   const rows    = tab === "hiragana" ? HIRAGANA_ROWS : KATAKANA_ROWS;
   const current = word.join("");
+
+  // Dictionary image lookup — debounced
+  useEffect(() => {
+    if (lookupTimer.current) clearTimeout(lookupTimer.current);
+    if (!current) { setDictEntry(null); return; }
+    lookupTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/dictionary?q=${encodeURIComponent(current)}&exact=true&limit=1`);
+        const data = await res.json();
+        const entry = data.words?.[0] ?? null;
+        setDictEntry(entry && entry.example_image_url ? entry : null);
+      } catch {
+        setDictEntry(null);
+      }
+    }, 400);
+    return () => { if (lookupTimer.current) clearTimeout(lookupTimer.current); };
+  }, [current]);
 
   const suggestions = current.length > 0
     ? WORD_DICT.filter((w) => w.word.startsWith(current)).slice(0, 6)
@@ -489,8 +517,46 @@ export default function WordsPage() {
           </div>
         </div>
 
-        {/* Exact match */}
-        {exactMatch && (
+        {/* Dictionary image from DB */}
+        {dictEntry && (
+          <div className="mx-4 mb-2 rounded-2xl overflow-hidden flex items-stretch gap-0"
+            style={{ background: "rgba(139,92,246,0.15)", border: "2px solid rgba(139,92,246,0.4)" }}>
+            {/* Image */}
+            <div className="w-24 h-24 flex-shrink-0 relative overflow-hidden rounded-l-xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={dictEntry.example_image_url}
+                alt={dictEntry.japanese_word}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Info */}
+            <div className="flex-1 flex flex-col justify-center px-3 py-2 gap-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-white font-black text-xl leading-tight">{dictEntry.japanese_word}</span>
+                {dictEntry.hiragana && dictEntry.hiragana !== dictEntry.japanese_word && (
+                  <span className="text-purple-300 text-sm font-bold">({dictEntry.hiragana})</span>
+                )}
+                <button
+                  onClick={() => speak(dictEntry.pronunciation_audio_url || dictEntry.japanese_word)}
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-sm active:scale-90 ml-auto"
+                  style={{ background: "rgba(139,92,246,0.4)" }}
+                >
+                  🔊
+                </button>
+              </div>
+              {dictEntry.english_meaning && (
+                <span className="text-purple-200/80 text-xs font-bold">{dictEntry.english_meaning}</span>
+              )}
+              {dictEntry.mongolian_meaning && (
+                <span className="text-purple-300/70 text-xs">{dictEntry.mongolian_meaning}</span>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Exact match (local dict fallback) */}
+        {exactMatch && !dictEntry && (
           <div className="mx-4 mb-2 rounded-2xl px-4 py-2.5 flex items-center gap-3"
             style={{ background: "rgba(34,197,94,0.15)", border: "2px solid rgba(34,197,94,0.4)" }}>
             <span className="text-xl">✅</span>
