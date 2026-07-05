@@ -13,12 +13,15 @@ const JP = [
 
 type Op    = "+" | "−";
 type Level = 1 | 2 | 3 | 4;
+type Slot  = "a" | "b" | "answer";
 
 interface Problem {
   a: number;
   b: number;
   op: Op;
   answer: number;
+  missingSlot: Slot;
+  correctValue: number;
   choices: number[];
 }
 
@@ -58,21 +61,24 @@ function makeProblem(level: Level): Problem {
 
   const answer = op === "+" ? a + b : a - b;
 
-  // 4 unique choices
-  const set = new Set<number>([answer]);
+  // Randomly hide one of the three slots — the child solves for the missing part
+  const missingSlot: Slot = (["a", "b", "answer"] as Slot[])[Math.floor(Math.random() * 3)];
+  const correctValue = missingSlot === "a" ? a : missingSlot === "b" ? b : answer;
+
+  // 4 unique choices around the correct value
+  const set = new Set<number>([correctValue]);
   let tries = 0;
   while (set.size < 4 && tries < 100) {
     const delta = Math.floor(Math.random() * 5) - 2;
-    const w = answer + delta;
-    if (w !== answer && w >= 0 && w <= 20) set.add(w);
+    const w = correctValue + delta;
+    if (w !== correctValue && w >= 0 && w <= 20) set.add(w);
     tries++;
   }
-  // fill remaining if needed
   let fill = 0;
   while (set.size < 4) { if (!set.has(fill)) set.add(fill); fill++; }
 
   return {
-    a, b, op, answer,
+    a, b, op, answer, missingSlot, correctValue,
     choices: Array.from(set).sort(() => Math.random() - 0.5),
   };
 }
@@ -127,6 +133,18 @@ function BlockChar({ n, crossed }: { n: number; crossed?: boolean }) {
   );
 }
 
+// A "?" placeholder shown in place of whichever number is missing, until revealed
+function MysteryBlock() {
+  return (
+    <div
+      className="w-9 h-9 rounded-lg border-2 border-dashed flex items-center justify-center flex-shrink-0 animate-pulse"
+      style={{ borderColor: "#c4b5fd", background: "#f5f3ff" }}
+    >
+      <span className="text-purple-300 font-black text-lg">?</span>
+    </div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────
 export default function MathPage() {
   const [level, setLevel]     = useState<Level>(1);
@@ -140,10 +158,20 @@ export default function MathPage() {
 
   const cfg = LEVEL_CONFIG[level];
 
+  const speakProblem = useCallback((p: Problem) => {
+    const opWord = p.op === "+" ? "たす" : "ひく";
+    if (p.missingSlot === "a") {
+      speak(`なに ${opWord} ${JP[p.b]} は ${JP[p.answer]} ですか？`);
+    } else if (p.missingSlot === "b") {
+      speak(`${JP[p.a]} ${opWord} なに は ${JP[p.answer]} ですか？`);
+    } else {
+      speak(`${JP[p.a]} ${opWord} ${JP[p.b]} は？`);
+    }
+  }, [speak]);
+
   // Speak the question when it changes
   useEffect(() => {
-    const op = problem.op === "+" ? "たす" : "ひく";
-    speak(`${JP[problem.a]} ${op} ${JP[problem.b]} は？`);
+    speakProblem(problem);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [problem]);
 
@@ -165,19 +193,24 @@ export default function MathPage() {
     if (selected !== null) return;
     setSelected(choice);
     setTotal(t => t + 1);
-    const correct = choice === problem.answer;
+    const correct = choice === problem.correctValue;
     if (correct) {
       setScore(s => s + 1);
       setStreak(s => s + 1);
-      speak(`せいかい！ ${JP[problem.answer]}`);
+      speak(`せいかい！ ${JP[problem.correctValue]}`);
     } else {
       setStreak(0);
-      speak(`ざんねん… こたえは ${JP[problem.answer]} です`);
+      speak(`ざんねん… こたえは ${JP[problem.correctValue]} です`);
     }
   };
 
-  const { a, b, op, answer, choices } = problem;
+  const { a, b, op, answer, missingSlot, choices } = problem;
   const opLabel = op === "+" ? "たす" : "ひく";
+  const revealed = selected !== null;
+
+  const displayA      = missingSlot === "a" && !revealed ? "?" : a;
+  const displayB      = missingSlot === "b" && !revealed ? "?" : b;
+  const displayAnswer = missingSlot === "answer" && !revealed ? "?" : answer;
 
   return (
     <div className="max-w-md mx-auto px-4 py-6 pb-28">
@@ -229,27 +262,33 @@ export default function MathPage() {
       >
         {/* Japanese question */}
         <p className="text-sm font-black mb-3" style={{ color: cfg.color }}>
-          {JP[a]} {opLabel} {JP[b]} は？
+          {missingSlot === "a" ? "なに" : JP[a]} {opLabel} {missingSlot === "b" ? "なに" : JP[b]} は
+          {missingSlot === "answer" ? "？" : ` ${JP[answer]}`}
         </p>
 
-        {/* Big equation */}
+        {/* Big equation — traditional a op b = answer format */}
         <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="text-6xl font-black text-gray-800">{a}</span>
+          <span className="text-6xl font-black" style={{ color: missingSlot === "a" && !revealed ? "#c4b5fd" : "#1e293b" }}>
+            {displayA}
+          </span>
           <span className="text-5xl font-black" style={{ color: cfg.color }}>{op}</span>
-          <span className="text-6xl font-black text-gray-800">{b}</span>
+          <span className="text-6xl font-black" style={{ color: missingSlot === "b" && !revealed ? "#c4b5fd" : "#1e293b" }}>
+            {displayB}
+          </span>
           <span className="text-5xl font-black text-gray-400">=</span>
-          <span className="text-6xl font-black"
-            style={{ color: selected !== null ? cfg.color : "#e2e8f0" }}>
-            {selected !== null ? answer : "?"}
+          <span className="text-6xl font-black" style={{ color: missingSlot === "answer" && !revealed ? "#c4b5fd" : cfg.color }}>
+            {displayAnswer}
           </span>
         </div>
 
-        {/* Numberblocks-style visualizer */}
+        {/* Numberblocks-style visualizer — every slot gets its own character */}
         {showDots && (
-          <div className="flex items-center justify-center gap-3 flex-wrap">
-            <BlockChar n={a} />
-            <span className="text-2xl font-black flex-shrink-0" style={{ color: cfg.color }}>{op}</span>
-            <BlockChar n={b} crossed={op === "−"} />
+          <div className="flex items-center justify-center gap-2 flex-wrap">
+            {missingSlot === "a" && !revealed ? <MysteryBlock /> : <BlockChar n={a} />}
+            <span className="text-xl font-black flex-shrink-0" style={{ color: cfg.color }}>{op}</span>
+            {missingSlot === "b" && !revealed ? <MysteryBlock /> : <BlockChar n={b} crossed={op === "−"} />}
+            <span className="text-xl font-black flex-shrink-0 text-gray-300">=</span>
+            {missingSlot === "answer" && !revealed ? <MysteryBlock /> : <BlockChar n={answer} />}
           </div>
         )}
 
@@ -265,9 +304,8 @@ export default function MathPage() {
       {/* Answer choices */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         {choices.map((c) => {
-          const isCorrect = c === answer;
+          const isCorrect = c === problem.correctValue;
           const isSelected = c === selected;
-          const revealed = selected !== null;
 
           let bg = "#f8fafc";
           let border = "#e2e8f0";
@@ -308,7 +346,7 @@ export default function MathPage() {
       </div>
 
       {/* Next / Speak buttons */}
-      {selected !== null ? (
+      {revealed ? (
         <button
           onClick={() => next()}
           className="w-full py-4 rounded-3xl font-black text-lg text-white transition-all active:scale-95 flex items-center justify-center gap-3"
@@ -318,7 +356,7 @@ export default function MathPage() {
         </button>
       ) : (
         <button
-          onClick={() => speak(`${JP[a]} ${opLabel} ${JP[b]} は？`)}
+          onClick={() => speakProblem(problem)}
           className="w-full py-4 rounded-3xl font-black text-base transition-all active:scale-95 flex items-center justify-center gap-3"
           style={{ backgroundColor: `${cfg.color}15`, color: cfg.color, border: `2px solid ${cfg.color}33` }}
         >
