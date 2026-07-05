@@ -21,6 +21,7 @@ const APPS = [
   { href: "/left-right", icon: "👈", label: "Left/Right",  color: "#0ea5e9", bg: "from-sky-400 to-green-400" },
   { href: "/memory-hands", icon: "🧠", label: "Memory",    color: "#ff9f43", bg: "from-orange-400 to-amber-500" },
   { href: "/minemind-connect", icon: "💣", label: "MineMind", color: "#38bdf8", bg: "from-indigo-500 to-sky-500" },
+  { href: "/youtube", icon: "📺", label: "YouTube", color: "#ef4444", bg: "from-red-500 to-rose-600" },
   { href: "/family",     icon: "👨‍👩‍👧", label: "Family",    color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
   { href: "/clock",      icon: "🕐", label: "Clock",       color: "#6366f1", bg: "from-indigo-400 to-violet-500" },
   { href: "/math",       icon: "🧮", label: "Math",        color: "#14b8a6", bg: "from-teal-400 to-cyan-500" },

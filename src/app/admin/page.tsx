@@ -31,6 +31,7 @@ export default async function AdminDashboard() {
         <StatCard icon="📚" label="Total Books" value={bookCount} color="bg-pink-50 border-pink-200" href="/admin/books" />
         <StatCard icon="📝" label="Dictionary Words" value={wordCount} color="bg-purple-50 border-purple-200" href="/admin/dictionary" />
         <StatCard icon="🎮" label="Games" value={null} color="bg-green-50 border-green-200" href="/admin/games" />
+        <StatCard icon="📺" label="YouTube" value={null} color="bg-red-50 border-red-200" href="/admin/youtube" />
       </div>
 
       {/* Quick actions */}
