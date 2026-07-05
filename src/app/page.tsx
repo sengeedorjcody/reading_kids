@@ -18,6 +18,7 @@ const APPS = [
   { href: "/colors",     icon: "🎨", label: "Colors",      color: "#a855f7", bg: "from-purple-400 to-fuchsia-500" },
   // Row 3 — topics
   { href: "/directions", icon: "🧭", label: "Directions",  color: "#3b82f6", bg: "from-blue-400 to-indigo-500" },
+  { href: "/left-right", icon: "👈", label: "Left/Right",  color: "#0ea5e9", bg: "from-sky-400 to-green-400" },
   { href: "/family",     icon: "👨‍👩‍👧", label: "Family",    color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
   { href: "/clock",      icon: "🕐", label: "Clock",       color: "#6366f1", bg: "from-indigo-400 to-violet-500" },
   { href: "/math",       icon: "🧮", label: "Math",        color: "#14b8a6", bg: "from-teal-400 to-cyan-500" },
