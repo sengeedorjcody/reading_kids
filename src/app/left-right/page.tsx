@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
 
 const HAND_SHAPES = ["✋", "🖐️", "✌️", "✊", "👍", "☝️", "🤘", "👌"];
+const SPEED_OPTIONS = [3, 5, 8, 10];
 
 function randomShape() {
   return HAND_SHAPES[Math.floor(Math.random() * HAND_SHAPES.length)];
@@ -13,6 +14,7 @@ export default function LeftRightPage() {
   const [leftShape, setLeftShape] = useState(() => randomShape());
   const [rightShape, setRightShape] = useState(() => randomShape());
   const [flash, setFlash] = useState<"left" | "right" | null>(null);
+  const [speed, setSpeed] = useState(5);
   const { speak } = useSpeech();
 
   const tap = (side: "left" | "right") => {
@@ -25,16 +27,32 @@ export default function LeftRightPage() {
     const t = setInterval(() => {
       setLeftShape(randomShape());
       setRightShape(randomShape());
-    }, 5000);
+    }, speed * 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [speed]);
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex-shrink-0 text-center py-3 z-10" style={{ background: "#1e293b" }}>
         <h1 className="text-white font-black text-lg">👈👉 ひだり・みぎ</h1>
-        <p className="text-white/50 text-xs font-bold">Зүүн ба баруун гар</p>
+        <p className="text-white/50 text-xs font-bold mb-2">Зүүн ба баруун гар</p>
+        <div className="flex items-center justify-center gap-1.5">
+          {SPEED_OPTIONS.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSpeed(s)}
+              className="px-3 py-1 rounded-full text-xs font-black transition-all active:scale-95"
+              style={
+                speed === s
+                  ? { background: "#f97316", color: "#fff" }
+                  : { background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)" }
+              }
+            >
+              {s}s
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Split screen */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 const GESTURES = ["✋", "✊", "✌️", "👍", "☝️", "🤘", "👌", "🖐️"];
+const SPEED_OPTIONS = [3, 5, 8, 10];
 
 function randomGesture() {
   return GESTURES[Math.floor(Math.random() * GESTURES.length)];
@@ -11,17 +12,37 @@ function randomGesture() {
 export default function MemoryHandsGame() {
   const [left, setLeft] = useState(() => randomGesture());
   const [right, setRight] = useState(() => randomGesture());
+  const [speed, setSpeed] = useState(3);
 
   useEffect(() => {
     const t = setInterval(() => {
       setLeft(randomGesture());
       setRight(randomGesture());
-    }, 3000);
+    }, speed * 1000);
     return () => clearInterval(t);
-  }, []);
+  }, [speed]);
 
   return (
-    <div className="fixed inset-0 flex overflow-hidden select-none">
+    <div className="fixed inset-0 flex flex-col overflow-hidden select-none">
+      {/* Speed selector */}
+      <div className="flex-shrink-0 flex items-center justify-center gap-1.5 py-2 z-10" style={{ background: "#1e293b" }}>
+        {SPEED_OPTIONS.map((s) => (
+          <button
+            key={s}
+            onClick={() => setSpeed(s)}
+            className="px-3 py-1 rounded-full text-xs font-black transition-all active:scale-95"
+            style={
+              speed === s
+                ? { background: "#ff9f43", color: "#fff" }
+                : { background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)" }
+            }
+          >
+            {s}s
+          </button>
+        ))}
+      </div>
+
+      <div className="flex-1 flex">
       {/* Left hand */}
       <div
         className="flex-1 flex flex-col items-center justify-center gap-3 relative"
@@ -46,6 +67,7 @@ export default function MemoryHandsGame() {
         <span style={{ fontSize: 110, minHeight: 150, display: "flex", alignItems: "center", transform: "scaleX(-1)" }}>
           {right}
         </span>
+      </div>
       </div>
     </div>
   );
