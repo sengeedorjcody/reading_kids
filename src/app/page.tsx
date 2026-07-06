@@ -3,7 +3,16 @@
 import Link from "next/link";
 import HomeDateWidget from "@/components/HomeDateWidget";
 
-const APPS = [
+interface AppEntry {
+  href: string;
+  icon?: string;
+  iconSrc?: string;
+  label: string;
+  color: string;
+  bg: string;
+}
+
+const APPS: AppEntry[] = [
   // Row 1 — core learning
   { href: "/exam",       icon: "📝", label: "Exam",        color: "#f97316", bg: "from-orange-500 to-rose-500" },
   { href: "/flashcards", icon: "🃏", label: "Flashcards",  color: "#ec4899", bg: "from-pink-400 to-rose-500" },
@@ -18,10 +27,7 @@ const APPS = [
   { href: "/colors",     icon: "🎨", label: "Colors",      color: "#a855f7", bg: "from-purple-400 to-fuchsia-500" },
   // Row 3 — topics
   { href: "/directions", icon: "🧭", label: "Directions",  color: "#3b82f6", bg: "from-blue-400 to-indigo-500" },
-  { href: "/left-right", icon: "👈", label: "Left/Right",  color: "#0ea5e9", bg: "from-sky-400 to-green-400" },
-  { href: "/memory-hands", icon: "🧠", label: "Memory",    color: "#ff9f43", bg: "from-orange-400 to-amber-500" },
-  { href: "/minemind-connect", icon: "💣", label: "MineMind", color: "#38bdf8", bg: "from-indigo-500 to-sky-500" },
-  { href: "/youtube", icon: "📺", label: "YouTube", color: "#ef4444", bg: "from-red-500 to-rose-600" },
+  { href: "/youtube", iconSrc: "/youtube-icon.svg", label: "YouTube", color: "#ef4444", bg: "from-red-500 to-rose-600" },
   { href: "/family",     icon: "👨‍👩‍👧", label: "Family",    color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
   { href: "/clock",      icon: "🕐", label: "Clock",       color: "#6366f1", bg: "from-indigo-400 to-violet-500" },
   { href: "/math",       icon: "🧮", label: "Math",        color: "#14b8a6", bg: "from-teal-400 to-cyan-500" },
@@ -71,9 +77,7 @@ export default function HomePage() {
   );
 }
 
-function AppIcon({ href, icon, label, bg }: {
-  href: string; icon: string; label: string; color: string; bg: string;
-}) {
+function AppIcon({ href, icon, iconSrc, label, bg }: AppEntry) {
   return (
     <Link
       href={href}
@@ -86,7 +90,12 @@ function AppIcon({ href, icon, label, bg }: {
           boxShadow: "0 4px 15px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2)",
         }}
       >
-        <span className="drop-shadow-md leading-none">{icon}</span>
+        {iconSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={iconSrc} alt={label} className="w-9 h-9 drop-shadow-md" />
+        ) : (
+          <span className="drop-shadow-md leading-none">{icon}</span>
+        )}
       </div>
       {/* Label */}
       <span

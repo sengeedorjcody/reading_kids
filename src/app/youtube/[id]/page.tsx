@@ -86,6 +86,9 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   const [dictEntry, setDictEntry] = useState<DictEntry | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [videoWidthPct, setVideoWidthPct] = useState(50);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const columnsRef = useRef<HTMLDivElement>(null);
 
   const playerRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const playerElRef = useRef<HTMLDivElement>(null);
@@ -146,6 +149,32 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   useEffect(() => {
     activeLineRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [currentTime]);
+
+  // Track desktop (3-columns-in-a-row) vs mobile layout so the video column
+  // only gets a custom drag-resized width when columns are actually side by side.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 900px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  const startColumnResize = (e: React.PointerEvent) => {
+    e.preventDefault();
+    const rect = columnsRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const onMove = (ev: PointerEvent) => {
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+      setVideoWidthPct(Math.min(75, Math.max(25, pct)));
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
 
   // Segment every line into words once, when the video loads
   const linesTokens = useMemo(
@@ -235,11 +264,23 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         <h1 className="text-white font-black text-sm truncate flex-1">{video.title}</h1>
       </div>
 
-      {/* 1 + 2 + 3: on desktop, three equal columns side by side; on mobile, stacked */}
-      <div className="flex-1 flex flex-col min-[900px]:flex-row min-h-0">
+      {/* 1 + 2 + 3: on desktop, three columns side by side (video is drag-resizable); on mobile, stacked */}
+      <div ref={columnsRef} className="flex-1 flex flex-col min-[900px]:flex-row min-h-0">
         {/* 1. Video column */}
-        <div className="flex-shrink-0 min-[900px]:flex-1 w-full aspect-video min-[900px]:aspect-auto min-[900px]:h-full bg-black">
+        <div
+          className="flex-shrink-0 min-[900px]:flex-1 w-full aspect-video min-[900px]:aspect-auto min-[900px]:h-full bg-black"
+          style={isDesktop ? { width: `${videoWidthPct}%`, flex: "none" } : undefined}
+        >
           <div ref={playerElRef} className="w-full h-full" />
+        </div>
+
+        {/* Drag handle to resize the video column (desktop only) */}
+        <div
+          onPointerDown={startColumnResize}
+          className="hidden min-[900px]:flex flex-shrink-0 items-center justify-center active:bg-white/10 transition-colors"
+          style={{ width: 10, cursor: "col-resize", background: "rgba(255,255,255,0.03)" }}
+        >
+          <div style={{ width: 3, height: 32, borderRadius: 999, background: "rgba(255,255,255,0.2)" }} />
         </div>
 
         {/* 2. Transcript column — only when the video has one */}

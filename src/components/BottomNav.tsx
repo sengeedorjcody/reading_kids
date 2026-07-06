@@ -14,7 +14,7 @@ export default function BottomNav() {
       {/* Spacer so page content isn't hidden behind the fixed nav */}
       <div className="h-24" />
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
-        <div className="flex items-center gap-1 px-2 py-2 overflow-x-auto scrollbar-none">
+        <div className="bottom-nav-scroll flex items-center gap-1 px-2 py-2 overflow-x-auto">
           <BottomNavLink href="/" icon="🏠" label="Home" />
           <BottomNavLink href="/exam" icon="📝" label="Exam" />
           <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
@@ -29,10 +29,7 @@ export default function BottomNav() {
           <BottomNavLink href="/home" icon="🏠" label="Home" />
           <BottomNavLink href="/colors" icon="🎨" label="Colors" />
           <BottomNavLink href="/directions" icon="🧭" label="Direction" />
-          <BottomNavLink href="/left-right" icon="👈" label="Left/Right" />
-          <BottomNavLink href="/memory-hands" icon="🧠" label="Memory" />
-          <BottomNavLink href="/minemind-connect" icon="💣" label="MineMind" />
-          <BottomNavLink href="/youtube" icon="📺" label="YouTube" />
+          <BottomNavLink href="/youtube" iconSrc="/youtube-icon.svg" label="YouTube" />
           <BottomNavLink href="/clock" icon="🕐" label="Clock" />
           <BottomNavLink href="/themes" icon="🗂️" label="Themes" />
           <BottomNavLink href="/math" icon="🧮" label="Math" />
@@ -53,7 +50,9 @@ export default function BottomNav() {
   );
 }
 
-function BottomNavLink({ href, icon, label, isAdmin }: { href: string; icon: string; label: string; isAdmin?: boolean }) {
+function BottomNavLink({ href, icon, iconSrc, label, isAdmin }: {
+  href: string; icon?: string; iconSrc?: string; label: string; isAdmin?: boolean;
+}) {
   return (
     <Link
       href={href}
@@ -63,7 +62,12 @@ function BottomNavLink({ href, icon, label, isAdmin }: { href: string; icon: str
           : "text-gray-500 hover:text-pink-600 hover:bg-pink-50"
       }`}
     >
-      <span className="text-3xl leading-none">{icon}</span>
+      {iconSrc ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={iconSrc} alt={label} className="w-7 h-7" />
+      ) : (
+        <span className="text-3xl leading-none">{icon}</span>
+      )}
       <span className="text-xs font-bold">{label}</span>
     </Link>
   );
