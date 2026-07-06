@@ -85,6 +85,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   const [selection, setSelection] = useState<Selection | null>(null);
   const [dictEntry, setDictEntry] = useState<DictEntry | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const playerRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const playerElRef = useRef<HTMLDivElement>(null);
@@ -197,6 +198,19 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
       .finally(() => setLookupLoading(false));
   }, [speak]);
 
+  // Manual dictionary search — used when a video has no transcript to tap words from.
+  const searchWord = useCallback((query: string) => {
+    const text = query.trim();
+    if (!text) return;
+    setSelection({ lineIndex: -1, tokenStart: 0, tokenEnd: 0, text });
+    setDictEntry(null);
+    setLookupLoading(true);
+    fetchDictEntry(text)
+      .then((entry) => { setDictEntry(entry); speak(text); })
+      .catch(() => setDictEntry(null))
+      .finally(() => setLookupLoading(false));
+  }, [speak]);
+
   if (!video) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black">
@@ -204,6 +218,8 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
       </div>
     );
   }
+
+  const hasTranscript = video.transcript.length > 0;
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-black">
@@ -226,7 +242,8 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
           <div ref={playerElRef} className="w-full h-full" />
         </div>
 
-        {/* 2. Transcript column */}
+        {/* 2. Transcript column — only when the video has one */}
+        {hasTranscript && (
         <div className="flex-1 min-[900px]:border-l overflow-y-auto px-3 py-3 min-h-0" style={{ background: "#0f172a", borderColor: "rgba(255,255,255,0.1)" }}>
           {video.transcript.map((line, i) => {
             const isActive = i === activeIndex;
@@ -265,13 +282,39 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
             );
           })}
         </div>
+        )}
 
         {/* 3. Dictionary column */}
         <div className="flex-1 border-t min-[900px]:border-t-0 min-[900px]:border-l overflow-y-auto px-4 py-4"
           style={{ background: "#111827", borderColor: "rgba(255,255,255,0.1)", minHeight: 140 }}
         >
+          {!hasTranscript && (
+            <form
+              onSubmit={(e) => { e.preventDefault(); searchWord(searchQuery); }}
+              className="flex items-center gap-2 mb-4"
+            >
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="単語を入力… (үг бичих)"
+                lang="ja"
+                className="flex-1 rounded-xl px-3 py-2 text-sm text-white outline-none"
+                style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
+              />
+              <button
+                type="submit"
+                className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 active:scale-90 transition-all"
+                style={{ background: "rgba(139,92,246,0.4)" }}
+              >
+                🔍
+              </button>
+            </form>
+          )}
           {!selection && (
-            <p className="text-white/30 text-sm text-center mt-6">Үг дээр дарж утгыг харна уу</p>
+            <p className="text-white/30 text-sm text-center mt-6">
+              {hasTranscript ? "Үг дээр дарж утгыг харна уу" : "Дээрх хэсэгт үг бичиж хайна уу"}
+            </p>
           )}
           {selection && lookupLoading && (
             <p className="text-white/40 text-sm text-center mt-6">Хайж байна…</p>

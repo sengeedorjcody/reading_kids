@@ -80,10 +80,6 @@ export default function AdminYoutubePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (transcript.length === 0) {
-      setError("SRT файл сонгоно уу");
-      return;
-    }
     setSaving(true);
     setError("");
     try {
@@ -159,7 +155,7 @@ export default function AdminYoutubePage() {
 
           <div className="grid grid-cols-2 gap-4 items-end">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1">Subtitle .srt файл *</label>
+              <label className="block text-xs font-bold text-gray-500 mb-1">Subtitle .srt файл (заавал биш)</label>
               <input
                 type="file"
                 accept=".srt"
@@ -178,9 +174,13 @@ export default function AdminYoutubePage() {
             </div>
           </div>
 
-          {srtFileName && (
+          {srtFileName ? (
             <p className="text-[11px] text-gray-500">
               📄 {srtFileName} {transcript.length > 0 && `— ${transcript.length} мөр, нийт урт ${mmss(transcript[transcript.length - 1].start)}`}
+            </p>
+          ) : (
+            <p className="text-[11px] text-gray-400">
+              SRT сонгоогүй бол транскриптийн багана харагдахгүй, харин толь бичгийн баганад үг хайх хэсэг гарч ирнэ.
             </p>
           )}
 
