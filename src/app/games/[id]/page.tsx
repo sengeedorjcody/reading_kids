@@ -26,11 +26,15 @@ export default function GamePlayPage({ params }: { params: { id: string } }) {
     );
   }
 
-  // Internal games are our own same-origin pages (relative iframeSrc like "/animal-match").
-  // Sandboxing them provides no real security benefit and is known to silently break
-  // the Web Speech API (no sound, no error) inside sandboxed iframes on iOS Safari —
+  // Internal games are our own same-origin pages — either a relative path
+  // ("/animal-match") or a full URL that happens to point at this same site
+  // (some were added via admin by pasting the whole address). Sandboxing them
+  // provides no real security benefit and is known to silently break the Web
+  // Speech API (no sound, no error) inside sandboxed iframes on iOS Safari —
   // only sandbox truly external content (e.g. Higgsfield's absolute URLs).
-  const isInternal = game.iframeSrc.startsWith("/");
+  const isInternal =
+    game.iframeSrc.startsWith("/") ||
+    (typeof window !== "undefined" && game.iframeSrc.startsWith(window.location.origin));
 
   return (
     <div className="fixed inset-0 bg-black flex flex-col">
