@@ -16,10 +16,12 @@ export async function GET(request: NextRequest) {
 
     if (q && q.trim()) {
       if (exact) {
-        // Exact match on japanese_word or hiragana only (used by DictionaryPanel)
+        // Exact match on japanese_word, hiragana, or romaji (case-insensitive)
+        const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         query.$or = [
           { japanese_word: q.trim() },
           { hiragana: q.trim() },
+          { romaji: { $regex: `^${escaped}$`, $options: "i" } },
         ];
       } else {
         // Partial / regex match for search UI
