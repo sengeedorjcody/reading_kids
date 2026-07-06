@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { IYoutubeVideo } from "@/lib/db/models/YoutubeVideo";
 import { useSpeech } from "@/hooks/useSpeech";
@@ -14,15 +14,36 @@ interface DictEntry {
   example_image_url?: string;
 }
 
+interface Token {
+  text: string;
+  isWord: boolean; // false for punctuation/whitespace segments
+}
+
 interface Selection {
   lineIndex: number;
-  start: number; // inclusive char index (Array.from-based)
-  end: number;   // exclusive
+  tokenStart: number; // inclusive token index
+  tokenEnd: number;   // exclusive
   text: string;
 }
 
-const WORD_CHAR = /[぀-ヿ㐀-鿿豈-﫿ー]/;
-const MAX_LOOKUP_LEN = 6;
+const MAX_MERGE_TOKENS = 3; // adjacent word-segmenter tokens to try merging for compound words
+
+// Prefer the real Intl.Segmenter (ICU dictionary-based word breaking, built into
+// modern browsers) so words like 話します / 自己紹介 keep proper boundaries instead
+// of being split character-by-character.
+const jaSegmenter: Intl.Segmenter | null =
+  typeof Intl !== "undefined" && "Segmenter" in Intl ? new Intl.Segmenter("ja", { granularity: "word" }) : null;
+
+function segmentLine(text: string): Token[] {
+  // Lines that were manually pre-segmented with spaces (e.g. "私 は 今日") keep that as-is.
+  if (/\s/.test(text)) {
+    return text.split(/(\s+)/).filter(Boolean).map((t) => ({ text: t, isWord: !/^\s+$/.test(t) }));
+  }
+  if (jaSegmenter) {
+    return Array.from(jaSegmenter.segment(text)).map((s) => ({ text: s.segment, isWord: !!s.isWordLike }));
+  }
+  return [{ text, isWord: true }];
+}
 
 async function fetchDictEntry(text: string): Promise<DictEntry | null> {
   const res = await fetch(`/api/dictionary?q=${encodeURIComponent(text)}&exact=true&limit=1`);
@@ -104,6 +125,12 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
     activeLineRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [currentTime]);
 
+  // Segment every line into words once, when the video loads
+  const linesTokens = useMemo(
+    () => video ? video.transcript.map((line) => segmentLine(line.text)) : [],
+    [video]
+  );
+
   const activeIndex = video
     ? video.transcript.reduce((best, line, i) => (line.start <= currentTime ? i : best), -1)
     : -1;
@@ -113,32 +140,38 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
     playerRef.current?.playVideo?.();
   };
 
-  // Tap a character in a line: greedily try the longest run of word-characters
-  // starting there and look up the longest substring that's actually in the
-  // dictionary (falls back to the single tapped character if nothing matches).
-  const lookupAt = useCallback((lineIndex: number, lineText: string, charIndex: number) => {
-    const chars = Array.from(lineText);
-    if (!WORD_CHAR.test(chars[charIndex])) return;
+  // Tap a word token: try merging it with the next 1-2 tokens to catch
+  // compound words, picking the longest combination that's actually in the
+  // dictionary (falls back to just the tapped token if nothing matches).
+  const lookupAt = useCallback((lineIndex: number, tokens: Token[], tokenIndex: number) => {
+    if (!tokens[tokenIndex]?.isWord) return;
 
-    let runEnd = charIndex;
-    while (runEnd < chars.length && runEnd - charIndex < MAX_LOOKUP_LEN && WORD_CHAR.test(chars[runEnd])) {
-      runEnd++;
+    let mergeCount = 1;
+    while (
+      mergeCount < MAX_MERGE_TOKENS &&
+      tokens[tokenIndex + mergeCount]?.isWord
+    ) {
+      mergeCount++;
     }
-    const maxLen = runEnd - charIndex;
-    const candidates: string[] = [];
-    for (let len = maxLen; len >= 1; len--) candidates.push(chars.slice(charIndex, charIndex + len).join(""));
 
-    setSelection({ lineIndex, start: charIndex, end: charIndex + 1, text: candidates[candidates.length - 1] });
+    const candidates: { text: string; tokenEnd: number }[] = [];
+    for (let n = mergeCount; n >= 1; n--) {
+      const text = tokens.slice(tokenIndex, tokenIndex + n).map((t) => t.text).join("");
+      candidates.push({ text, tokenEnd: tokenIndex + n });
+    }
+
+    const fallback = candidates[candidates.length - 1];
+    setSelection({ lineIndex, tokenStart: tokenIndex, tokenEnd: fallback.tokenEnd, text: fallback.text });
     setDictEntry(null);
     setLookupLoading(true);
 
-    Promise.all(candidates.map((c) => fetchDictEntry(c).catch(() => null)))
+    Promise.all(candidates.map((c) => fetchDictEntry(c.text).catch(() => null)))
       .then((results) => {
         const hitIndex = results.findIndex((r) => r !== null);
-        const matched = hitIndex >= 0 ? candidates[hitIndex] : candidates[candidates.length - 1];
-        setSelection({ lineIndex, start: charIndex, end: charIndex + matched.length, text: matched });
+        const matched = hitIndex >= 0 ? candidates[hitIndex] : fallback;
+        setSelection({ lineIndex, tokenStart: tokenIndex, tokenEnd: matched.tokenEnd, text: matched.text });
         setDictEntry(hitIndex >= 0 ? results[hitIndex] : null);
-        speak(matched);
+        speak(matched.text);
       })
       .finally(() => setLookupLoading(false));
   }, [speak]);
@@ -176,6 +209,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         <div className="flex-1 sm:border-l overflow-y-auto px-3 py-3 min-h-0" style={{ background: "#0f172a", borderColor: "rgba(255,255,255,0.1)" }}>
           {video.transcript.map((line, i) => {
             const isActive = i === activeIndex;
+            const tokens = linesTokens[i] ?? [];
             return (
               <div
                 key={i}
@@ -188,21 +222,20 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
                 }}
               >
                 <div className="flex flex-wrap">
-                  {Array.from(line.text).map((ch, ci) => {
-                    const isSelected = !!selection && selection.lineIndex === i && ci >= selection.start && ci < selection.end;
-                    const clickable = WORD_CHAR.test(ch);
+                  {tokens.map((tok, ti) => {
+                    const isSelected = !!selection && selection.lineIndex === i && ti >= selection.tokenStart && ti < selection.tokenEnd;
                     return (
                       <span
-                        key={ci}
-                        onClick={clickable ? (e) => { e.stopPropagation(); lookupAt(i, line.text, ci); } : undefined}
-                        className={`font-bold rounded transition-all ${clickable ? "cursor-pointer" : ""}`}
+                        key={ti}
+                        onClick={tok.isWord ? (e) => { e.stopPropagation(); lookupAt(i, tokens, ti); } : undefined}
+                        className={`font-bold rounded transition-all whitespace-pre ${tok.isWord ? "cursor-pointer" : ""}`}
                         style={{
                           color: isActive ? "#fff" : "rgba(255,255,255,0.6)",
                           fontSize: 16,
                           background: isSelected ? "rgba(251,191,36,0.35)" : "transparent",
                         }}
                       >
-                        {ch}
+                        {tok.text}
                       </span>
                     );
                   })}
