@@ -34,15 +34,36 @@ const MAX_MERGE_TOKENS = 3; // adjacent word-segmenter tokens to try merging for
 const jaSegmenter: Intl.Segmenter | null =
   typeof Intl !== "undefined" && "Segmenter" in Intl ? new Intl.Segmenter("ja", { granularity: "word" }) : null;
 
+// Trailing/leading punctuation (。、！？!?.,「」『』・…) shouldn't be part of a
+// lookup — split it into its own non-word token so it never reaches the dictionary.
+const PUNCT = "。、！？!?.,「」『』・…";
+const PUNCT_SPLIT = new RegExp(`^([${PUNCT}]*)([\\s\\S]*?)([${PUNCT}]*)$`);
+
+function splitPunctuation(tokens: Token[]): Token[] {
+  const out: Token[] = [];
+  for (const t of tokens) {
+    if (!t.isWord) { out.push(t); continue; }
+    const m = t.text.match(PUNCT_SPLIT);
+    const [, lead, core, trail] = m ?? ["", "", t.text, ""];
+    if (!core) { out.push({ text: t.text, isWord: false }); continue; }
+    if (lead) out.push({ text: lead, isWord: false });
+    out.push({ text: core, isWord: true });
+    if (trail) out.push({ text: trail, isWord: false });
+  }
+  return out;
+}
+
 function segmentLine(text: string): Token[] {
   // Lines that were manually pre-segmented with spaces (e.g. "私 は 今日") keep that as-is.
   if (/\s/.test(text)) {
-    return text.split(/(\s+)/).filter(Boolean).map((t) => ({ text: t, isWord: !/^\s+$/.test(t) }));
+    const tokens = text.split(/(\s+)/).filter(Boolean).map((t) => ({ text: t, isWord: !/^\s+$/.test(t) }));
+    return splitPunctuation(tokens);
   }
   if (jaSegmenter) {
-    return Array.from(jaSegmenter.segment(text)).map((s) => ({ text: s.segment, isWord: !!s.isWordLike }));
+    const tokens = Array.from(jaSegmenter.segment(text)).map((s) => ({ text: s.segment, isWord: !!s.isWordLike }));
+    return splitPunctuation(tokens);
   }
-  return [{ text, isWord: true }];
+  return splitPunctuation([{ text, isWord: true }]);
 }
 
 async function fetchDictEntry(text: string): Promise<DictEntry | null> {
