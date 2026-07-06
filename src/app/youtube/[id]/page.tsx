@@ -88,6 +88,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   const [searchQuery, setSearchQuery] = useState("");
   const [videoWidthPct, setVideoWidthPct] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
   const columnsRef = useRef<HTMLDivElement>(null);
 
   const playerRef = useRef<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -164,11 +165,13 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
     e.preventDefault();
     const rect = columnsRef.current?.getBoundingClientRect();
     if (!rect) return;
+    setIsResizing(true);
     const onMove = (ev: PointerEvent) => {
       const pct = ((ev.clientX - rect.left) / rect.width) * 100;
       setVideoWidthPct(Math.min(75, Math.max(25, pct)));
     };
     const onUp = () => {
+      setIsResizing(false);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
@@ -290,6 +293,13 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         >
           <div style={{ width: 3, height: 32, borderRadius: 999, background: "rgba(255,255,255,0.2)" }} />
         </div>
+
+        {/* While resizing, block pointer events from reaching the YouTube iframe —
+            it's cross-origin, so a mouseup/pointerup released over it never bubbles
+            back to our window listeners and the drag would get stuck "on" forever. */}
+        {isResizing && (
+          <div className="fixed inset-0 z-[9999]" style={{ cursor: "col-resize" }} />
+        )}
 
         {/* 2. Transcript column — only when the video has one */}
         {hasTranscript && (

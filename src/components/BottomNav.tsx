@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -7,6 +8,36 @@ const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conve
 
 export default function BottomNav() {
   const pathname = usePathname();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [thumb, setThumb] = useState({ widthPct: 100, leftPct: 0 });
+
+  // Always-visible custom scroll indicator — native scrollbars are OS-controlled
+  // overlays on iOS/mobile Safari and fade out even with scrollbar CSS applied,
+  // so we track scroll position ourselves instead of relying on them.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const { scrollWidth, clientWidth, scrollLeft } = el;
+      if (scrollWidth <= clientWidth) {
+        setThumb({ widthPct: 100, leftPct: 0 });
+        return;
+      }
+      const widthPct = (clientWidth / scrollWidth) * 100;
+      const leftPct = (scrollLeft / scrollWidth) * 100;
+      setThumb({ widthPct, leftPct });
+    };
+
+    update();
+    el.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      el.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [pathname]);
+
   if (HIDDEN_PATTERNS.some((re) => re.test(pathname))) return null;
 
   return (
@@ -14,7 +45,7 @@ export default function BottomNav() {
       {/* Spacer so page content isn't hidden behind the fixed nav */}
       <div className="h-24" />
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
-        <div className="bottom-nav-scroll flex items-center gap-1 px-2 pt-2 pb-3 overflow-x-auto">
+        <div ref={scrollRef} className="scrollbar-none flex items-center gap-1 px-2 pt-2 pb-1 overflow-x-auto">
           <BottomNavLink href="/" icon="🏠" label="Home" />
           <BottomNavLink href="/exam" icon="📝" label="Exam" />
           <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
@@ -44,6 +75,16 @@ export default function BottomNav() {
           <BottomNavLink href="/writing" icon="✍️" label="Writing" />
           <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
+        </div>
+
+        {/* Custom always-visible scroll indicator track */}
+        <div className="px-2 pb-1.5">
+          <div className="h-1.5 rounded-full bg-pink-100 overflow-hidden">
+            <div
+              className="h-full rounded-full bg-pink-400 transition-all"
+              style={{ width: `${thumb.widthPct}%`, marginLeft: `${thumb.leftPct}%` }}
+            />
+          </div>
         </div>
       </nav>
     </>

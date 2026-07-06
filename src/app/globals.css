@@ -118,26 +118,6 @@ img { max-width: 100%; height: auto; }
 .scrollbar-none { scrollbar-width: none; }
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
-/* ── Visible scrollbar for the bottom nav ── */
-.bottom-nav-scroll {
-  scrollbar-width: auto;
-  scrollbar-color: #ec4899 #fce7f3;
-}
-.bottom-nav-scroll::-webkit-scrollbar {
-  height: 10px;
-  display: block;
-}
-.bottom-nav-scroll::-webkit-scrollbar-track {
-  background: #fce7f3;
-  border-radius: 999px;
-}
-.bottom-nav-scroll::-webkit-scrollbar-thumb {
-  background: #ec4899;
-  border-radius: 999px;
-  border: 2px solid #fce7f3;
-}
-.bottom-nav-scroll::-webkit-scrollbar-thumb:hover { background: #db2777; }
-
 /* ── Flashcard flip animation ── */
 .flashcard-container { perspective: 1200px; }
 .flashcard-inner {
