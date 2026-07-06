@@ -11,16 +11,27 @@ function extractYoutubeId(input: string): string {
   return trimmed;
 }
 
-// Distribute timestamps across durationSeconds, weighted by each line's character count.
-function buildTranscript(lines: string[], durationSeconds: number): TranscriptLine[] {
-  const weights = lines.map((l) => Math.max(l.replace(/\s/g, "").length, 1));
-  const totalWeight = weights.reduce((s, w) => s + w, 0) || 1;
-  let elapsed = 0;
-  return lines.map((text, i) => {
-    const start = Math.round(elapsed);
-    elapsed += (weights[i] / totalWeight) * durationSeconds;
-    return { start, text: text.trim() };
-  });
+function timecodeToSeconds(hh: string, mm: string, ss: string, ms: string) {
+  return parseInt(hh) * 3600 + parseInt(mm) * 60 + parseInt(ss) + parseInt(ms) / 1000;
+}
+
+// Parses standard .srt subtitle format into { start, text } transcript lines.
+function parseSRT(content: string): TranscriptLine[] {
+  const blocks = content.replace(/\r/g, "").split(/\n\s*\n/).map((b) => b.trim()).filter(Boolean);
+  const lines: TranscriptLine[] = [];
+
+  for (const block of blocks) {
+    const blockLines = block.split("\n");
+    const startIdx = /^\d+$/.test(blockLines[0]?.trim()) ? 1 : 0;
+    const timeLine = blockLines[startIdx] ?? "";
+    const match = timeLine.match(/(\d{2}):(\d{2}):(\d{2})[,.](\d{3})\s*-->/);
+    if (!match) continue;
+    const [, hh, mm, ss, ms] = match;
+    const start = timecodeToSeconds(hh, mm, ss, ms);
+    const text = blockLines.slice(startIdx + 1).join(" ").replace(/\s+/g, " ").trim();
+    if (text) lines.push({ start, text });
+  }
+  return lines;
 }
 
 function mmss(totalSeconds: number) {
@@ -32,9 +43,6 @@ function mmss(totalSeconds: number) {
 const EMPTY_FORM = {
   title: "",
   youtubeUrl: "",
-  durationMinutes: "5",
-  durationSecondsExtra: "0",
-  transcriptText: "",
   order: 0,
 };
 
@@ -42,6 +50,8 @@ export default function AdminYoutubePage() {
   const [videos, setVideos] = useState<IYoutubeVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
+  const [srtFileName, setSrtFileName] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -54,16 +64,31 @@ export default function AdminYoutubePage() {
 
   useEffect(() => { fetchVideos(); }, []);
 
+  const handleSrtFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setSrtFileName(file.name);
+    const text = await file.text();
+    const parsed = parseSRT(text);
+    if (parsed.length === 0) {
+      setError("SRT файлыг уншиж чадсангүй — формат шалгана уу");
+      return;
+    }
+    setError("");
+    setTranscript(parsed);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (transcript.length === 0) {
+      setError("SRT файл сонгоно уу");
+      return;
+    }
     setSaving(true);
     setError("");
     try {
-      const durationSeconds =
-        (parseInt(form.durationMinutes) || 0) * 60 + (parseInt(form.durationSecondsExtra) || 0);
-      const lines = form.transcriptText.split("\n").map((l) => l.trim()).filter(Boolean);
-      const transcript = buildTranscript(lines, durationSeconds);
       const youtubeId = extractYoutubeId(form.youtubeUrl);
+      const durationSeconds = Math.round(transcript[transcript.length - 1]?.start ?? 0);
 
       const body = { title: form.title, youtubeId, durationSeconds, transcript, order: form.order };
       const url = editing ? `/api/youtube/${editing}` : "/api/youtube";
@@ -71,6 +96,8 @@ export default function AdminYoutubePage() {
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (!res.ok) throw new Error("Failed");
       setForm(EMPTY_FORM);
+      setTranscript([]);
+      setSrtFileName("");
       setEditing(null);
       await fetchVideos();
     } catch {
@@ -81,14 +108,9 @@ export default function AdminYoutubePage() {
 
   const handleEdit = (v: IYoutubeVideo) => {
     setEditing(v._id);
-    setForm({
-      title: v.title,
-      youtubeUrl: v.youtubeId,
-      durationMinutes: String(Math.floor(v.durationSeconds / 60)),
-      durationSecondsExtra: String(v.durationSeconds % 60),
-      transcriptText: v.transcript.map((l) => l.text).join("\n"),
-      order: v.order,
-    });
+    setForm({ title: v.title, youtubeUrl: v.youtubeId, order: v.order });
+    setTranscript(v.transcript);
+    setSrtFileName(`(одоо байгаа ${v.transcript.length} мөр — солихыг хүсвэл шинэ .srt сонгоно уу)`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -135,23 +157,14 @@ export default function AdminYoutubePage() {
             />
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4 items-end">
             <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1">Видеоны урт (мин)</label>
+              <label className="block text-xs font-bold text-gray-500 mb-1">Subtitle .srt файл *</label>
               <input
-                type="number" min={0}
-                value={form.durationMinutes}
-                onChange={(e) => setForm((f) => ({ ...f, durationMinutes: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-500 mb-1">(сек)</label>
-              <input
-                type="number" min={0} max={59}
-                value={form.durationSecondsExtra}
-                onChange={(e) => setForm((f) => ({ ...f, durationSecondsExtra: e.target.value }))}
-                className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+                type="file"
+                accept=".srt"
+                onChange={handleSrtFile}
+                className="w-full text-sm file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-600 file:font-bold"
               />
             </div>
             <div>
@@ -165,23 +178,11 @@ export default function AdminYoutubePage() {
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-gray-500 mb-1">
-              Transcript (мөр бүр нэг өгүүлбэр, үг хооронд зай тавьсан)
-            </label>
-            <textarea
-              rows={10}
-              value={form.transcriptText}
-              onChange={(e) => setForm((f) => ({ ...f, transcriptText: e.target.value }))}
-              placeholder={"はじめ まし て こんにちは\n私の名前 は 旬 です\n..."}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
-            />
-            <p className="text-[11px] text-gray-400 mt-1">
-              Мөр тус бүрийн цаг хугацааг видеоны нийт урт дундаж дагуу автоматаар тооцно
-              (тэмдэгтийн тоогоор жинлэнэ) — тайлбар: {form.transcriptText.split("\n").filter((l) => l.trim()).length} мөр,
-              нийт урт {mmss((parseInt(form.durationMinutes) || 0) * 60 + (parseInt(form.durationSecondsExtra) || 0))}
+          {srtFileName && (
+            <p className="text-[11px] text-gray-500">
+              📄 {srtFileName} {transcript.length > 0 && `— ${transcript.length} мөр, нийт урт ${mmss(transcript[transcript.length - 1].start)}`}
             </p>
-          </div>
+          )}
 
           {error && <p className="text-sm text-red-500 font-bold">{error}</p>}
 
@@ -196,7 +197,7 @@ export default function AdminYoutubePage() {
             {editing && (
               <button
                 type="button"
-                onClick={() => { setEditing(null); setForm(EMPTY_FORM); }}
+                onClick={() => { setEditing(null); setForm(EMPTY_FORM); setTranscript([]); setSrtFileName(""); }}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-black py-2.5 px-6 rounded-2xl transition-all"
               >
                 Цуцлах
