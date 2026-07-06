@@ -85,8 +85,11 @@ function doSpeak(text: string, langOverride?: string) {
   const voice = getBestVoice(lang);
   if (voice) utterance.voice = voice;
 
-  // iOS needs a short delay after cancel() before speak() works reliably
-  setTimeout(() => ss.speak(utterance), 50);
+  // Speak synchronously, in the same tick as the user gesture that triggered
+  // this — iOS Safari silently drops speak() calls made even a few ms after
+  // the gesture (e.g. via setTimeout), and this is especially strict inside
+  // iframes (our own mini-games embedded via /games/[id]).
+  ss.speak(utterance);
 }
 
 function speakWithWebAPI(text: string, langOverride?: string) {
