@@ -86,7 +86,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   const [dictEntry, setDictEntry] = useState<DictEntry | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [videoWidthPct, setVideoWidthPct] = useState(50);
+  const [videoWidthPct, setVideoWidthPct] = useState<number | null>(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const columnsRef = useRef<HTMLDivElement>(null);
 
@@ -175,6 +175,14 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
+
+  // Default video column width matches what the equal-columns layout would
+  // give it (1/3 with a transcript, 1/2 without) — dragging can then grow or
+  // shrink it from there instead of snapping to a fixed 50% on first render.
+  useEffect(() => {
+    if (!video || videoWidthPct !== null) return;
+    setVideoWidthPct(video.transcript.length > 0 ? 100 / 3 : 50);
+  }, [video, videoWidthPct]);
 
   // Segment every line into words once, when the video loads
   const linesTokens = useMemo(
@@ -269,7 +277,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         {/* 1. Video column */}
         <div
           className="flex-shrink-0 min-[900px]:flex-1 w-full aspect-video min-[900px]:aspect-auto min-[900px]:h-full bg-black"
-          style={isDesktop ? { width: `${videoWidthPct}%`, flex: "none" } : undefined}
+          style={isDesktop && videoWidthPct !== null ? { width: `${videoWidthPct}%`, flex: "none" } : undefined}
         >
           <div ref={playerElRef} className="w-full h-full" />
         </div>

@@ -14,7 +14,7 @@ export default function BottomNav() {
       {/* Spacer so page content isn't hidden behind the fixed nav */}
       <div className="h-24" />
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
-        <div className="bottom-nav-scroll flex items-center gap-1 px-2 py-2 overflow-x-auto">
+        <div className="bottom-nav-scroll flex items-center gap-1 px-2 pt-2 pb-3 overflow-x-auto">
           <BottomNavLink href="/" icon="🏠" label="Home" />
           <BottomNavLink href="/exam" icon="📝" label="Exam" />
           <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
