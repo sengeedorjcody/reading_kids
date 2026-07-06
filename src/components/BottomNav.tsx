@@ -9,6 +9,7 @@ const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conve
 export default function BottomNav() {
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = useState({ widthPct: 100, leftPct: 0 });
 
   // Always-visible custom scroll indicator — native scrollbars are OS-controlled
@@ -37,6 +38,30 @@ export default function BottomNav() {
       window.removeEventListener("resize", update);
     };
   }, [pathname]);
+
+  // Dragging the track (or its thumb) scrolls the icon row proportionally,
+  // same as dragging a real scrollbar.
+  const scrollToPointer = (clientX: number) => {
+    const scrollEl = scrollRef.current;
+    const track = trackRef.current;
+    if (!scrollEl || !track) return;
+    const rect = track.getBoundingClientRect();
+    const pct = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+    const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+    scrollEl.scrollLeft = pct * maxScroll;
+  };
+
+  const startTrackDrag = (e: React.PointerEvent) => {
+    e.preventDefault();
+    scrollToPointer(e.clientX);
+    const onMove = (ev: PointerEvent) => scrollToPointer(ev.clientX);
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
 
   if (HIDDEN_PATTERNS.some((re) => re.test(pathname))) return null;
 
@@ -77,11 +102,14 @@ export default function BottomNav() {
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
         </div>
 
-        {/* Custom always-visible scroll indicator track */}
-        <div className="px-2 pb-1.5">
-          <div className="h-1.5 rounded-full bg-pink-100 overflow-hidden">
+        {/* Custom always-visible, draggable scroll indicator track */}
+        <div
+          onPointerDown={startTrackDrag}
+          className="px-2 py-2 cursor-pointer touch-none"
+        >
+          <div ref={trackRef} className="h-1.5 rounded-full bg-pink-100 overflow-hidden">
             <div
-              className="h-full rounded-full bg-pink-400 transition-all"
+              className="h-full rounded-full bg-pink-400 transition-all pointer-events-none"
               style={{ width: `${thumb.widthPct}%`, marginLeft: `${thumb.leftPct}%` }}
             />
           </div>
