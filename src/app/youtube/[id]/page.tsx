@@ -220,14 +220,14 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
       </div>
 
       {/* 1 + 2 + 3: on desktop, three equal columns side by side; on mobile, stacked */}
-      <div className="flex-1 flex flex-col sm:flex-row min-h-0">
+      <div className="flex-1 flex flex-col min-[900px]:flex-row min-h-0">
         {/* 1. Video column */}
-        <div className="flex-shrink-0 sm:flex-1 w-full aspect-video sm:aspect-auto sm:h-full bg-black">
+        <div className="flex-shrink-0 min-[900px]:flex-1 w-full aspect-video min-[900px]:aspect-auto min-[900px]:h-full bg-black">
           <div ref={playerElRef} className="w-full h-full" />
         </div>
 
         {/* 2. Transcript column */}
-        <div className="flex-1 sm:border-l overflow-y-auto px-3 py-3 min-h-0" style={{ background: "#0f172a", borderColor: "rgba(255,255,255,0.1)" }}>
+        <div className="flex-1 min-[900px]:border-l overflow-y-auto px-3 py-3 min-h-0" style={{ background: "#0f172a", borderColor: "rgba(255,255,255,0.1)" }}>
           {video.transcript.map((line, i) => {
             const isActive = i === activeIndex;
             const tokens = linesTokens[i] ?? [];
@@ -267,7 +267,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         </div>
 
         {/* 3. Dictionary column */}
-        <div className="flex-1 border-t sm:border-t-0 sm:border-l overflow-y-auto px-4 py-4"
+        <div className="flex-1 border-t min-[900px]:border-t-0 min-[900px]:border-l overflow-y-auto px-4 py-4"
           style={{ background: "#111827", borderColor: "rgba(255,255,255,0.1)", minHeight: 140 }}
         >
           {!selection && (
