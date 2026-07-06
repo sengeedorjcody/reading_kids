@@ -16,6 +16,7 @@ const DictionaryWordSchema = new Schema(
     tags: [{ type: String }],
     conversationId: { type: mongoose.Schema.Types.ObjectId, ref: "Conversation", default: null },
     bookId: { type: mongoose.Schema.Types.ObjectId, ref: "Book", default: null },
+    pictureBookId: { type: mongoose.Schema.Types.ObjectId, ref: "PictureBook", default: null },
   },
   { timestamps: true }
 );

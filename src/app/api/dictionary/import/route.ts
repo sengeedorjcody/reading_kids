@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file") as File | null;
   const conversationId = (formData.get("conversationId") as string | null) || null;
   const bookId = (formData.get("bookId") as string | null) || null;
+  const pictureBookId = (formData.get("pictureBookId") as string | null) || null;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
 
   const ext = file.name.split(".").pop()?.toLowerCase();
@@ -113,6 +114,7 @@ export async function POST(req: NextRequest) {
         ...entry,
         ...(conversationId ? { conversationId } : {}),
         ...(bookId ? { bookId } : {}),
+        ...(pictureBookId ? { pictureBookId } : {}),
       });
       inserted++;
     } catch (err: unknown) {

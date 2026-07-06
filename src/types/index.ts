@@ -126,3 +126,26 @@ export interface IConversation {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IPictureBook {
+  _id: string;
+  title: string;
+  titleJapanese?: string;
+  level: BookLevel;
+  coverImageUrl?: string;
+  description?: string;
+  tags?: string[];
+  totalPages: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IPictureBookPage {
+  _id: string;
+  pictureBookId: string;
+  pageNumber: number;
+  imageUrl?: string;
+  rawText: string;
+  sentences: ISentence[];
+}

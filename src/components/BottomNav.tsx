@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//, /^\/games\/.+/, /^\/animal-match/, /^\/left-right/, /^\/memory-hands/, /^\/minemind-connect/, /^\/numberblocks/, /^\/youtube\/[^/]+/];
+const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//, /^\/picture-books\/[^/]+\/read\//, /^\/games\/.+/, /^\/animal-match/, /^\/left-right/, /^\/memory-hands/, /^\/minemind-connect/, /^\/numberblocks/, /^\/youtube\/[^/]+/];
 
 export default function BottomNav() {
   const pathname = usePathname();
@@ -75,6 +75,7 @@ export default function BottomNav() {
           <BottomNavLink href="/exam" icon="📝" label="Exam" />
           <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
           <BottomNavLink href="/books" icon="📖" label="Books" />
+          <BottomNavLink href="/picture-books" icon="🖼️" label="えほん" />
           <BottomNavLink href="/conversations" icon="💬" label="会話" />
           <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
           <BottomNavLink href="/games" icon="🎮" label="Games" />

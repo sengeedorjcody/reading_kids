@@ -15,6 +15,7 @@ interface ImportResult {
 
 interface Conversation { _id: string; title: string; }
 interface Book { _id: string; title: string; }
+interface PictureBook { _id: string; title: string; }
 
 function ExcelImportModal({ onClose }: { onClose: () => void }) {
   const [file, setFile] = useState<File | null>(null);
@@ -23,8 +24,10 @@ function ExcelImportModal({ onClose }: { onClose: () => void }) {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [conversationId, setConversationId] = useState("");
   const [bookId, setBookId] = useState("");
+  const [pictureBookId, setPictureBookId] = useState("");
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
+  const [pictureBooks, setPictureBooks] = useState<PictureBook[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -36,6 +39,10 @@ function ExcelImportModal({ onClose }: { onClose: () => void }) {
     fetch("/api/books")
       .then((r) => r.json())
       .then((d) => setBooks(d.books ?? []))
+      .catch(() => {});
+    fetch("/api/picture-books/all")
+      .then((r) => r.json())
+      .then((d) => setPictureBooks(d.pictureBooks ?? []))
       .catch(() => {});
   }, []);
 
@@ -64,6 +71,7 @@ function ExcelImportModal({ onClose }: { onClose: () => void }) {
     fd.append("file", file);
     if (conversationId) fd.append("conversationId", conversationId);
     if (bookId) fd.append("bookId", bookId);
+    if (pictureBookId) fd.append("pictureBookId", pictureBookId);
     try {
       const res = await fetch("/api/dictionary/import", { method: "POST", body: fd });
       const data: ImportResult = await res.json();
@@ -171,6 +179,26 @@ function ExcelImportModal({ onClose }: { onClose: () => void }) {
             </select>
             {bookId && (
               <p className="text-xs text-blue-500 font-bold mt-1">Words will be tagged with this book</p>
+            )}
+          </div>
+
+          {/* Picture book picker */}
+          <div>
+            <label className="block text-sm font-bold text-gray-600 mb-1.5">
+              Link to Picture Book <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <select
+              value={pictureBookId}
+              onChange={(e) => setPictureBookId(e.target.value)}
+              className="w-full border-2 border-gray-200 focus:border-amber-400 rounded-2xl px-4 py-2.5 text-gray-700 outline-none bg-white"
+            >
+              <option value="">— No picture book —</option>
+              {pictureBooks.map((pb) => (
+                <option key={pb._id} value={pb._id}>{pb.title}</option>
+              ))}
+            </select>
+            {pictureBookId && (
+              <p className="text-xs text-amber-500 font-bold mt-1">Words will be tagged with this picture book</p>
             )}
           </div>
 
