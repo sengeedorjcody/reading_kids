@@ -10,10 +10,9 @@ interface Props {
   pictureBookId: string;
   currentPage: number;
   totalPages: number;
-  forceRow?: boolean;
 }
 
-export default function PictureBookPanel({ page, pictureBookId, currentPage, totalPages, forceRow }: Props) {
+export default function PictureBookPanel({ page, pictureBookId, currentPage, totalPages }: Props) {
   const router = useRouter();
   const sentences = page.sentences ?? [];
 
@@ -42,47 +41,60 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
         <span className="text-sm text-[#a07840]/60">{totalPages} ページ</span>
       </div>
 
-      {/* Two-page spread */}
-      <div className="flex-1 overflow-hidden relative flex items-center">
+      {/* Full-page illustration with text overlaid on its built-in caption area */}
+      <div className="flex-1 overflow-hidden relative flex items-center justify-center bg-[#efe2c0]">
         {/* Prev */}
         <button
           onClick={goPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-16 bg-[#f5ecd4] hover:bg-[#ead5a8] text-[#6b4423] font-black text-xl rounded-r-2xl border border-l-0 border-[#d4b87a]/60 transition-colors active:scale-95 shadow-md"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-16 bg-[#f5ecd4] hover:bg-[#ead5a8] text-[#6b4423] font-black text-xl rounded-r-2xl border border-l-0 border-[#d4b87a]/60 transition-colors active:scale-95 shadow-md"
         >
           ◀
         </button>
 
-        <div className={`flex-1 h-full flex ${forceRow ? "flex-row" : "flex-col md:flex-row"}`}>
-          {/* Left/top: text page */}
-          <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-wrap content-center items-start justify-center bg-[#faf3e0]">
-            {sentences.length === 0 ? (
-              <p className="text-lg text-[#a07840]/50 italic">{page.rawText || "このページはからです。"}</p>
-            ) : (
-              sentences.map((s, si) => (
-                <div key={s._id ?? si} className="flex flex-wrap items-end w-full justify-center">
-                  {s.words.map((w, wi) => (
-                    <WordToken key={wi} word={w} />
-                  ))}
-                </div>
-              ))
-            )}
-          </div>
+        {page.imageUrl ? (
+          <div className="relative w-full h-full flex items-center justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={page.imageUrl} alt="" className="max-w-full max-h-full object-contain" />
 
-          {/* Right/bottom: illustration */}
-          <div className="flex-1 relative bg-[#efe2c0] min-h-[40%]">
-            {page.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={page.imageUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-30">🖼️</div>
+            {/* Caption text — sits over the blank strip baked into the illustration */}
+            <div
+              className="absolute flex flex-wrap items-center justify-center gap-1"
+              style={{ bottom: "3%", left: "50%", transform: "translateX(-50%)", width: "50%" }}
+            >
+              {sentences.length === 0 ? (
+                <p className="text-base text-[#a07840]/60 italic text-center">{page.rawText}</p>
+              ) : (
+                sentences.map((s, si) => (
+                  <div key={s._id ?? si} className="flex flex-wrap items-end justify-center w-full">
+                    {s.words.map((w, wi) => (
+                      <WordToken key={wi} word={w} />
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-4">
+            <span className="text-6xl opacity-30">🖼️</span>
+            {sentences.length > 0 && (
+              <div className="flex flex-wrap items-end justify-center px-8">
+                {sentences.map((s, si) => (
+                  <div key={s._id ?? si} className="flex flex-wrap items-end justify-center w-full">
+                    {s.words.map((w, wi) => (
+                      <WordToken key={wi} word={w} />
+                    ))}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
-        </div>
+        )}
 
         {/* Next */}
         <button
           onClick={goNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-10 h-16 bg-[#c8783c] hover:bg-[#b5652b] text-white font-black text-xl rounded-l-2xl transition-colors active:scale-95 shadow-md shadow-[#c8783c]/30"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-10 h-16 bg-[#c8783c] hover:bg-[#b5652b] text-white font-black text-xl rounded-l-2xl transition-colors active:scale-95 shadow-md shadow-[#c8783c]/30"
         >
           ▶
         </button>

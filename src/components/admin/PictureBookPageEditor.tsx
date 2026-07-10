@@ -71,7 +71,7 @@ export default function PictureBookPageEditor({ page, backgrounds, pictureBookId
         <div className="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
           {/* Illustration picker */}
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2">Illustration (right-hand page)</label>
+            <label className="block text-xs font-bold text-gray-500 mb-2">Illustration (full page, with blank caption area)</label>
             {backgrounds.length > 0 && (
               <div className="grid grid-cols-4 gap-2 mb-2">
                 {backgrounds.map((bg) => (
@@ -105,7 +105,7 @@ export default function PictureBookPageEditor({ page, backgrounds, pictureBookId
 
           {/* Text */}
           <div>
-            <label className="block text-xs font-bold text-gray-500 mb-2">Text (left-hand page)</label>
+            <label className="block text-xs font-bold text-gray-500 mb-2">Caption text (overlaid on the illustration's blank area)</label>
             <textarea
               value={rawText}
               onChange={(e) => setRawText(e.target.value)}

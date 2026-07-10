@@ -59,7 +59,6 @@ export default function PictureBookLayout({ page, pictureBookId, currentPage, to
               pictureBookId={pictureBookId}
               currentPage={currentPage}
               totalPages={totalPages}
-              forceRow={isMobile && landscapeRead}
             />
           </div>
         </LandscapeWrapper>
