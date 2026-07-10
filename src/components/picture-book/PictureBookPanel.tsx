@@ -17,11 +17,13 @@ interface Box { left: number; top: number; width: number; height: number }
 
 // The region (within the rendered image box) where the illustration left blank
 // space for the caption, as fractions of the image box.
-const REGION: Record<PictureBookTextPosition, { left: number; top: number; width: number; height: number; align: "center" | "left" }> = {
-  left:   { left: 0.02, top: 0.06, width: 0.44, height: 0.88, align: "left" },
-  right:  { left: 0.54, top: 0.06, width: 0.44, height: 0.88, align: "left" },
-  bottom: { left: 0.08, top: 0.70, width: 0.84, height: 0.28, align: "center" },
-  top:    { left: 0.08, top: 0.02, width: 0.84, height: 0.28, align: "center" },
+// Regions are inset from the outer edges so the caption is centered in the blank
+// area and stays clear of the prev/next arrows sitting at the container edges.
+const REGION: Record<PictureBookTextPosition, { left: number; top: number; width: number; height: number; align: "center" }> = {
+  left:   { left: 0.08, top: 0.08, width: 0.36, height: 0.84, align: "center" },
+  right:  { left: 0.56, top: 0.08, width: 0.36, height: 0.84, align: "center" },
+  bottom: { left: 0.14, top: 0.68, width: 0.72, height: 0.28, align: "center" },
+  top:    { left: 0.14, top: 0.04, width: 0.72, height: 0.28, align: "center" },
 };
 
 export default function PictureBookPanel({ page, pictureBookId, currentPage, totalPages }: Props) {
@@ -70,20 +72,19 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
 
   const overlay = imgBox && (
     <div
-      className="absolute overflow-hidden flex flex-wrap content-center"
+      className="absolute overflow-hidden flex flex-wrap content-center justify-center"
       style={{
         left: imgBox.left + region.left * imgBox.width,
         top: imgBox.top + region.top * imgBox.height,
         width: region.width * imgBox.width,
         height: region.height * imgBox.height,
-        justifyContent: region.align === "center" ? "center" : "flex-start",
       }}
     >
       {sentences.length === 0 ? (
-        <p className="italic text-[#a07840]/60 w-full" style={{ fontSize: fontPx, textAlign: region.align }}>{page.rawText}</p>
+        <p className="italic text-[#a07840]/60 w-full text-center" style={{ fontSize: fontPx }}>{page.rawText}</p>
       ) : (
         sentences.map((s, si) => (
-          <div key={s._id ?? si} className={`flex flex-wrap items-end w-full ${region.align === "center" ? "justify-center" : "justify-start"}`}>
+          <div key={s._id ?? si} className="flex flex-wrap items-end w-full justify-center">
             {s.words.map((w, wi) => (
               <PictureBookWord key={wi} word={w} fontPx={fontPx} />
             ))}
@@ -117,7 +118,7 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
         {/* Prev */}
         <button
           onClick={goPrev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-14 bg-[#f5ecd4] hover:bg-[#ead5a8] text-[#6b4423] font-black text-lg rounded-r-2xl border border-l-0 border-[#d4b87a]/60 transition-colors active:scale-95 shadow-md"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-8 h-12 bg-[#f5ecd4]/80 hover:bg-[#ead5a8] text-[#6b4423] font-black text-base rounded-2xl border border-[#d4b87a]/50 transition-all active:scale-95 shadow-md opacity-70 hover:opacity-100"
         >
           ◀
         </button>
@@ -154,7 +155,7 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
         {/* Next */}
         <button
           onClick={goNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-9 h-14 bg-[#c8783c] hover:bg-[#b5652b] text-white font-black text-lg rounded-l-2xl transition-colors active:scale-95 shadow-md shadow-[#c8783c]/30"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center w-8 h-12 bg-[#c8783c]/85 hover:bg-[#b5652b] text-white font-black text-base rounded-2xl transition-all active:scale-95 shadow-md shadow-[#c8783c]/30 opacity-80 hover:opacity-100"
         >
           ▶
         </button>
