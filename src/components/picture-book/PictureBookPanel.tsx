@@ -72,7 +72,7 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
           <div className="flex-1 relative bg-[#efe2c0] min-h-[40%]">
             {page.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={page.imageUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <img src={page.imageUrl} alt="" className="absolute inset-0 w-full h-full object-contain" />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-30">🖼️</div>
             )}
