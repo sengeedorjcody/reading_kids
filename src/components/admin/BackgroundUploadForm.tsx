@@ -3,6 +3,8 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
+const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB — Vercel serverless functions reject larger payloads
+
 export default function BackgroundUploadForm() {
   const [name, setName] = useState("");
   const [preview, setPreview] = useState("");
@@ -16,6 +18,13 @@ export default function BackgroundUploadForm() {
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
+    if (f.size > MAX_FILE_SIZE) {
+      setError(`Image is too big (${(f.size / 1024 / 1024).toFixed(1)} MB) — please choose one under 3 MB.`);
+      setFile(null);
+      setPreview("");
+      if (fileRef.current) fileRef.current.value = "";
+      return;
+    }
     setFile(f);
     setPreview(URL.createObjectURL(f));
     setUrlInput("");
@@ -78,6 +87,7 @@ export default function BackgroundUploadForm() {
         )}
       </div>
       <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFile} />
+      <p className="text-xs text-gray-400 text-center -mt-2">Max file size: 3 MB</p>
 
       {/* URL input */}
       <div className="flex items-center gap-2">
