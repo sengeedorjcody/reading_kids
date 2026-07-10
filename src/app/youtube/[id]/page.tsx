@@ -398,7 +398,7 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
                   )}
                   {dictEntry.example_image_url && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={dictEntry.example_image_url} alt={selection.text} className="w-full rounded-xl mt-2 object-cover" style={{ maxHeight: 140 }} />
+                    <img src={dictEntry.example_image_url} alt={selection.text} className="w-full rounded-xl mt-2 object-contain" style={{ maxHeight: 220 }} />
                   )}
                 </div>
               ) : (
