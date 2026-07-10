@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { IPictureBookPage } from "@/types";
+import { IPictureBookPage, PictureBookTextPosition } from "@/types";
 
 interface IBackground { _id: string; name: string; imageUrl: string; }
 
@@ -12,10 +12,18 @@ interface Props {
   pictureBookId: string;
 }
 
+const POSITIONS: { value: PictureBookTextPosition; label: string; icon: string }[] = [
+  { value: "bottom", label: "Bottom", icon: "⬇️" },
+  { value: "top",    label: "Top",    icon: "⬆️" },
+  { value: "left",   label: "Left",   icon: "⬅️" },
+  { value: "right",  label: "Right",  icon: "➡️" },
+];
+
 export default function PictureBookPageEditor({ page, backgrounds, pictureBookId }: Props) {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState(page.imageUrl ?? "");
   const [rawText, setRawText] = useState(page.rawText ?? "");
+  const [textPosition, setTextPosition] = useState<PictureBookTextPosition>(page.textPosition ?? "bottom");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -26,7 +34,7 @@ export default function PictureBookPageEditor({ page, backgrounds, pictureBookId
       await fetch(`/api/picture-books/${pictureBookId}/pages/${page.pageNumber}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageUrl: imageUrl || null, rawText }),
+        body: JSON.stringify({ imageUrl: imageUrl || null, rawText, textPosition }),
       });
       router.refresh();
     } finally {
@@ -101,6 +109,28 @@ export default function PictureBookPageEditor({ page, backgrounds, pictureBookId
               placeholder="Or paste image URL…"
               className="w-full border border-gray-200 focus:border-amber-400 rounded-xl px-3 py-2 text-xs text-gray-700 outline-none transition-colors"
             />
+          </div>
+
+          {/* Blank-area position */}
+          <div>
+            <label className="block text-xs font-bold text-gray-500 mb-2">Where is the blank caption area on this image?</label>
+            <div className="grid grid-cols-4 gap-2">
+              {POSITIONS.map((p) => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setTextPosition(p.value)}
+                  className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border-2 font-bold text-xs transition-all ${
+                    textPosition === p.value
+                      ? "border-amber-500 bg-amber-50 text-amber-600"
+                      : "border-gray-200 text-gray-400 hover:border-gray-300"
+                  }`}
+                >
+                  <span className="text-base">{p.icon}</span>
+                  {p.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Text */}

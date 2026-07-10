@@ -16,11 +16,14 @@ const SentenceSchema = new Schema({
   words: [WordTokenSchema],
 });
 
+export type TextPosition = "bottom" | "top" | "left" | "right";
+
 export interface IPictureBookPageDoc extends Document {
   pictureBookId: mongoose.Types.ObjectId;
   pageNumber: number;
   imageUrl?: string;
   rawText: string;
+  textPosition: TextPosition;
   sentences: { text: string; words: { surface: string }[] }[];
   createdAt: Date;
   updatedAt: Date;
@@ -32,6 +35,7 @@ const PictureBookPageSchema = new Schema<IPictureBookPageDoc>(
     pageNumber: { type: Number, required: true },
     imageUrl: { type: String, trim: true },
     rawText: { type: String, default: "" },
+    textPosition: { type: String, enum: ["bottom", "top", "left", "right"], default: "bottom" },
     sentences: [SentenceSchema],
   },
   { timestamps: true }

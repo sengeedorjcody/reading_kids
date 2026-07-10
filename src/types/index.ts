@@ -141,11 +141,14 @@ export interface IPictureBook {
   updatedAt: string;
 }
 
+export type PictureBookTextPosition = "bottom" | "top" | "left" | "right";
+
 export interface IPictureBookPage {
   _id: string;
   pictureBookId: string;
   pageNumber: number;
   imageUrl?: string;
   rawText: string;
+  textPosition: PictureBookTextPosition;
   sentences: ISentence[];
 }

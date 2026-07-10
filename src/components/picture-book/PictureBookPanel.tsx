@@ -12,9 +12,18 @@ interface Props {
   totalPages: number;
 }
 
+// Where the caption sits, matching wherever the illustration reserved blank space.
+const OVERLAY_STYLE: Record<string, React.CSSProperties> = {
+  bottom: { bottom: "3%",  left: "50%", transform: "translateX(-50%)",              width: "50%", textAlign: "center" },
+  top:    { top: "3%",     left: "50%", transform: "translateX(-50%)",              width: "50%", textAlign: "center" },
+  left:   { left: "4%",    top: "50%",  transform: "translateY(-50%)",              width: "42%", textAlign: "left" },
+  right:  { right: "4%",   top: "50%",  transform: "translateY(-50%)",              width: "42%", textAlign: "left" },
+};
+
 export default function PictureBookPanel({ page, pictureBookId, currentPage, totalPages }: Props) {
   const router = useRouter();
   const sentences = page.sentences ?? [];
+  const overlayStyle = OVERLAY_STYLE[page.textPosition ?? "bottom"];
 
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
@@ -52,20 +61,23 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
         </button>
 
         {page.imageUrl ? (
-          <div className="relative w-full h-full flex items-center justify-center">
+          <div className="relative w-full h-full">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={page.imageUrl} alt="" className="max-w-full max-h-full object-contain" />
+            <img src={page.imageUrl} alt="" className="w-full h-full object-contain" />
 
-            {/* Caption text — sits over the blank strip baked into the illustration */}
+            {/* Caption text — sits over the blank area baked into the illustration */}
             <div
-              className="absolute flex flex-wrap items-center justify-center gap-1"
-              style={{ bottom: "3%", left: "50%", transform: "translateX(-50%)", width: "50%" }}
+              className="absolute flex flex-wrap items-center gap-1"
+              style={{ ...overlayStyle, justifyContent: overlayStyle.textAlign === "center" ? "center" : "flex-start" }}
             >
               {sentences.length === 0 ? (
-                <p className="text-base text-[#a07840]/60 italic text-center">{page.rawText}</p>
+                <p className="text-base text-[#a07840]/60 italic" style={{ textAlign: overlayStyle.textAlign, width: "100%" }}>{page.rawText}</p>
               ) : (
                 sentences.map((s, si) => (
-                  <div key={s._id ?? si} className="flex flex-wrap items-end justify-center w-full">
+                  <div
+                    key={s._id ?? si}
+                    className={`flex flex-wrap items-end w-full ${overlayStyle.textAlign === "center" ? "justify-center" : "justify-start"}`}
+                  >
                     {s.words.map((w, wi) => (
                       <WordToken key={wi} word={w} />
                     ))}

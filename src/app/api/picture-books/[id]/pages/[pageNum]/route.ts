@@ -23,6 +23,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string; 
     await connectDB();
     const body = await req.json();
     const update: Record<string, unknown> = { imageUrl: body.imageUrl };
+    if (body.textPosition) update.textPosition = body.textPosition;
     if (typeof body.rawText === "string") {
       update.rawText = body.rawText;
       update.sentences = textToSentences(body.rawText);
