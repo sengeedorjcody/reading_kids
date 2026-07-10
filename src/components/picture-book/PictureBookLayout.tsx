@@ -19,10 +19,20 @@ export default function PictureBookLayout({ page, pictureBookId, currentPage, to
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 899px)");
-    const update = () => setIsMobile(mq.matches);
+    // On a portrait phone the wide illustration is much easier to read rotated,
+    // so default the landscape view on for mobile portrait.
+    const portrait = window.matchMedia("(orientation: portrait)");
+    const update = () => {
+      setIsMobile(mq.matches);
+      setLandscapeRead(mq.matches && portrait.matches);
+    };
     update();
     mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
+    portrait.addEventListener("change", update);
+    return () => {
+      mq.removeEventListener("change", update);
+      portrait.removeEventListener("change", update);
+    };
   }, []);
 
   return (
@@ -51,9 +61,9 @@ export default function PictureBookLayout({ page, pictureBookId, currentPage, to
       )}
 
       {/* Right: Picture book spread */}
-      <div className="flex-1 overflow-hidden flex flex-col items-center justify-center p-2 md:p-8">
+      <div className="flex-1 overflow-hidden flex flex-col items-center justify-center md:p-8">
         <LandscapeWrapper active={isMobile && landscapeRead}>
-          <div className="w-full max-w-4xl h-full flex flex-col book-page rounded-2xl overflow-hidden">
+          <div className="w-full h-full md:max-w-4xl flex flex-col book-page md:rounded-2xl overflow-hidden">
             <PictureBookPanel
               page={page}
               pictureBookId={pictureBookId}
