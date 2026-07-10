@@ -161,20 +161,67 @@ interface Problem {
 
 const JP_NUM = ["ぜろ","いち","に","さん","よん","ご","ろく","なな","はち","きゅう","じゅう"];
 
-function makeProblem(): Problem {
-  const op: Op = Math.random() < 0.5 ? "+" : "−";
-  let a: number, b: number;
-  if (op === "+") {
-    a = Math.floor(Math.random() * 11);          // 0-10
-    b = Math.floor(Math.random() * (11 - a));    // keep sum ≤ 10
-  } else {
-    a = Math.floor(Math.random() * 11);          // 0-10
-    b = Math.floor(Math.random() * (a + 1));     // 0..a, includes a−a=0 and n−0
-  }
+const LEVEL_CONFIG: Record<number, { label: string; icon: string }> = {
+  1: { label: "たし算",     icon: "➕" },
+  2: { label: "ひき算",     icon: "➖" },
+  3: { label: "0 + たす",   icon: "0️⃣➕" },
+  4: { label: "0 ひく",     icon: "0️⃣➖" },
+  5: { label: "たす ？",    icon: "➕❓" },
+  6: { label: "ひく ？",    icon: "➖❓" },
+  7: { label: "0 と ？",    icon: "0️⃣❓" },
+};
+
+function rnd(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function build(a: number, b: number, op: Op, missing: Slot): Problem {
   const answer = op === "+" ? a + b : a - b;
-  const missing: Slot = (["a", "b", "answer"] as Slot[])[Math.floor(Math.random() * 3)];
   const correct = missing === "a" ? a : missing === "b" ? b : answer;
   return { a, b, op, answer, missing, correct };
+}
+
+function makeProblem(level: number): Problem {
+  switch (level) {
+    case 1: { // pure addition, answer missing: 3 + 4 = ?
+      const a = rnd(1, 9);
+      const b = rnd(1, 10 - a);
+      return build(a, b, "+", "answer");
+    }
+    case 2: { // pure subtraction, answer missing: 6 - 4 = ?
+      const a = rnd(2, 10);
+      const b = rnd(1, a - 1);
+      return build(a, b, "−", "answer");
+    }
+    case 3: { // zero addition, answer missing: 0 + 5 = ? / 5 + 0 = ?
+      const n = rnd(1, 10);
+      return Math.random() < 0.5 ? build(0, n, "+", "answer") : build(n, 0, "+", "answer");
+    }
+    case 4: { // zero subtraction, answer missing: 6 - 0 = ? / 6 - 6 = ?
+      const n = rnd(1, 10);
+      return Math.random() < 0.5 ? build(n, 0, "−", "answer") : build(n, n, "−", "answer");
+    }
+    case 5: { // missing addend, answer known: 4 + ? = 7
+      const a = rnd(1, 9);
+      const b = rnd(1, 10 - a);
+      return build(a, b, "+", "b");
+    }
+    case 6: { // missing subtrahend, answer known: 4 - ? = 2
+      const a = rnd(2, 10);
+      const b = rnd(1, a - 1);
+      return build(a, b, "−", "b");
+    }
+    case 7: { // zero involved, missing addend/subtrahend
+      const n = rnd(1, 10);
+      const kind = rnd(0, 3);
+      if (kind === 0) return build(0, n, "+", "b");   // 0 + ? = n
+      if (kind === 1) return build(n, 0, "+", "a");   // ? + 0 = n
+      if (kind === 2) return build(n, 0, "−", "a");   // ? − 0 = n
+      return build(n, n, "−", "b");                   // n − ? = 0
+    }
+    default:
+      return makeProblem(1);
+  }
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -185,7 +232,8 @@ interface DragState {
 }
 
 export default function NumberblocksFriends() {
-  const [problem, setProblem] = useState<Problem>(() => makeProblem());
+  const [level, setLevel] = useState(1);
+  const [problem, setProblem] = useState<Problem>(() => makeProblem(1));
   const [solved, setSolved] = useState(false);
   const [score, setScore] = useState(0);
   const [drag, setDrag] = useState<DragState | null>(null);
@@ -205,13 +253,19 @@ export default function NumberblocksFriends() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const newProblem = useCallback(() => {
-    const p = makeProblem();
+  const newProblem = useCallback((lvl: number = level) => {
+    const p = makeProblem(lvl);
     setProblem(p);
     setSolved(false);
     setSlotFlash(null);
     speakProblem(p);
-  }, [speakProblem]);
+  }, [level, speakProblem]);
+
+  const switchLevel = (l: number) => {
+    setLevel(l);
+    setScore(0);
+    newProblem(l);
+  };
 
   // ── Dragging from the palette ──
   const startDrag = (char: Character) => (e: React.PointerEvent) => {
@@ -340,6 +394,28 @@ export default function NumberblocksFriends() {
         <div className="px-3 py-1.5 rounded-2xl bg-white/70 shadow">
           <span className="text-sm font-black text-orange-600">⭐ {score}</span>
         </div>
+      </div>
+
+      {/* Level selector */}
+      <div className="flex-shrink-0 flex items-center gap-1.5 overflow-x-auto px-3 pb-2 scrollbar-none">
+        {Object.entries(LEVEL_CONFIG).map(([lvlStr, cfg]) => {
+          const l = parseInt(lvlStr);
+          const active = level === l;
+          return (
+            <button
+              key={l}
+              onClick={() => switchLevel(l)}
+              className="flex-shrink-0 flex flex-col items-center gap-0.5 px-2.5 py-1.5 rounded-2xl font-black transition-all active:scale-95"
+              style={active
+                ? { background: "#8b5cf6", color: "#fff", boxShadow: "0 4px 10px rgba(139,92,246,0.4)" }
+                : { background: "rgba(255,255,255,0.6)", color: "#64748b" }
+              }
+            >
+              <span className="text-base leading-none">{cfg.icon}</span>
+              <span className="text-[10px] whitespace-nowrap">{l}. {cfg.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Equation with characters */}
