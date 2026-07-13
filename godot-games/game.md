@@ -189,5 +189,8 @@ Export дууссаны дараа `/admin/games` дээр шинэ тоглоо
   дээгүүр нь харайна; лаав дээр буувал зүрх алдаж сүүлийн аюулгүй цэг рүү буцна
 - Roblox-маяг дугуй touch товчнууд баруун доод буланд: うつ (буудах),
   ジャンプ (харайх); keyboard: X/Z = буудах, Space = харайх
+- Roblox-маяг хөдөлгөөний виртуал joystick зүүн доод буланд (аналог, чиглэл +
+  хурд); давуу эрэмбэ: keyboard > joystick > tap-to-move. Touch-emulated mouse
+  давхардлыг `event.device == DEVICE_ID_EMULATION` шалгалтаар хаасан
 - Headless test (`test_flow.gd`): auto-spawn, буудлага, зүрх, лаав буулт,
   3 level-ийн flow, game over — бүгдийг browser-гүй шалгана

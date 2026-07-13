@@ -45,17 +45,40 @@ func _run() -> void:
 	assert(main.hearts == 2, "hit should cost a heart")
 	main.hearts = 99  # keep auto-spawned zombies from ending the run mid-test
 
-	# ── jump ──
+	# ── virtual joystick (bottom-left) ──
+	var jc: Vector2 = main.JOY_CENTER
+	var touch := InputEventScreenTouch.new()
+	touch.index = 0
+	touch.pressed = true
+	touch.position = jc + Vector2(30, 0)
+	main._unhandled_input(touch)
+	assert(main.joy_touch_id == 0, "joystick should grab touch in its zone")
+	assert(main.joy_vec.x > 0.5 and absf(main.joy_vec.y) < 0.1, "joy_vec should point right")
+	var px: float = main.player.position.x
+	await create_timer(0.4).timeout
+	assert(main.player.position.x > px + 10.0, "joystick should move player right")
+	var lift := InputEventScreenTouch.new()
+	lift.index = 0
+	lift.pressed = false
+	main._unhandled_input(lift)
+	assert(main.joy_vec == Vector2.ZERO, "joystick should reset on release")
+	print("[test] joystick OK")
+
+	# ── jump (in place — don't drift into items) ──
+	main.move_dir = Vector2.ZERO
 	main._jump()
 	assert(main.airborne, "jump should set airborne")
 	await create_timer(0.7).timeout
 	assert(not main.airborne, "should land after jump")
 
+	# The joystick walk above may have legitimately picked up an item or two,
+	# so collect whatever remains instead of assuming all 20 are left.
 	var items: Array = main.items_root.get_children()
-	print("[test] L1 items: ", items.size())
-	assert(items.size() == 20, "expected 20 level-1 items")
+	print("[test] L1 items left: ", items.size(), " counts=", main.counts)
+	assert(items.size() >= 18, "too few level-1 items remain")
 	for a in items:
-		main._collect(a)
+		if not a.is_queued_for_deletion():
+			main._collect(a)
 	print("[test] after L1 collect: playing=", main.playing, " level=", main.level_index)
 	assert(not main.playing, "should pause during level-clear overlay")
 
@@ -65,6 +88,9 @@ func _run() -> void:
 	assert(main.level_index == 1, "should be on level 1 (fruits)")
 	assert(main.playing, "should be playing level 2")
 	var fruits: Array = main.items_root.get_children()
+	if fruits.size() != 20:
+		print("[debug] player=", main.player.position, " counts=", main.counts,
+			" pointer_active=", main.pointer_active, " joy_vec=", main.joy_vec)
 	assert(fruits.size() == 20, "expected 20 level-2 items")
 	var kinds := {}
 	for a in fruits:
@@ -95,8 +121,7 @@ func _run() -> void:
 	main.jump_t = 0.0001
 	main.jump_dir = Vector2.ZERO
 	var hearts_before: int = main.hearts
-	await process_frame
-	await process_frame
+	await create_timer(0.2).timeout
 	assert(not main.airborne, "should have landed")
 	assert(main.hearts == hearts_before - 1, "landing on lava should cost a heart")
 	assert(main.player.position.distance_to(safe) < 20.0, "should return to last safe spot")

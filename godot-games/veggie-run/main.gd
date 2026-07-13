@@ -19,6 +19,11 @@ const JUMP_TIME := 0.5
 const JUMP_BOOST := 1.8
 const ZOMBIE_SPAWN_EVERY := 2.5
 const ZOMBIE_MAX := [2, 3, 4]  # per level
+const JOY_CENTER := Vector2(72, 302)  # movement joystick, bottom-left
+const JOY_R := 42.0
+const JOY_KNOB_R := 18.0
+const JOY_NONE := -99
+const MOUSE_ID := -50
 
 const CHARACTERS := [
 	{"tex": "bear",   "jp": "くま"},
@@ -98,6 +103,8 @@ var invincible_t := 0.0
 var shoot_cd_t := 0.0
 var zspawn_t := 0.0
 var time_acc := 0.0
+var joy_touch_id := JOY_NONE  # touch index (or MOUSE_ID) holding the joystick
+var joy_vec := Vector2.ZERO   # analog direction, length 0..1
 
 var level_label: Label
 var progress_box: HBoxContainer
@@ -113,6 +120,8 @@ var hearts_box: HBoxContainer
 var heart_rects: Array[TextureRect] = []
 var jump_button: Button
 var shoot_button: Button
+var joy_base: Panel
+var joy_knob: Panel
 var jp_font: FontFile
 
 func _ready() -> void:
@@ -207,7 +216,10 @@ func _spawn_level_items(idx: int) -> void:
 				)
 			area.position = pos
 			area.body_entered.connect(func(body: Node) -> void:
-				if body == player and playing:
+				# Distance check guards against stale physics transforms right
+				# after the player teleports at level start.
+				if body == player and playing \
+						and area.position.distance_to(player.position) < 34.0:
 					_collect(area)
 			)
 			items_root.add_child(area)
@@ -419,7 +431,28 @@ func _build_hud() -> void:
 	shoot_button.position = Vector2(640 - 76 - 14 - 60 - 14, 360 - 60 - 16)
 	shoot_button.button_down.connect(_shoot)
 	hud.add_child(shoot_button)
+
+	# Roblox-style movement joystick, bottom-left
+	joy_base = _circle_panel(JOY_R * 2.0, Color(1, 1, 1, 0.16))
+	joy_base.position = JOY_CENTER - Vector2(JOY_R, JOY_R)
+	hud.add_child(joy_base)
+	joy_knob = _circle_panel(JOY_KNOB_R * 2.0, Color(1, 1, 1, 0.42))
+	joy_knob.position = JOY_CENTER - Vector2(JOY_KNOB_R, JOY_KNOB_R)
+	hud.add_child(joy_knob)
 	_set_buttons(false)
+
+func _circle_panel(d: float, col: Color) -> Panel:
+	var p := Panel.new()
+	p.custom_minimum_size = Vector2(d, d)
+	p.size = Vector2(d, d)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = col
+	sb.set_corner_radius_all(int(d / 2.0))
+	sb.border_color = Color(1, 1, 1, 0.55)
+	sb.set_border_width_all(3)
+	p.add_theme_stylebox_override("panel", sb)
+	return p
 
 func _round_button(txt: String, d: int, fs: int) -> Button:
 	var b := Button.new()
@@ -444,6 +477,19 @@ func _round_button(txt: String, d: int, fs: int) -> Button:
 func _set_buttons(v: bool) -> void:
 	jump_button.visible = v
 	shoot_button.visible = v
+	joy_base.visible = v
+	joy_knob.visible = v
+	_joy_release()
+
+func _joy_update(p: Vector2) -> void:
+	var off := (p - JOY_CENTER).limit_length(JOY_R)
+	joy_vec = off / JOY_R
+	joy_knob.position = JOY_CENTER + off - Vector2(JOY_KNOB_R, JOY_KNOB_R)
+
+func _joy_release() -> void:
+	joy_touch_id = JOY_NONE
+	joy_vec = Vector2.ZERO
+	joy_knob.position = JOY_CENTER - Vector2(JOY_KNOB_R, JOY_KNOB_R)
 
 func _update_hearts() -> void:
 	for i in heart_rects.size():
@@ -503,6 +549,8 @@ func _start_pressed() -> void:
 
 func _start_level(idx: int) -> void:
 	level_index = idx
+	player.position = Vector2(COLS * TILE / 2.0, ROWS * TILE / 2.0)
+	last_safe_pos = player.position
 	_build_level_ground(idx)
 	_build_progress_hud(idx)
 	_spawn_level_items(idx)
@@ -511,8 +559,6 @@ func _start_level(idx: int) -> void:
 	for b in bullets_root.get_children():
 		b.queue_free()
 	level_label.text = LEVELS[idx]["name"]
-	player.position = Vector2(COLS * TILE / 2.0, ROWS * TILE / 2.0)
-	last_safe_pos = player.position
 	pointer_active = false
 	airborne = false
 	invincible_t = 0.0
@@ -541,7 +587,10 @@ func _physics_process(delta: float) -> void:
 	# player input
 	var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if dir != Vector2.ZERO:
-		pointer_active = false  # keyboard overrides tap-to-move
+		pointer_active = false  # keyboard overrides joystick + tap-to-move
+	elif joy_vec.length() > 0.15:
+		dir = joy_vec.limit_length(1.0)
+		pointer_active = false
 	elif pointer_active:
 		var to_target := pointer_target - player.position
 		if to_target.length() > 6.0:
@@ -634,19 +683,47 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_X, KEY_Z:
 				_shoot()
 		return
-	# Tap/click anywhere → walk there until reached; dragging retargets live.
-	if event is InputEventScreenTouch and event.pressed:
-		pointer_active = true
-		pointer_target = _to_world(event.position)
+	# Pointer: a press near the joystick grabs it; anywhere else = tap-to-move.
+	# Touch-emulated mouse events (device == DEVICE_ID_EMULATION) are skipped —
+	# the touch branch already handled them.
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			_pointer_press(event.position, event.index)
+		else:
+			_pointer_release(event.index)
 	elif event is InputEventScreenDrag:
+		_pointer_move(event.position, event.index)
+	elif event is InputEventMouseButton:
+		if event.device == InputEvent.DEVICE_ID_EMULATION:
+			return
+		if event.pressed:
+			_pointer_press(event.position, MOUSE_ID)
+		else:
+			_pointer_release(MOUSE_ID)
+	elif event is InputEventMouseMotion:
+		if event.device == InputEvent.DEVICE_ID_EMULATION:
+			return
+		if event.button_mask != 0:
+			_pointer_move(event.position, MOUSE_ID)
+
+func _pointer_press(p: Vector2, id: int) -> void:
+	if playing and joy_touch_id == JOY_NONE and p.distance_to(JOY_CENTER) < JOY_R + 28.0:
+		joy_touch_id = id
+		_joy_update(p)
+	else:
 		pointer_active = true
-		pointer_target = _to_world(event.position)
-	elif event is InputEventMouseButton and event.pressed:
+		pointer_target = _to_world(p)
+
+func _pointer_move(p: Vector2, id: int) -> void:
+	if id == joy_touch_id:
+		_joy_update(p)
+	else:
 		pointer_active = true
-		pointer_target = _to_world(event.position)
-	elif event is InputEventMouseMotion and event.button_mask != 0:
-		pointer_active = true
-		pointer_target = _to_world(event.position)
+		pointer_target = _to_world(p)
+
+func _pointer_release(id: int) -> void:
+	if id == joy_touch_id:
+		_joy_release()
 
 func _to_world(screen_pos: Vector2) -> Vector2:
 	return get_canvas_transform().affine_inverse() * screen_pos
