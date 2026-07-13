@@ -189,8 +189,18 @@ Export дууссаны дараа `/admin/games` дээр шинэ тоглоо
   дээгүүр нь харайна; лаав дээр буувал зүрх алдаж сүүлийн аюулгүй цэг рүү буцна
 - Roblox-маяг дугуй touch товчнууд баруун доод буланд: うつ (буудах),
   ジャンプ (харайх); keyboard: X/Z = буудах, Space = харайх
-- Roblox-маяг хөдөлгөөний виртуал joystick зүүн доод буланд (аналог, чиглэл +
-  хурд); давуу эрэмбэ: keyboard > joystick > tap-to-move. Touch-emulated mouse
-  давхардлыг `event.device == DEVICE_ID_EMULATION` шалгалтаар хаасан
+- Roblox-маяг ДИНАМИК joystick: зүүн талын хагаст хуруу тавьсан газар суурь нь
+  очиж идэвхжинэ; хуруугаа авмагц дүр ШУУД зогсоно (tap-to-move устгасан).
+  Давуу эрэмбэ: keyboard > joystick
+- **Multi-touch ЧУХАЛ**: Godot GUI Button зөвхөн ЭХНИЙ хүрэлтэд (mouse
+  emulation) хариу үзүүлдэг тул утсан дээр хоёр гараар тоглоход (joystick
+  барьсан хуруу + үйлдлийн хуруу) Button ажиллахгүй. Шийдэл: бүх in-game
+  товч (うつ/ジャンプ) болон select дэлгэцийн товчнуудыг `_unhandled_input`
+  дотор гараар hit-test хийдэг (`_pointer_press`, `_overlay_touch`).
+  Touch-emulated mouse давхардлыг `event.device == DEVICE_ID_EMULATION`
+  шалгалтаар хаасан; handler-ууд idempotent (давхар очиход хор нөлөөгүй)
+- Portrait утсан дээр「スマホを よこむきに してね！」overlay гарч тоглоом
+  түр зогсоно; start дарахад `screen.orientation.lock('landscape')` оролдоно
+  (PWA/fullscreen орчинд ажиллана, бусад үед чимээгүй алгасна)
 - Headless test (`test_flow.gd`): auto-spawn, буудлага, зүрх, лаав буулт,
   3 level-ийн flow, game over — бүгдийг browser-гүй шалгана

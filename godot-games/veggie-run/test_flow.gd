@@ -45,15 +45,21 @@ func _run() -> void:
 	assert(main.hearts == 2, "hit should cost a heart")
 	main.hearts = 99  # keep auto-spawned zombies from ending the run mid-test
 
-	# ── virtual joystick (bottom-left) ──
-	var jc: Vector2 = main.JOY_CENTER
+	# ── dynamic virtual joystick (Roblox-style, left half) ──
+	var jc := Vector2(150, 250)
 	var touch := InputEventScreenTouch.new()
 	touch.index = 0
 	touch.pressed = true
-	touch.position = jc + Vector2(30, 0)
+	touch.position = jc
 	main._unhandled_input(touch)
-	assert(main.joy_touch_id == 0, "joystick should grab touch in its zone")
-	assert(main.joy_vec.x > 0.5 and absf(main.joy_vec.y) < 0.1, "joy_vec should point right")
+	assert(main.joy_touch_id == 0, "joystick should grab a left-half touch")
+	assert(main.joy_center_cur.distance_to(jc) < 1.0, "joystick base should recenter on the touch")
+	assert(main.joy_vec == Vector2.ZERO, "no drag yet → no movement")
+	var drag := InputEventScreenDrag.new()
+	drag.index = 0
+	drag.position = jc + Vector2(42, 0)
+	main._unhandled_input(drag)
+	assert(main.joy_vec.x > 0.9 and absf(main.joy_vec.y) < 0.1, "joy_vec should point right")
 	var px: float = main.player.position.x
 	await create_timer(0.4).timeout
 	assert(main.player.position.x > px + 10.0, "joystick should move player right")
@@ -62,7 +68,49 @@ func _run() -> void:
 	lift.pressed = false
 	main._unhandled_input(lift)
 	assert(main.joy_vec == Vector2.ZERO, "joystick should reset on release")
+	var vx: float = main.player.position.x
+	await create_timer(0.25).timeout
+	assert(absf(main.player.position.x - vx) < 1.0, "player must stop immediately on release")
 	print("[test] joystick OK")
+
+	# ── multi-touch action circles: 2nd finger shoots while 1st holds joystick ──
+	var touch2 := InputEventScreenTouch.new()
+	touch2.index = 0
+	touch2.pressed = true
+	touch2.position = jc
+	main._unhandled_input(touch2)
+	var shoot_touch := InputEventScreenTouch.new()
+	shoot_touch.index = 1
+	shoot_touch.pressed = true
+	shoot_touch.position = main._btn_center(main.shoot_button)
+	var bullets_before: int = main.bullets_root.get_child_count()
+	main._unhandled_input(shoot_touch)
+	assert(main.bullets_root.get_child_count() == bullets_before + 1,
+		"second finger should fire while joystick is held")
+	var lift2 := InputEventScreenTouch.new()
+	lift2.index = 0
+	lift2.pressed = false
+	main._unhandled_input(lift2)
+	print("[test] multitouch shoot OK")
+
+	# ── overlay touch fallback: select + start via raw touch hit-test ──
+	main._show_select()
+	var sel_touch := InputEventScreenTouch.new()
+	sel_touch.index = 1
+	sel_touch.pressed = true
+	sel_touch.position = main.char_buttons[2].get_global_rect().get_center()
+	main._unhandled_input(sel_touch)
+	assert(main.selected_char == 2, "overlay touch should select character")
+	var start_touch := InputEventScreenTouch.new()
+	start_touch.index = 1
+	start_touch.pressed = true
+	start_touch.position = main.start_button.get_global_rect().get_center()
+	main._unhandled_input(start_touch)
+	await process_frame
+	assert(main.playing, "overlay touch should start the game")
+	assert(main.level_index == 0, "restart back at level 0")
+	main.hearts = 99
+	print("[test] overlay touch OK")
 
 	# ── jump (in place — don't drift into items) ──
 	main.move_dir = Vector2.ZERO
@@ -90,7 +138,7 @@ func _run() -> void:
 	var fruits: Array = main.items_root.get_children()
 	if fruits.size() != 20:
 		print("[debug] player=", main.player.position, " counts=", main.counts,
-			" pointer_active=", main.pointer_active, " joy_vec=", main.joy_vec)
+			" joy_vec=", main.joy_vec)
 	assert(fruits.size() == 20, "expected 20 level-2 items")
 	var kinds := {}
 	for a in fruits:

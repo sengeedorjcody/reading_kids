@@ -89,8 +89,6 @@ var level_index := 0
 var counts := {}          # tex -> collected count
 var playing := false
 var selected_char := 0
-var pointer_target := Vector2.ZERO
-var pointer_active := false
 
 var hearts := MAX_HEARTS
 var facing := Vector2.RIGHT       # last non-zero move direction (bullet dir)
@@ -103,8 +101,9 @@ var invincible_t := 0.0
 var shoot_cd_t := 0.0
 var zspawn_t := 0.0
 var time_acc := 0.0
-var joy_touch_id := JOY_NONE  # touch index (or MOUSE_ID) holding the joystick
-var joy_vec := Vector2.ZERO   # analog direction, length 0..1
+var joy_touch_id := JOY_NONE       # touch index (or MOUSE_ID) holding the joystick
+var joy_vec := Vector2.ZERO        # analog direction, length 0..1
+var joy_center_cur := JOY_CENTER   # dynamic: base recenters where the touch lands
 
 var level_label: Label
 var progress_box: HBoxContainer
@@ -122,6 +121,7 @@ var jump_button: Button
 var shoot_button: Button
 var joy_base: Panel
 var joy_knob: Panel
+var rotate_overlay: ColorRect
 var jp_font: FontFile
 
 func _ready() -> void:
@@ -421,15 +421,18 @@ func _build_hud() -> void:
 	start_button.pressed.connect(_start_pressed)
 	overlay.add_child(start_button)
 
-	# Roblox-style round touch buttons, bottom-right
+	# Roblox-style round touch buttons, bottom-right. These are visuals only —
+	# presses are hit-tested in _pointer_press so they work with ANY finger
+	# (GUI Buttons only respond to the first touch via mouse emulation, which
+	# breaks two-handed play: joystick finger + action finger).
 	jump_button = _round_button("ジャンプ", 76, 14)
 	jump_button.position = Vector2(640 - 76 - 14, 360 - 76 - 16)
-	jump_button.button_down.connect(_jump)
+	jump_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(jump_button)
 
 	shoot_button = _round_button("うつ", 60, 16)
 	shoot_button.position = Vector2(640 - 76 - 14 - 60 - 14, 360 - 60 - 16)
-	shoot_button.button_down.connect(_shoot)
+	shoot_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hud.add_child(shoot_button)
 
 	# Roblox-style movement joystick, bottom-left
@@ -440,6 +443,19 @@ func _build_hud() -> void:
 	joy_knob.position = JOY_CENTER - Vector2(JOY_KNOB_R, JOY_KNOB_R)
 	hud.add_child(joy_knob)
 	_set_buttons(false)
+
+	# "Rotate your phone" overlay for portrait mobile (web only), topmost
+	rotate_overlay = ColorRect.new()
+	rotate_overlay.color = Color(0, 0, 0, 0.88)
+	rotate_overlay.size = Vector2(640, 360)
+	rotate_overlay.visible = false
+	hud.add_child(rotate_overlay)
+	var rot_label := Label.new()
+	rot_label.text = "スマホを よこむきに してね！"
+	rot_label.add_theme_font_size_override("font_size", 26)
+	rot_label.position = Vector2(110, 150)
+	_style(rot_label)
+	rotate_overlay.add_child(rot_label)
 
 func _circle_panel(d: float, col: Color) -> Panel:
 	var p := Panel.new()
@@ -481,14 +497,23 @@ func _set_buttons(v: bool) -> void:
 	joy_knob.visible = v
 	_joy_release()
 
+func _joy_grab(p: Vector2, id: int) -> void:
+	# Roblox-style dynamic thumbstick: the base recenters where the touch lands.
+	joy_touch_id = id
+	joy_center_cur = Vector2(clampf(p.x, 52.0, 300.0), clampf(p.y, 62.0, 340.0))
+	joy_base.position = joy_center_cur - Vector2(JOY_R, JOY_R)
+	_joy_update(p)
+
 func _joy_update(p: Vector2) -> void:
-	var off := (p - JOY_CENTER).limit_length(JOY_R)
+	var off := (p - joy_center_cur).limit_length(JOY_R)
 	joy_vec = off / JOY_R
-	joy_knob.position = JOY_CENTER + off - Vector2(JOY_KNOB_R, JOY_KNOB_R)
+	joy_knob.position = joy_center_cur + off - Vector2(JOY_KNOB_R, JOY_KNOB_R)
 
 func _joy_release() -> void:
 	joy_touch_id = JOY_NONE
 	joy_vec = Vector2.ZERO
+	joy_center_cur = JOY_CENTER
+	joy_base.position = JOY_CENTER - Vector2(JOY_R, JOY_R)
 	joy_knob.position = JOY_CENTER - Vector2(JOY_KNOB_R, JOY_KNOB_R)
 
 func _update_hearts() -> void:
@@ -541,7 +566,12 @@ func _update_char_buttons() -> void:
 		char_buttons[i].modulate = Color(1, 1, 1) if i == selected_char else Color(0.55, 0.55, 0.58)
 
 func _start_pressed() -> void:
+	if not overlay.visible:
+		return  # guard against double-fire (raw touch + emulated mouse)
 	overlay.visible = false
+	if OS.has_feature("web"):
+		# Best-effort landscape lock (works in PWA/fullscreen contexts; harmless no-op elsewhere)
+		JavaScriptBridge.eval("try{if(screen.orientation&&screen.orientation.lock){screen.orientation.lock('landscape').catch(function(e){})}}catch(e){}")
 	level_index = 0
 	hearts = MAX_HEARTS
 	_update_hearts()
@@ -559,7 +589,7 @@ func _start_level(idx: int) -> void:
 	for b in bullets_root.get_children():
 		b.queue_free()
 	level_label.text = LEVELS[idx]["name"]
-	pointer_active = false
+	_joy_release()
 	airborne = false
 	invincible_t = 0.0
 	shoot_cd_t = 0.0
@@ -572,8 +602,14 @@ func _start_level(idx: int) -> void:
 	_speak("%s！ すたーと！" % LEVELS[idx]["name"])
 
 # ── Movement & combat loop ───────────────────────────────────────────────────
+func _process(_delta: float) -> void:
+	# Portrait phone → ask to rotate (web only; canvas follows device orientation)
+	if OS.has_feature("web"):
+		var ws := DisplayServer.window_get_size()
+		rotate_overlay.visible = ws.y > ws.x
+
 func _physics_process(delta: float) -> void:
-	if not playing:
+	if not playing or rotate_overlay.visible:
 		return
 	time_acc += delta
 	if invincible_t > 0.0:
@@ -584,19 +620,10 @@ func _physics_process(delta: float) -> void:
 	if shoot_cd_t > 0.0:
 		shoot_cd_t -= delta
 
-	# player input
+	# player input: keyboard or held joystick only — releasing stops instantly
 	var dir := Input.get_vector("move_left", "move_right", "move_up", "move_down")
-	if dir != Vector2.ZERO:
-		pointer_active = false  # keyboard overrides joystick + tap-to-move
-	elif joy_vec.length() > 0.15:
+	if dir == Vector2.ZERO and joy_vec.length() > 0.12:
 		dir = joy_vec.limit_length(1.0)
-		pointer_active = false
-	elif pointer_active:
-		var to_target := pointer_target - player.position
-		if to_target.length() > 6.0:
-			dir = to_target.normalized()
-		else:
-			pointer_active = false
 	move_dir = dir
 	if dir != Vector2.ZERO:
 		facing = dir.normalized()
@@ -683,7 +710,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_X, KEY_Z:
 				_shoot()
 		return
-	# Pointer: a press near the joystick grabs it; anywhere else = tap-to-move.
+	# Multi-touch pointer handling (Roblox-style): left half = dynamic joystick,
+	# right-side circles = shoot/jump, overlay = manual button hit-test.
+	# Every finger works — GUI Buttons alone only react to the first touch
+	# (mouse emulation), which breaks two-handed landscape play on phones.
 	# Touch-emulated mouse events (device == DEVICE_ID_EMULATION) are skipped —
 	# the touch branch already handled them.
 	if event is InputEventScreenTouch:
@@ -706,24 +736,49 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_mask != 0:
 			_pointer_move(event.position, MOUSE_ID)
 
+func _btn_center(b: Button) -> Vector2:
+	return b.position + b.size / 2.0
+
+func _flash(b: Button) -> void:
+	b.modulate = Color(1.6, 1.6, 1.6)
+	var tw := create_tween()
+	tw.tween_property(b, "modulate", Color(1, 1, 1), 0.18)
+
 func _pointer_press(p: Vector2, id: int) -> void:
-	if playing and joy_touch_id == JOY_NONE and p.distance_to(JOY_CENTER) < JOY_R + 28.0:
-		joy_touch_id = id
-		_joy_update(p)
-	else:
-		pointer_active = true
-		pointer_target = _to_world(p)
+	if rotate_overlay.visible:
+		return
+	if overlay.visible:
+		_overlay_touch(p)
+		return
+	if not playing:
+		return
+	# action circles, bottom-right (any finger)
+	if p.distance_to(_btn_center(shoot_button)) <= 36.0:
+		_flash(shoot_button)
+		_shoot()
+		return
+	if p.distance_to(_btn_center(jump_button)) <= 44.0:
+		_flash(jump_button)
+		_jump()
+		return
+	# left half of the screen grabs the movement joystick
+	if joy_touch_id == JOY_NONE and p.x < 320.0:
+		_joy_grab(p, id)
 
 func _pointer_move(p: Vector2, id: int) -> void:
 	if id == joy_touch_id:
 		_joy_update(p)
-	else:
-		pointer_active = true
-		pointer_target = _to_world(p)
 
 func _pointer_release(id: int) -> void:
 	if id == joy_touch_id:
 		_joy_release()
 
-func _to_world(screen_pos: Vector2) -> Vector2:
-	return get_canvas_transform().affine_inverse() * screen_pos
+func _overlay_touch(p: Vector2) -> void:
+	# Manual hit-test for the select screen so taps from any finger register.
+	# Handlers are idempotent, so a duplicate emulated-mouse GUI press is harmless.
+	for i in char_buttons.size():
+		if char_row.visible and char_buttons[i].get_global_rect().has_point(p):
+			_select_char(i)
+			return
+	if start_button.visible and start_button.get_global_rect().has_point(p):
+		_start_pressed()
