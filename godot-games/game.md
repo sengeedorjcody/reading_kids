@@ -192,13 +192,19 @@ Export дууссаны дараа `/admin/games` дээр шинэ тоглоо
 - Roblox-маяг ДИНАМИК joystick: зүүн талын хагаст хуруу тавьсан газар суурь нь
   очиж идэвхжинэ; хуруугаа авмагц дүр ШУУД зогсоно (tap-to-move устгасан).
   Давуу эрэмбэ: keyboard > joystick
-- **Multi-touch ЧУХАЛ**: Godot GUI Button зөвхөн ЭХНИЙ хүрэлтэд (mouse
-  emulation) хариу үзүүлдэг тул утсан дээр хоёр гараар тоглоход (joystick
-  барьсан хуруу + үйлдлийн хуруу) Button ажиллахгүй. Шийдэл: бүх in-game
-  товч (うつ/ジャンプ) болон select дэлгэцийн товчнуудыг `_unhandled_input`
-  дотор гараар hit-test хийдэг (`_pointer_press`, `_overlay_touch`).
-  Touch-emulated mouse давхардлыг `event.device == DEVICE_ID_EMULATION`
-  шалгалтаар хаасан; handler-ууд idempotent (давхар очиход хор нөлөөгүй)
+- **Multi-touch + товч найдвартай байдал ЧУХАЛ**: бүх товшилтыг
+  `_input`-д (GUI-аас ӨМНӨ) хийнэ, `_unhandled_input`-д БИШ. Учир нь:
+  1) Godot GUI Button зөвхөн ЭХНИЙ хүрэлтэд (mouse emulation) хариу үзүүлдэг
+     → хоёр гараар тоглоход (joystick барьсан хуруу + үйлдлийн хуруу) ажиллахгүй;
+  2) default `MOUSE_FILTER_STOP`-той Control (modal overlay, эсвэл товчны дээгүүр
+     гарч ирсэн collect/やっつけた popup Label) touch-ийг ЭХЛЭЭД зажилж, товч
+     "заримдаа дардаггүй" болдог. `_input` нь GUI-аас өмнө ажилладаг тул энэ
+     хоёуланг шийднэ. Бүх Button-ыг `MOUSE_FILTER_IGNORE` (зөвхөн зураг) болгож,
+     select дэлгэц + うつ/ジャンプ-ыг гараар hit-test хийдэг (`_pointer_press`,
+     `_overlay_touch`). Дугуй товчны hit radius = харагдах радиус (size/2) —
+     "гадуур дарахад дардаг" алдааг зассан. Touch-emulated mouse давхардлыг
+     `event.device == DEVICE_ID_EMULATION` шалгалтаар хаасан. Keyboard
+     (Space/X/Z) `_unhandled_input`-д хэвээр
 - Portrait утсан дээр「スマホを よこむきに してね！」overlay гарч тоглоом
   түр зогсоно; start дарахад `screen.orientation.lock('landscape')` оролдоно
   (PWA/fullscreen орчинд ажиллана, бусад үед чимээгүй алгасна)

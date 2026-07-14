@@ -407,7 +407,9 @@ func _build_hud() -> void:
 		b.custom_minimum_size = Vector2(78, 92)
 		b.add_theme_font_override("font", jp_font)
 		b.add_theme_font_size_override("font_size", 16)
-		b.pressed.connect(_select_char.bind(i))
+		# Visual only — taps are hit-tested manually in _overlay_touch so every
+		# finger works (GUI Buttons only follow the first, emulated-mouse touch).
+		b.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		char_row.add_child(b)
 		char_buttons.append(b)
 	_update_char_buttons()
@@ -418,7 +420,7 @@ func _build_hud() -> void:
 	start_button.add_theme_font_override("font", jp_font)
 	start_button.position = Vector2(240, 268)
 	start_button.size = Vector2(160, 56)
-	start_button.pressed.connect(_start_pressed)
+	start_button.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	overlay.add_child(start_button)
 
 	# Roblox-style round touch buttons, bottom-right. These are visuals only —
@@ -702,18 +704,14 @@ func _physics_process(delta: float) -> void:
 				b.queue_free()
 				break
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed and not event.echo:
-		match event.physical_keycode:
-			KEY_SPACE:
-				_jump()
-			KEY_X, KEY_Z:
-				_shoot()
-		return
-	# Multi-touch pointer handling (Roblox-style): left half = dynamic joystick,
-	# right-side circles = shoot/jump, overlay = manual button hit-test.
-	# Every finger works — GUI Buttons alone only react to the first touch
-	# (mouse emulation), which breaks two-handed landscape play on phones.
+# Pointer handling lives in _input (NOT _unhandled_input) so it runs BEFORE the
+# GUI system. Otherwise a Control with the default MOUSE_FILTER_STOP — the modal
+# overlay, or a collect/やっつけた popup Label drifting over a touch button —
+# swallows the touch first and the button silently misses ("sometimes doesn't
+# press"). Running here, every tap reaches us regardless of what's on screen.
+func _input(event: InputEvent) -> void:
+	# Multi-touch (Roblox-style): left half = dynamic joystick, right-side circles
+	# = shoot/jump, overlay screen = manual button hit-test. Every finger works.
 	# Touch-emulated mouse events (device == DEVICE_ID_EMULATION) are skipped —
 	# the touch branch already handled them.
 	if event is InputEventScreenTouch:
@@ -736,6 +734,14 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.button_mask != 0:
 			_pointer_move(event.position, MOUSE_ID)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.physical_keycode:
+			KEY_SPACE:
+				_jump()
+			KEY_X, KEY_Z:
+				_shoot()
+
 func _btn_center(b: Button) -> Vector2:
 	return b.position + b.size / 2.0
 
@@ -752,12 +758,13 @@ func _pointer_press(p: Vector2, id: int) -> void:
 		return
 	if not playing:
 		return
-	# action circles, bottom-right (any finger)
-	if p.distance_to(_btn_center(shoot_button)) <= 36.0:
+	# action circles, bottom-right (any finger). Hit radius == the visible circle
+	# radius (button.size/2) so taps register only where the button is drawn.
+	if p.distance_to(_btn_center(shoot_button)) <= shoot_button.size.x * 0.5:
 		_flash(shoot_button)
 		_shoot()
 		return
-	if p.distance_to(_btn_center(jump_button)) <= 44.0:
+	if p.distance_to(_btn_center(jump_button)) <= jump_button.size.x * 0.5:
 		_flash(jump_button)
 		_jump()
 		return
