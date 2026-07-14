@@ -78,6 +78,43 @@ const LAVA_MAP := [
 	"....................",
 ]
 
+# ── Web touch: compute design-space (640×360) coords ourselves ────────────────
+# Godot Web mis-scales InputEventScreenTouch on HiDPI screens (devicePixelRatio
+# > 1) — the very phones this game targets — while mouse events stay correct.
+# So on web we ignore Godot's touch events and instead listen to the canvas'
+# raw browser touches, converting with getBoundingClientRect() (CSS pixels, so
+# dpr-independent) into the aspect-kept 640×360 design space. Coordinates then
+# match every Control/button position exactly, on any device.
+const JS_INSTALL := """
+(function(){
+  if(window.__vr && window.__vr.installed) return;
+  var c = document.querySelector('canvas');
+  if(!c) return;
+  window.__vr = {installed:true, queue:[]};
+  function toDesign(cx, cy){
+    var r = c.getBoundingClientRect();
+    var s = Math.min(r.width/640.0, r.height/360.0);
+    if(s <= 0) s = 1;
+    var ox = (r.width  - 640.0*s)/2.0;
+    var oy = (r.height - 360.0*s)/2.0;
+    return [((cx - r.left) - ox)/s, ((cy - r.top) - oy)/s];
+  }
+  function push(phase, e){
+    if(e.cancelable) e.preventDefault();
+    for(var i=0;i<e.changedTouches.length;i++){
+      var t=e.changedTouches[i];
+      var d=toDesign(t.clientX, t.clientY);
+      window.__vr.queue.push({id:t.identifier, x:d[0], y:d[1], phase:phase});
+    }
+  }
+  c.addEventListener('touchstart', function(e){push('down',e);}, {passive:false});
+  c.addEventListener('touchmove',  function(e){push('move',e);}, {passive:false});
+  c.addEventListener('touchend',   function(e){push('up',e);},   {passive:false});
+  c.addEventListener('touchcancel',function(e){push('up',e);},   {passive:false});
+})();
+"""
+const JS_POLL := "(function(){if(!window.__vr)return '[]';var q=window.__vr.queue;window.__vr.queue=[];return JSON.stringify(q);})()"
+
 var player: CharacterBody2D
 var player_sprite: Sprite2D
 var ground_root: Node2D
@@ -139,6 +176,8 @@ func _ready() -> void:
 	_build_hud()
 	_build_level_ground(0)
 	_show_select()
+	if OS.has_feature("web"):
+		JavaScriptBridge.eval(JS_INSTALL)
 
 # ── World ─────────────────────────────────────────────────────────────────────
 func _build_level_ground(idx: int) -> void:
@@ -609,6 +648,25 @@ func _process(_delta: float) -> void:
 	if OS.has_feature("web"):
 		var ws := DisplayServer.window_get_size()
 		rotate_overlay.visible = ws.y > ws.x
+		_poll_web_touches()
+
+func _poll_web_touches() -> void:
+	var res: Variant = JavaScriptBridge.eval(JS_POLL)
+	if typeof(res) != TYPE_STRING or res == "" or res == "[]":
+		return
+	var arr: Variant = JSON.parse_string(res)
+	if not (arr is Array):
+		return
+	for e in arr:
+		var p := Vector2(float(e["x"]), float(e["y"]))
+		var id := int(e["id"])
+		match e["phase"]:
+			"down":
+				_pointer_press(p, id)
+			"move":
+				_pointer_move(p, id)
+			"up":
+				_pointer_release(id)
 
 func _physics_process(delta: float) -> void:
 	if not playing or rotate_overlay.visible:
@@ -714,12 +772,19 @@ func _input(event: InputEvent) -> void:
 	# = shoot/jump, overlay screen = manual button hit-test. Every finger works.
 	# Touch-emulated mouse events (device == DEVICE_ID_EMULATION) are skipped —
 	# the touch branch already handled them.
+	var web := OS.has_feature("web")
 	if event is InputEventScreenTouch:
+		# On web, Godot's touch coords are wrong on HiDPI — we handle touches via
+		# the JS listener in _poll_web_touches instead. Native/editor use these.
+		if web:
+			return
 		if event.pressed:
 			_pointer_press(event.position, event.index)
 		else:
 			_pointer_release(event.index)
 	elif event is InputEventScreenDrag:
+		if web:
+			return
 		_pointer_move(event.position, event.index)
 	elif event is InputEventMouseButton:
 		if event.device == InputEvent.DEVICE_ID_EMULATION:

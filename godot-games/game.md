@@ -208,5 +208,19 @@ Export дууссаны дараа `/admin/games` дээр шинэ тоглоо
 - Portrait утсан дээр「スマホを よこむきに してね！」overlay гарч тоглоом
   түр зогсоно; start дарахад `screen.orientation.lock('landscape')` оролдоно
   (PWA/fullscreen орчинд ажиллана, бусад үед чимээгүй алгасна)
+- **HiDPI touch offset (утсан дээр товч дардаггүй байсан гол шалтгаан)**:
+  Godot Web нь `devicePixelRatio > 1` (бүх орчин үеийн утас dpr 2–3) дэлгэц дээр
+  `InputEventScreenTouch`-ийн координатыг буруу scale хийдэг — mouse зөв,
+  touch буруу. Тиймээс дэлгэц дээр товчны БАЙРЛАЛ болон хүрэлт таарахгүй,
+  "товчин дээр дарахад ажиллахгүй, доор нь дарахад ажиллана" болдог.
+  Шийдэл: web дээр Godot-ийн touch-ийг ОГТ ашиглахгүй (`_input`-д
+  `OS.has_feature("web")` бол ScreenTouch/Drag-ийг skip). Оронд нь `_ready`-д
+  canvas дээр өөрсдийн JS touch listener суулгаж (`JS_INSTALL`),
+  `getBoundingClientRect()`-ээр (CSS pixel → dpr-ээс хамааралгүй) aspect-kept
+  640×360 design координат руу хөрвүүлж queue-д хийнэ; `_process`-д `JS_POLL`-оор
+  тухайн queue-г уншиж (`_poll_web_touches`) `_pointer_press/move/release` рүү
+  дамжуулна. Ингэснээр dpr ямар ч байсан координат яг таарна. Multi-touch
+  (олон хуруу) шууд дэмжигдэнэ (touch identifier = pointer id). Native/editor
+  болон headless test нь хуучнаараа Godot-ийн ScreenTouch ашиглана
 - Headless test (`test_flow.gd`): auto-spawn, буудлага, зүрх, лаав буулт,
   3 level-ийн flow, game over — бүгдийг browser-гүй шалгана
