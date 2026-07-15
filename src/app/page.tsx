@@ -47,6 +47,7 @@ const APPS: AppEntry[] = [
   { href: "/volleyball",    icon: "🏐", label: "Volleyball",  color: "#f59e0b", bg: "from-yellow-400 to-orange-400" },
   // Row 7 — English
   { href: "/english",       icon: "🇬🇧", label: "English",    color: "#6366f1", bg: "from-indigo-400 to-blue-500" },
+  { href: "/english-tutor", icon: "🎙️", label: "AI Tutor",   color: "#6366f1", bg: "from-indigo-500 to-violet-600" },
   { href: "/words-english", icon: "⌨️",  label: "Words EN",   color: "#8b5cf6", bg: "from-violet-400 to-indigo-500" },
 ];
 
