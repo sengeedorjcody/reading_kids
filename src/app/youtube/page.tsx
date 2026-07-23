@@ -18,20 +18,26 @@ export default function YoutubeListPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-28">
-      <div className="px-5 pt-6 pb-4 max-w-xl mx-auto w-full">
-        <h1 className="text-3xl font-black text-white">📺 YouTube</h1>
-        <p className="text-sm text-gray-400 mt-1">Видео үзэж, транскриптийг дагаж сур</p>
+      <div className="px-5 pt-6 pb-4 max-w-xl mx-auto w-full flex items-center gap-3">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/youtube-icon.svg" alt="" className="w-8 h-8" />
+        <div>
+          <h1 className="text-3xl font-black text-white">YouTube</h1>
+          <p className="text-sm text-gray-400 mt-1">Видео үзэж, транскриптийг дагаж сур</p>
+        </div>
       </div>
 
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <span className="text-4xl animate-spin">📺</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/youtube-icon.svg" alt="" className="w-10 h-10 opacity-70" />
         </div>
       )}
 
       {!loading && videos.length === 0 && (
         <div className="text-center py-20 text-gray-500">
-          <div className="text-5xl mb-4">📺</div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/youtube-icon.svg" alt="" className="w-12 h-12 mx-auto mb-4 opacity-70" />
           <p className="font-bold">Видео байхгүй байна</p>
           <p className="text-sm mt-1">Admin хэсгээс нэмнэ үү</p>
         </div>

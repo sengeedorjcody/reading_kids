@@ -81,6 +81,7 @@ declare global {
 
 export default function YoutubeStudyPage({ params }: { params: { id: string } }) {
   const [video, setVideo] = useState<IYoutubeVideo | null>(null);
+  const [videoList, setVideoList] = useState<{ _id: string; title: string }[]>([]);
   const [currentTime, setCurrentTime] = useState(0);
   const [selection, setSelection] = useState<Selection | null>(null);
   const [dictEntry, setDictEntry] = useState<DictEntry | null>(null);
@@ -109,6 +110,71 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
       .catch(() => router.replace("/youtube"));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
+
+  // Fetch the full video list once, so swipe/buttons can move to the next/prev video
+  useEffect(() => {
+    fetch("/api/youtube")
+      .then((r) => r.json())
+      .then((data) => setVideoList(Array.isArray(data) ? data.map((v: IYoutubeVideo) => ({ _id: v._id, title: v.title })) : []))
+      .catch(() => {});
+  }, []);
+
+  const currentVideoIndex = videoList.findIndex((v) => v._id === params.id);
+  const hasPrevVideo = currentVideoIndex > 0;
+  const hasNextVideo = currentVideoIndex >= 0 && currentVideoIndex < videoList.length - 1;
+
+  const goToPrevVideo = useCallback(() => {
+    if (currentVideoIndex > 0) router.push(`/youtube/${videoList[currentVideoIndex - 1]._id}`);
+  }, [currentVideoIndex, videoList, router]);
+
+  const goToNextVideo = useCallback(() => {
+    if (currentVideoIndex >= 0 && currentVideoIndex < videoList.length - 1) {
+      router.push(`/youtube/${videoList[currentVideoIndex + 1]._id}`);
+    }
+  }, [currentVideoIndex, videoList, router]);
+
+  // Swipe (mobile touch) and wheel (desktop trackpad) both switch videos.
+  // Touches that land on the YouTube iframe never reach these listeners at all
+  // (separate cross-origin browsing context), so this only fires for gestures
+  // starting on our own UI — header, transcript, dictionary, margins — and
+  // never steals a tap meant for the video player's own controls.
+  useEffect(() => {
+    let touchStartY = 0;
+    let touchStartX = 0;
+    let wheelAccum = 0;
+    let wheelCooldown = false;
+
+    const onTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+      touchStartX = e.touches[0].clientX;
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dy) > 70 && Math.abs(dy) > Math.abs(dx) * 1.5) {
+        if (dy < 0) goToNextVideo(); else goToPrevVideo();
+      }
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (wheelCooldown) return;
+      wheelAccum += e.deltaY;
+      if (Math.abs(wheelAccum) > 220) {
+        if (wheelAccum > 0) goToNextVideo(); else goToPrevVideo();
+        wheelAccum = 0;
+        wheelCooldown = true;
+        setTimeout(() => { wheelCooldown = false; }, 700);
+      }
+    };
+
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("wheel", onWheel, { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchend", onTouchEnd);
+      window.removeEventListener("wheel", onWheel);
+    };
+  }, [goToNextVideo, goToPrevVideo]);
 
   // Load YouTube IFrame API + create player once we have the video id
   useEffect(() => {
@@ -254,7 +320,8 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
   if (!video) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black">
-        <span className="text-4xl animate-spin">📺</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/youtube-icon.svg" alt="" className="w-12 h-12 opacity-70" />
       </div>
     );
   }
@@ -273,6 +340,26 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
           ←
         </button>
         <h1 className="text-white font-black text-sm truncate flex-1">{video.title}</h1>
+        <div className="flex items-center gap-1 flex-shrink-0">
+          <button
+            onClick={goToPrevVideo}
+            disabled={!hasPrevVideo}
+            title="Өмнөх видео"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-white active:scale-90 disabled:opacity-30 transition-all"
+            style={{ background: "rgba(255,255,255,0.1)" }}
+          >
+            ▲
+          </button>
+          <button
+            onClick={goToNextVideo}
+            disabled={!hasNextVideo}
+            title="Дараагийн видео"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-white active:scale-90 disabled:opacity-30 transition-all"
+            style={{ background: "rgba(255,255,255,0.1)" }}
+          >
+            ▼
+          </button>
+        </div>
       </div>
 
       {/* 1 + 2 + 3: on desktop, three columns side by side (video is drag-resizable); on mobile, stacked */}

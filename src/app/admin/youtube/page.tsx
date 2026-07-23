@@ -119,7 +119,11 @@ export default function AdminYoutubePage() {
   return (
     <div className="space-y-8 max-w-3xl">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-black text-gray-800">📺 YouTube</h1>
+        <h1 className="text-3xl font-black text-gray-800 flex items-center gap-2">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/youtube-icon.svg" alt="" className="w-7 h-7" />
+          YouTube
+        </h1>
         <a href="/youtube" target="_blank" className="text-sm text-blue-600 hover:underline font-bold">
           View →
         </a>

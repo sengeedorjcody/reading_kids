@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import LogoutButton from "@/components/admin/LogoutButton";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  if (pathname === "/admin/login") return <>{children}</>;
+
   return (
     <div className="flex min-h-[calc(100vh-80px)]">
       {/* Sidebar */}
@@ -25,6 +32,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
           <div className="pt-4 mt-4 border-t border-gray-700">
             <NavLink href="/" icon="👁" label="View Site" />
+            <LogoutButton />
           </div>
         </nav>
       </aside>
@@ -47,6 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span>{item.label}</span>
             </Link>
           ))}
+          <LogoutButton compact />
         </div>
         <div className="p-6 md:p-8">{children}</div>
       </div>

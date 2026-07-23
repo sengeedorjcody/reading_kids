@@ -1,5 +1,7 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { connectDB } from "@/lib/db/mongoose";
+import User from "@/lib/db/models/User";
 
 const handler = NextAuth({
   providers: [
@@ -10,13 +12,16 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (
-          credentials?.email === process.env.ADMIN_EMAIL &&
-          credentials?.password === process.env.ADMIN_PASSWORD
-        ) {
-          return { id: "1", name: "Admin", email: credentials!.email, role: "admin" };
-        }
-        return null;
+        if (!credentials?.email || !credentials?.password) return null;
+
+        await connectDB();
+        const user = await User.findOne({ email: credentials.email.toLowerCase().trim() });
+        if (!user) return null;
+
+        const valid = await user.comparePassword(credentials.password);
+        if (!valid) return null;
+
+        return { id: String(user._id), name: user.name ?? "Admin", email: user.email, role: user.role };
       },
     }),
   ],

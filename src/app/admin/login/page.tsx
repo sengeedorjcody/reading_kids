@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,7 +35,8 @@ export default function LoginPage() {
       setError("Invalid email or password");
       setLoading(false);
     } else {
-      router.push("/admin");
+      const callbackUrl = searchParams.get("callbackUrl");
+      router.push(callbackUrl && callbackUrl.startsWith("/admin") ? callbackUrl : "/admin");
       router.refresh();
     }
   };
