@@ -3,6 +3,7 @@ import { Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import "./globals.css";
 import { DevInspector } from "@/components/DevInspector";
 import BottomNav from "@/components/BottomNav";
+import AuthSessionProvider from "@/components/AuthSessionProvider";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -19,13 +20,13 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  title: "にほんご よもう！ - Learn Japanese Reading",
+  title: "Learn Japanese Reading - にほんご よもう！",
   description: "A fun and interactive Japanese reading website for kids.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "よもう！",
+    title: "Reading Kids",
   },
   icons: {
     apple: "/icons/icon-192x192.png",
@@ -37,11 +38,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ja" className={`${notoSansJP.variable} ${notoSerifJP.variable}`}>
       <body className="min-h-screen" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)", minHeight: "100dvh" }}>
+        <AuthSessionProvider>
         <DevInspector>
         <main className="min-h-screen">{children}</main>
 
         <BottomNav />
         </DevInspector>
+        </AuthSessionProvider>
       </body>
     </html>
   );

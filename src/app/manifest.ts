@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "にほんご よもう！ - Reading Kids",
-    short_name: "よもう！",
+    name: "Reading Kids - にほんご よもう！",
+    short_name: "Reading Kids",
     description: "A fun and interactive Japanese reading website for kids.",
     start_url: "/",
     display: "standalone",

@@ -128,3 +128,11 @@ img { max-width: 100%; height: auto; }
 .flashcard-front,
 .flashcard-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
 .flashcard-back { transform: rotateY(180deg); }
+
+/* ── Home screen icon jiggle (edit mode) ── */
+@keyframes homeIconWiggle {
+  0%   { transform: rotate(-1.5deg); }
+  50%  { transform: rotate(1.5deg); }
+  100% { transform: rotate(-1.5deg); }
+}
+.home-icon-wiggle { animation: homeIconWiggle 0.22s ease-in-out infinite; }
