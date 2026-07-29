@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useSpeech } from "@/hooks/useSpeech";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 interface CharCard {
@@ -564,6 +565,7 @@ function DoneScreen({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ExamPage() {
+  useLockBodyScroll();
   const [phase, setPhase] = useState<Phase>("select");
   const [round, setRound] = useState(1);
   const [deck, setDeck] = useState<CharCard[]>([]);

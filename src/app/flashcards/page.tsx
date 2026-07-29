@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { IDictionaryWord } from "@/types";
 import { useSpeech } from "@/hooks/useSpeech";
+import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 const ROUND_SIZE = 20;
 const MAX_WRONG = 5;
@@ -364,6 +365,7 @@ function ResultScreen({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function FlashcardsPage() {
+  useLockBodyScroll();
   const [phase, setPhase] = useState<"loading" | "exam" | "done">("loading");
   const [deck, setDeck] = useState<IDictionaryWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
