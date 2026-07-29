@@ -76,7 +76,7 @@ export default function BottomNav() {
           <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
           <BottomNavLink href="/books" icon="📖" label="Books" />
           <BottomNavLink href="/picture-books" icon="🖼️" label="Picture Books" />
-          <BottomNavLink href="/conversations" icon="💬" label="会話" />
+          <BottomNavLink href="/conversations" icon="💬" label="Conversations" />
           <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
           <BottomNavLink href="/games" icon="🎮" label="Games" />
           <BottomNavLink href="/game" icon="🔍" label="Find" />

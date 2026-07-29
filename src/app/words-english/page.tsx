@@ -401,7 +401,7 @@ export default function WordsEnglishPage() {
       )}
 
       {/* ── QWERTY Keyboard ── */}
-      <div className="flex-1 overflow-y-auto pb-24 px-2 flex flex-col justify-end gap-1.5 pt-2">
+      <div className="flex-1 overflow-y-auto pb-28 px-2 flex flex-col justify-end gap-1.5 pt-2">
         {QWERTY_ROWS.map((row, ri) => (
           <div key={ri} className="flex justify-center gap-1">
             {row.map((c) => {

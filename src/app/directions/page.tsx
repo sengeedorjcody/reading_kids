@@ -100,7 +100,7 @@ export default function DirectionsPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-black text-gray-800">🧭 Directions · ほうこう</h1>
-        <p className="text-base text-gray-400">タップして ほうこうを きこう！</p>
+        <p className="text-base text-gray-400">Tap to hear the direction&apos;s name!</p>
       </div>
 
       {/* ── Basic 6 directions — 3×2 grid ── */}

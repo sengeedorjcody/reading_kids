@@ -105,7 +105,7 @@ export default function FlashcardsPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-black text-gray-800 mb-1">🃏 Flashcards</h1>
-        <p className="text-lg text-gray-500">フラッシュカード で おぼえよう！</p>
+        <p className="text-lg text-gray-500">Learn with flashcards!</p>
       </div>
 
       {/* Filter pills */}

@@ -18,7 +18,7 @@ export default function AlphabetPage() {
       {/* Header */}
       <div className="text-center mb-10">
         <h1 className="text-4xl font-black text-gray-800 mb-2">
-          もじ を まなぼう！
+          Learn the Alphabet!
         </h1>
         <p className="text-xl text-gray-500">Click a character to hear how it sounds 🔊</p>
       </div>

@@ -21,7 +21,7 @@ export default async function BooksPage() {
       {books.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">
           <div className="text-8xl">📭</div>
-          <p className="text-xl font-bold text-white/50">まだほんがありません</p>
+          <p className="text-xl font-bold text-white/50">No books yet</p>
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
