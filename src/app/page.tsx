@@ -328,7 +328,7 @@ export default function HomePage() {
       {/* ── App grid ── */}
       <div className="flex-1 px-5">
         <div className="grid grid-cols-4 gap-x-4 gap-y-6 max-w-xl mx-auto">
-          {items.map((item) => {
+          {items.map((item, index) => {
             const isDragging = dragId === item.id;
             return (
               <div
@@ -336,7 +336,12 @@ export default function HomePage() {
                 ref={registerRef(item.id)}
                 onPointerDown={(e) => handlePointerDown(e, item.id)}
                 className={editMode && !isDragging ? "home-icon-wiggle" : ""}
-                style={{ touchAction: editMode ? "none" : "auto", opacity: isDragging ? 0.25 : 1, cursor: editMode ? "grab" : "pointer" }}
+                style={{
+                  touchAction: editMode ? "none" : "auto",
+                  opacity: isDragging ? 0.25 : 1,
+                  cursor: editMode ? "grab" : "pointer",
+                  animationDelay: editMode ? `${(index % 4) * 0.09}s` : undefined,
+                }}
               >
                 {item.type === "folder" ? (
                   <FolderIcon item={item} />
