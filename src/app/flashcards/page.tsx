@@ -31,7 +31,6 @@ function FlashExamScreen({
   const [flyDir, setFlyDir] = useState<"left" | "right" | null>(null);
   const [flipped, setFlipped] = useState(false);
   const isDragging = useRef(false);
-  const movedRef = useRef(false);
   const dragXRef = useRef(0);
   const cardRef = useRef<HTMLDivElement>(null);
   const onSwipeRef = useRef(onSwipe);
@@ -65,14 +64,12 @@ function FlashExamScreen({
       touchStartX.current = e.touches[0].clientX;
       touchStartY.current = e.touches[0].clientY;
       isDragging.current = true;
-      movedRef.current = false;
       dragXRef.current = 0;
     };
     const handleTouchMove = (e: TouchEvent) => {
       if (!isDragging.current) return;
       const dx = e.touches[0].clientX - touchStartX.current;
       const dy = e.touches[0].clientY - touchStartY.current;
-      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) movedRef.current = true;
       if (Math.abs(dx) > Math.abs(dy)) {
         e.preventDefault();
         dragXRef.current = dx;
@@ -81,12 +78,15 @@ function FlashExamScreen({
     };
     const handleTouchEnd = () => {
       isDragging.current = false;
+      // A real swipe already called preventDefault() in touchmove, which
+      // suppresses the browser's synthetic click — so only handle the swipe
+      // case here. A plain tap (no preventDefault) falls through to the
+      // native click event and flips the card via the onClick handler.
       if (Math.abs(dragXRef.current) > 70) {
         triggerSwipeRef.current(dragXRef.current > 0 ? "right" : "left");
       } else {
         setDragX(0);
         dragXRef.current = 0;
-        if (!movedRef.current) setFlipped((f) => !f);
       }
     };
 
@@ -166,7 +166,7 @@ function FlashExamScreen({
         >
           <div
             className="flashcard-container w-full cursor-pointer select-none"
-            style={{ height: "340px" }}
+            style={{ height: "min(420px, 62dvh)" }}
             onClick={() => setFlipped((f) => !f)}
           >
             <div className={`flashcard-inner w-full h-full relative${flipped ? " flipped" : ""}`}>
@@ -190,24 +190,24 @@ function FlashExamScreen({
 
               {/* Back — meaning + image */}
               <div
-                className="flashcard-back absolute inset-0 rounded-3xl flex flex-col items-center py-6 px-6 shadow-2xl gap-3 overflow-y-auto"
+                className="flashcard-back absolute inset-0 rounded-3xl flex flex-col items-center py-4 px-5 shadow-2xl gap-1.5 overflow-y-auto"
                 style={{
                   background: "linear-gradient(135deg, rgba(236,72,153,0.2), rgba(139,92,246,0.2))",
                   border: "2px solid rgba(236,72,153,0.35)",
                   backdropFilter: "blur(10px)",
                 }}
               >
-                <span className="text-lg font-black text-white text-center">
+                <span className="text-base font-black text-white text-center">
                   🇬🇧 {card.english_meaning || "—"}
                 </span>
                 {card.mongolian_meaning && (
-                  <span className="text-sm font-bold text-white/50 text-center">
+                  <span className="text-xs font-bold text-white/50 text-center">
                     🇲🇳 {card.mongolian_meaning}
                   </span>
                 )}
 
                 {card.example_image_url && (
-                  <div className="relative w-full h-32 rounded-2xl overflow-hidden bg-white/90 flex-shrink-0">
+                  <div className="relative w-full flex-1 min-h-0 rounded-2xl overflow-hidden bg-white/90 my-1">
                     <Image
                       src={card.example_image_url}
                       alt={card.japanese_word}
@@ -219,16 +219,16 @@ function FlashExamScreen({
                 )}
 
                 <span
-                  className="text-3xl font-black text-white text-center"
+                  className="text-2xl font-black text-white text-center flex-shrink-0"
                   style={{ fontFamily: "var(--font-noto-serif-jp), serif" }}
                 >
                   {card.japanese_word}
                 </span>
-                {card.romaji && <span className="text-sm text-white/50 italic">{card.romaji}</span>}
+                {card.romaji && <span className="text-xs text-white/50 italic flex-shrink-0">{card.romaji}</span>}
 
                 <button
                   onClick={(e) => { e.stopPropagation(); speak(card.japanese_word); }}
-                  className="flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs active:scale-90 transition-transform"
+                  className="flex items-center gap-2 px-4 py-2 rounded-2xl font-bold text-xs active:scale-90 transition-transform flex-shrink-0"
                   style={{ background: "rgba(236,72,153,0.25)", border: "1px solid rgba(236,72,153,0.5)", color: "#f9a8d4" }}
                 >
                   🔊 Listen

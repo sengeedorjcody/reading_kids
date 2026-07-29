@@ -20,8 +20,8 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata: Metadata = {
-  title: "Learn Japanese Reading - にほんご よもう！",
-  description: "A fun and interactive Japanese reading website for kids.",
+  title: "Japanese",
+  description: "A fun and interactive Japanese reading website",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -34,19 +34,32 @@ export const metadata: Metadata = {
   themeColor: "#0f3460",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="ja" className={`${notoSansJP.variable} ${notoSerifJP.variable}`}>
-      <body className="min-h-screen" style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)", minHeight: "100dvh" }}>
+    <html
+      lang="ja"
+      className={`${notoSansJP.variable} ${notoSerifJP.variable}`}
+    >
+      <body
+        className="min-h-screen"
+        style={{
+          background:
+            "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)",
+          minHeight: "100dvh",
+        }}
+      >
         <AuthSessionProvider>
-        <DevInspector>
-        <main className="min-h-screen">{children}</main>
+          <DevInspector>
+            <main className="min-h-screen">{children}</main>
 
-        <BottomNav />
-        </DevInspector>
+            <BottomNav />
+          </DevInspector>
         </AuthSessionProvider>
       </body>
     </html>
   );
 }
-
