@@ -56,7 +56,7 @@ export default function PictureBookLayout({ page, pictureBookId, currentPage, to
           className="absolute top-3 right-3 z-40 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold shadow-lg active:scale-95 transition-all"
           style={{ background: landscapeRead ? "#c8783c" : "rgba(255,255,255,0.15)", color: "#fff" }}
         >
-          🔄 {landscapeRead ? "たてに もどす" : "よこに して よむ"}
+          🔄 {landscapeRead ? "Portrait" : "Landscape"}
         </button>
       )}
 

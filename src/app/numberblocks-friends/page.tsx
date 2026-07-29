@@ -388,7 +388,7 @@ export default function NumberblocksFriends() {
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 py-3">
         <div>
-          <h1 className="font-black text-lg text-gray-700">🧱 ナンバーブロックス</h1>
+          <h1 className="font-black text-lg text-gray-700">🧱 Numberblocks · ナンバーブロックス</h1>
           <p className="text-xs font-bold text-gray-500">Дутуу тоог доороос чирж оруулаарай! 👆</p>
         </div>
         <div className="px-3 py-1.5 rounded-2xl bg-white/70 shadow">

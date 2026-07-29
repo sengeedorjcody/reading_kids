@@ -217,7 +217,7 @@ export default function MathPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h1 className="text-3xl font-black text-gray-800">🧮 けいさん</h1>
+          <h1 className="text-3xl font-black text-gray-800">🧮 Math · けいさん</h1>
           <p className="text-sm text-gray-400">Math for beginners</p>
         </div>
         {/* Score */}

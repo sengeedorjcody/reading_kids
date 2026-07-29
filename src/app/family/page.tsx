@@ -238,7 +238,7 @@ export default function FamilyPage() {
     <div className="max-w-lg mx-auto px-4 py-6 pb-28">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-4xl font-black text-gray-800">👨‍👩‍👧‍👦 かぞく</h1>
+        <h1 className="text-4xl font-black text-gray-800">👨‍👩‍👧‍👦 Family · かぞく</h1>
         <p className="text-sm text-gray-400">わたしは だれ？ — Who am I?</p>
       </div>
 

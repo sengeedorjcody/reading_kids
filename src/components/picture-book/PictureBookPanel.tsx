@@ -165,7 +165,7 @@ export default function PictureBookPanel({ page, pictureBookId, currentPage, tot
       {!hasNext && (
         <div className="flex-shrink-0 text-center py-1">
           <Link href="/picture-books" className="text-xs text-[#a07840]/50 hover:text-[#a07840] font-bold">
-            ← えほんの たな
+            ← Picture Books
           </Link>
         </div>
       )}

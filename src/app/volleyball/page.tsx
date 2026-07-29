@@ -125,7 +125,7 @@ export default function VolleyballPage() {
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
         <div className="px-4 pt-4 pb-2">
-          <h1 className="text-2xl font-black text-gray-800">🏐 バレーボール · Volleyball</h1>
+          <h1 className="text-2xl font-black text-gray-800">🏐 Volleyball · バレーボール</h1>
           <p className="text-xs text-gray-400 mt-0.5">タップして ことばを きこう！ · Волейболын нэр томьёо</p>
         </div>
         {/* Section tabs */}

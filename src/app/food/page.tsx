@@ -105,7 +105,7 @@ export default function FoodPage() {
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-orange-100 shadow-sm">
         <div className="px-4 pt-4 pb-2">
-          <h1 className="text-2xl font-black text-gray-800">🍽️ たべもの・のみもの</h1>
+          <h1 className="text-2xl font-black text-gray-800">🍽️ Food &amp; Drinks · たべもの・のみもの</h1>
           <p className="text-xs text-gray-400 mt-0.5">タップして なまえを きこう！ · Хоол хүнс</p>
         </div>
         {/* Category tabs */}

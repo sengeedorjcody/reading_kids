@@ -99,7 +99,7 @@ export default function DirectionsPage() {
     <div className="max-w-lg mx-auto px-4 py-6 pb-28">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-4xl font-black text-gray-800">🧭 ほうこう</h1>
+        <h1 className="text-4xl font-black text-gray-800">🧭 Directions · ほうこう</h1>
         <p className="text-base text-gray-400">タップして ほうこうを きこう！</p>
       </div>
 

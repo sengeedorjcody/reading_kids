@@ -35,7 +35,7 @@ export default function LeftRightPage() {
     <div className="fixed inset-0 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="flex-shrink-0 text-center py-3 z-10" style={{ background: "#1e293b" }}>
-        <h1 className="text-white font-black text-lg">👈👉 ひだり・みぎ</h1>
+        <h1 className="text-white font-black text-lg">👈👉 Left / Right · ひだり・みぎ</h1>
         <p className="text-white/50 text-xs font-bold mb-2">Зүүн ба баруун гар</p>
         <div className="flex items-center justify-center gap-1.5">
           {SPEED_OPTIONS.map((s) => (

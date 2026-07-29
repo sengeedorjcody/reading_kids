@@ -454,7 +454,7 @@ export default function WordsPage() {
         style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
 
         <div className="px-4 pt-4 pb-2">
-          <h1 className="text-xl font-black text-white">🔤 ことばつくり</h1>
+          <h1 className="text-xl font-black text-white">🔤 Word Builder · ことばつくり</h1>
         </div>
 
         {/* Input row */}

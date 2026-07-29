@@ -122,7 +122,7 @@ function SelectScreen({ onStart }: { onStart: (cat: Category) => void }) {
     <div className="min-h-screen flex flex-col items-center justify-center px-6 gap-8">
       <div className="text-center">
         <div className="text-6xl mb-3">📝</div>
-        <h1 className="text-4xl font-black text-white mb-1">もじ テスト</h1>
+        <h1 className="text-4xl font-black text-white mb-1">Letter Test</h1>
         <p className="text-white/60 text-sm">Swipe right = know it ✓　Swipe left = not yet ✗</p>
       </div>
 
@@ -132,24 +132,24 @@ function SelectScreen({ onStart }: { onStart: (cat: Category) => void }) {
           className="w-full py-5 rounded-3xl font-black text-2xl text-white transition-all active:scale-95 shadow-xl"
           style={{ background: "linear-gradient(135deg, #f97316, #ec4899)" }}
         >
-          ひらがな
-          <p className="text-sm font-bold opacity-80 mt-1">Hiragana · 46 chars</p>
+          Hiragana
+          <p className="text-sm font-bold opacity-80 mt-1">ひらがな · 46 chars</p>
         </button>
         <button
           onClick={() => onStart("katakana")}
           className="w-full py-5 rounded-3xl font-black text-2xl text-white transition-all active:scale-95 shadow-xl"
           style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)" }}
         >
-          カタカナ
-          <p className="text-sm font-bold opacity-80 mt-1">Katakana · 46 chars</p>
+          Katakana
+          <p className="text-sm font-bold opacity-80 mt-1">カタカナ · 46 chars</p>
         </button>
         <button
           onClick={() => onStart("both")}
           className="w-full py-5 rounded-3xl font-black text-xl text-white transition-all active:scale-95 shadow-xl"
           style={{ background: "linear-gradient(135deg, #10b981, #0ea5e9)" }}
         >
-          ひらがな + カタカナ
-          <p className="text-sm font-bold opacity-80 mt-1">Both · 92 chars</p>
+          Hiragana + Katakana
+          <p className="text-sm font-bold opacity-80 mt-1">ひらがな + カタカナ · 92 chars</p>
         </button>
       </div>
     </div>
@@ -262,7 +262,7 @@ function ExamScreen({
       <div className="flex items-center justify-between mb-4">
         <div className="flex flex-col">
           <span className="text-white font-black text-lg">
-            {round === 1 ? "ラウンド 1" : "ラウンド 2 🔁"}
+            {round === 1 ? "Round 1" : "Round 2 🔁"}
           </span>
           <span className="text-white/50 text-xs">
             {currentIndex + 1} / {deck.length}
@@ -297,7 +297,7 @@ function ExamScreen({
           style={{ opacity: knowOpacity, background: "rgba(34,197,94,0.15)" }}
         >
           <span className="text-green-400 font-black text-3xl border-4 border-green-400 px-6 py-2 rounded-2xl rotate-[-20deg]">
-            しってる ✓
+            Know it ✓
           </span>
         </div>
         <div
@@ -305,7 +305,7 @@ function ExamScreen({
           style={{ opacity: dontOpacity, background: "rgba(239,68,68,0.15)" }}
         >
           <span className="text-red-400 font-black text-3xl border-4 border-red-400 px-6 py-2 rounded-2xl rotate-[20deg]">
-            まだ ✗
+            Not yet ✗
           </span>
         </div>
 
@@ -336,7 +336,7 @@ function ExamScreen({
                 ? "bg-orange-500/20 text-orange-300"
                 : "bg-violet-500/20 text-violet-300"
             }`}>
-              {card.type === "hiragana" ? "ひらがな" : "カタカナ"}
+              {card.type === "hiragana" ? "Hiragana" : "Katakana"}
             </span>
 
             {/* Big character */}
@@ -357,7 +357,7 @@ function ExamScreen({
                 color: card.type === "hiragana" ? "#fb923c" : "#c084fc",
               }}
             >
-              🔊 きく
+              🔊 Listen
             </button>
           </div>
         </div>
@@ -365,7 +365,7 @@ function ExamScreen({
 
       {/* Swipe hint + buttons */}
       <div className="mt-6 flex flex-col items-center gap-4">
-        <p className="text-white/30 text-xs">← まだ　｜　しってる →</p>
+        <p className="text-white/30 text-xs">← Not yet　｜　Know it →</p>
         <div className="flex gap-6">
           <button
             onClick={() => triggerSwipe("left")}
@@ -404,9 +404,9 @@ function RoundResultScreen({
       <div className="text-center">
         <div className="text-5xl mb-3">{round === 1 ? "🎯" : "🎊"}</div>
         <h2 className="text-3xl font-black text-white mb-1">
-          ラウンド {round} おわり！
+          Round {round} Done!
         </h2>
-        <p className="text-white/50 text-sm">Round {round} complete</p>
+        <p className="text-white/50 text-sm">ラウンド {round} おわり！</p>
       </div>
 
       {/* Score */}
@@ -414,12 +414,12 @@ function RoundResultScreen({
         <div className="flex-1 rounded-2xl py-5 text-center"
           style={{ background: "rgba(34,197,94,0.15)", border: "2px solid rgba(34,197,94,0.3)" }}>
           <div className="text-4xl font-black text-green-400">{known.length}</div>
-          <div className="text-xs font-bold text-green-400/70 mt-1">しってる ✓</div>
+          <div className="text-xs font-bold text-green-400/70 mt-1">Know it ✓</div>
         </div>
         <div className="flex-1 rounded-2xl py-5 text-center"
           style={{ background: "rgba(239,68,68,0.15)", border: "2px solid rgba(239,68,68,0.3)" }}>
           <div className="text-4xl font-black text-red-400">{unknown.length}</div>
-          <div className="text-xs font-bold text-red-400/70 mt-1">まだ ✗</div>
+          <div className="text-xs font-bold text-red-400/70 mt-1">Not yet ✗</div>
         </div>
       </div>
 
@@ -427,7 +427,7 @@ function RoundResultScreen({
       {unknown.length > 0 && (
         <div className="w-full max-w-xs">
           <p className="text-white/50 text-xs font-bold uppercase tracking-wide mb-3 text-center">
-            もういちど れんしゅう
+            Practice Again
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {unknown.map((c) => (
@@ -449,7 +449,7 @@ function RoundResultScreen({
             className="w-full py-4 rounded-2xl font-black text-white text-lg active:scale-95 shadow-lg"
             style={{ background: "linear-gradient(135deg, #3b82f6, #8b5cf6)" }}
           >
-            🔁 まだのもじ を れんしゅう
+            🔁 Practice unknown letters
           </button>
         )}
         <button
@@ -457,7 +457,7 @@ function RoundResultScreen({
           className="w-full py-4 rounded-2xl font-black text-white text-lg active:scale-95 shadow-lg"
           style={{ background: "linear-gradient(135deg, #10b981, #0ea5e9)" }}
         >
-          📊 けっか を みる
+          📊 See Results
         </button>
       </div>
     </div>
@@ -487,9 +487,9 @@ function DoneScreen({
         style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(14,165,233,0.2))", border: "2px solid rgba(16,185,129,0.3)" }}>
         <div className="text-6xl mb-2">{pct >= 90 ? "🏆" : pct >= 70 ? "⭐" : pct >= 50 ? "💪" : "📚"}</div>
         <p className="text-5xl font-black text-white">{pct}%</p>
-        <p className="text-white/60 text-sm mt-1">{score} / {totalCards} もじ</p>
+        <p className="text-white/60 text-sm mt-1">{score} / {totalCards} letters</p>
         <p className="text-white/40 text-xs mt-1">
-          {pct >= 90 ? "すごい！かんぺき！" : pct >= 70 ? "よくできました！" : pct >= 50 ? "がんばって！" : "もっとれんしゅうしよう！"}
+          {pct >= 90 ? "Amazing! Perfect!" : pct >= 70 ? "Well done!" : pct >= 50 ? "Keep going!" : "Let's practice more!"}
         </p>
       </div>
 
@@ -497,7 +497,7 @@ function DoneScreen({
       {finalUnknown.length > 0 && (
         <div>
           <p className="text-white/50 text-xs font-black uppercase tracking-widest mb-3 text-center">
-            まだ おぼえていない もじ
+            Letters you haven&apos;t learned yet
           </p>
           <div className="flex flex-col gap-3">
             {finalUnknown.map((c) => (
@@ -521,7 +521,7 @@ function DoneScreen({
                     <span className={`text-[10px] font-black px-2 py-0.5 rounded-full ${
                       c.type === "hiragana" ? "bg-orange-500/20 text-orange-300" : "bg-violet-500/20 text-violet-300"
                     }`}>
-                      {c.type === "hiragana" ? "ひらがな" : "カタカナ"}
+                      {c.type === "hiragana" ? "Hiragana" : "Katakana"}
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -546,8 +546,8 @@ function DoneScreen({
       {finalUnknown.length === 0 && (
         <div className="text-center py-8">
           <div className="text-6xl mb-3">🎉</div>
-          <p className="text-2xl font-black text-green-400">ぜんぶ しってる！</p>
-          <p className="text-white/50 text-sm">You know them all!</p>
+          <p className="text-2xl font-black text-green-400">You know them all!</p>
+          <p className="text-white/50 text-sm">ぜんぶ しってる！</p>
         </div>
       )}
 
@@ -556,7 +556,7 @@ function DoneScreen({
         className="w-full py-4 rounded-2xl font-black text-white text-lg active:scale-95 mt-2"
         style={{ background: "linear-gradient(135deg, #f97316, #ec4899)" }}
       >
-        🔄 もういちど
+        🔄 Try Again
       </button>
     </div>
   );

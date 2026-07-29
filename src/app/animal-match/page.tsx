@@ -121,7 +121,7 @@ export default function AnimalMatchGame() {
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 pt-4 pb-2">
         <div>
-          <h1 className="text-xl font-black text-gray-800">🐾 どうぶつマッチ</h1>
+          <h1 className="text-xl font-black text-gray-800">🐾 Animal Match · どうぶつマッチ</h1>
           <p className="text-xs text-gray-500 font-bold">Drag animal → matching word</p>
         </div>
         <div className="flex items-center gap-2">
@@ -227,7 +227,7 @@ export default function AnimalMatchGame() {
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-3xl p-6 text-center shadow-2xl mx-6">
             <div className="text-5xl mb-2">🎉</div>
-            <h2 className="text-xl font-black text-gray-800 mb-1">よくできました！</h2>
+            <h2 className="text-xl font-black text-gray-800 mb-1">Well done!</h2>
             <p className="text-sm text-gray-500 mb-4">
               {score}/{attempts} correct on first try
             </p>

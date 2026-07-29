@@ -362,8 +362,8 @@ export default function WritingPage() {
             <div className="text-[8rem] leading-none mb-2 animate-bounce">{word.emoji}</div>
           )}
           <div className="text-6xl mb-4">🎉</div>
-          <p className="text-4xl font-black text-green-500 mb-1">よくできました！</p>
-          <p className="text-xl font-bold text-gray-400 mb-6">Great job writing!</p>
+          <p className="text-4xl font-black text-green-500 mb-1">Great job writing!</p>
+          <p className="text-xl font-bold text-gray-400 mb-6">よくできました！</p>
           <div className="text-5xl font-black text-gray-800 mb-1">{word.japanese}</div>
           <div className="text-2xl text-orange-500 font-bold mb-1">{word.romaji}</div>
           <div className="text-lg text-gray-400 font-medium mb-10">{word.english}</div>

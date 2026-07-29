@@ -266,7 +266,7 @@ export default function NumberBlocksGame() {
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 pt-4 pb-2">
         <div>
-          <h1 className="text-xl font-black text-gray-800">🧱 ナンバーブロックス</h1>
+          <h1 className="text-xl font-black text-gray-800">🧱 Numberblocks · ナンバーブロックス</h1>
           <p className="text-xs text-gray-600 font-bold">
             Level {level} · {round.mode === "add" ? "➕ Add" : "➖ Subtract"} · ⏱ {timeLeft}s
           </p>
@@ -351,7 +351,7 @@ export default function NumberBlocksGame() {
           <div className="bg-white rounded-3xl p-6 text-center shadow-2xl mx-6 max-w-xs">
             <div className="text-5xl mb-2">{status === "won" ? "🎉" : "⏰"}</div>
             <h2 className="text-xl font-black text-gray-800 mb-1">
-              {status === "won" ? "よくできました！" : "Time's Up!"}
+              {status === "won" ? "Well done!" : "Time's Up!"}
             </h2>
             <p className="text-sm text-gray-500 mb-4">Score: {score}</p>
             <button

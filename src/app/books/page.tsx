@@ -16,7 +16,7 @@ export default async function BooksPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <h1 className="text-3xl font-black text-white mb-4">📚 ほんだな</h1>
+      <h1 className="text-3xl font-black text-white mb-4">📚 Books · ほんだな</h1>
 
       {books.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4 text-center">

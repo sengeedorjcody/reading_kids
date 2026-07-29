@@ -45,8 +45,8 @@ export default function ColorsPage() {
     <div className="max-w-lg mx-auto px-4 py-6 pb-28">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-4xl font-black text-gray-800">🎨 いろ</h1>
-        <p className="text-base text-gray-400">タップして いろの なまえを きこう！</p>
+        <h1 className="text-4xl font-black text-gray-800">🎨 Colors</h1>
+        <p className="text-base text-gray-400">Tap to hear the color&apos;s name!</p>
       </div>
 
       {/* Color grid */}

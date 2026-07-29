@@ -213,8 +213,8 @@ export default function StrokeOrderModal({ char, romaji, onClose }: StrokeOrderM
         {showCongrats && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-white/95 rounded-3xl animate-fade-in">
             <div className="text-7xl mb-4 animate-bounce">🎉</div>
-            <p className="text-3xl font-black text-green-500 mb-2">よくできました！</p>
-            <p className="text-lg font-bold text-gray-500 mb-6">Great job!</p>
+            <p className="text-3xl font-black text-green-500 mb-2">Great job!</p>
+            <p className="text-lg font-bold text-gray-500 mb-6">よくできました！</p>
             <div className="text-5xl font-black text-gray-800 mb-1">{char}</div>
             <div className="text-xl text-orange-500 font-bold mb-8">{romaji}</div>
             <div className="flex gap-3">
