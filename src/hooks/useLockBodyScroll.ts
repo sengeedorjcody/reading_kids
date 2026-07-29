@@ -10,8 +10,9 @@ import { useEffect } from "react";
  * viewport, causing a few pixels of scroll/bounce on mobile. Locking the
  * scroll here removes that slack without touching BottomNav itself.
  */
-export function useLockBodyScroll() {
+export function useLockBodyScroll(enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
     const html = document.documentElement;
     const body = document.body;
     const prevHtmlOverflow = html.style.overflow;
@@ -22,5 +23,5 @@ export function useLockBodyScroll() {
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
     };
-  }, []);
+  }, [enabled]);
 }

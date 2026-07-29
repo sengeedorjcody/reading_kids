@@ -565,8 +565,8 @@ function DoneScreen({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function ExamPage() {
-  useLockBodyScroll();
   const [phase, setPhase] = useState<Phase>("select");
+  useLockBodyScroll(phase === "exam");
   const [round, setRound] = useState(1);
   const [deck, setDeck] = useState<CharCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);

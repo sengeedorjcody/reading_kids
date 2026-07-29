@@ -365,8 +365,8 @@ function ResultScreen({
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function FlashcardsPage() {
-  useLockBodyScroll();
   const [phase, setPhase] = useState<"loading" | "exam" | "done">("loading");
+  useLockBodyScroll(phase === "exam");
   const [deck, setDeck] = useState<IDictionaryWord[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [known, setKnown] = useState<IDictionaryWord[]>([]);
