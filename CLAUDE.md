@@ -28,11 +28,14 @@ No test suite is configured. Lint via `npm run lint`.
 | `/dictionary` | Word lookup with Zustand-connected TTS |
 | `/alphabet`, `/animals`, `/body`, `/colors`, `/clock`, `/directions`, `/family`, `/home`, `/math`, `/themes` | Vocabulary pages |
 | `/writing` | Stroke practice |
-| `/admin` | Content management |
+| `/picture-books` | Illustrated picture-book reader (page image + overlaid caption text, tap-to-look-up) |
+| `/games` | Games hub — lists both external (Higgsfield iframe) and internal (native page or Godot web export) games |
+| `/youtube` | YouTube study mode — video + transcript + tap-word dictionary lookup, swipe/button to switch videos |
+| `/admin` | Content management (requires login) |
 
 ### API Routes (`src/app/api/`)
-- `auth/` — NextAuth.js handlers
-- `books/`, `conversations/`, `characters/`, `backgrounds/` — CRUD for content models
+- `auth/` — NextAuth.js handlers (credentials provider backed by the `User` model)
+- `books/`, `conversations/`, `characters/`, `backgrounds/`, `picture-books/`, `games/`, `youtube/` — CRUD for content models
 - `dictionary/`, `mongolian/` — word lookups
 - `templates/` — reads `public/templates/` dir dynamically, returns image filenames
 - `open-in-editor/` — dev tool: spawns `code --goto file:line:col`
@@ -42,10 +45,12 @@ No test suite is configured. Lint via `npm run lint`.
 ### Database
 MongoDB via Mongoose (`src/lib/db/mongoose.ts`) with **global connection caching** (`global._mongoose`) to avoid reconnecting on every hot-reload.
 
-Models in `src/lib/db/models/`: `Book`, `Page`, `Character`, `Background`, `Conversation`, `ConversationPage`, `DictionaryWord`, `Image`.
+Models in `src/lib/db/models/`: `Book`, `Page`, `Character`, `Background`, `Conversation`, `ConversationPage`, `DictionaryWord`, `Image`, `PictureBook`, `PictureBookPage`, `Game`, `YoutubeVideo`, `User`.
 
 ### Auth
-`next-auth` v4. Middleware in `src/middleware.ts` (currently open — empty matcher).
+`next-auth` v4, credentials provider checks against the `User` model (bcrypt-hashed `passwordHash`, unique `email`) — not env vars. `src/middleware.ts` enforces a session on `/admin/:path*` (redirects to `/admin/login?callbackUrl=...`); `/admin/login` itself is excluded and the admin layout skips its sidebar chrome there.
+
+**Seeding the first admin user:** `npm run seed:admin` (runs `scripts/seed-admin.mjs`) reads `ADMIN_EMAIL`/`ADMIN_PASSWORD` from `.env.local` and creates a matching `User` if one doesn't already exist — idempotent, safe to re-run. There is no signup UI; new admins are seeded this way or added directly in the DB.
 
 ### Storage
 - **Cloudinary** — images (characters, backgrounds, book illustrations)
@@ -80,6 +85,43 @@ Configured via `@ducanh2912/next-pwa` in `next.config.js`. Manifest at `src/app/
 - **Only active** when `NODE_ENV === development` — no effect in production builds
 
 If VS Code isn't opening, ensure `code` CLI is in PATH: open VS Code → Cmd+Shift+P → "Shell Command: Install 'code' command in PATH".
+
+## Games Section — Native pages, Godot, and external embeds
+
+`/games` lists three kinds of playable content, all rendered through the same
+`/games/[id]` iframe wrapper (`iframeSrc` field on the `Game` model):
+
+1. **Native Next.js page games** — e.g. `/animal-match`, `/numberblocks-friends`,
+   `/minemind-connect`. `iframeSrc` is a relative path to that route.
+2. **Godot web-export games** — built from a Godot 4.7 project in
+   `godot-games/<name>/`, exported to `public/godot/<name>/index.html`.
+   `iframeSrc` points at that static build (same-origin, so no CORS/sandbox
+   headers needed — see `godot-games/game.md` for why `thread_support=false`
+   in the export preset matters here).
+3. **External embeds** — third-party iframes (e.g. Higgsfield), which keep the
+   `sandbox` attribute that internal games don't need.
+
+`/games/[id]/page.tsx` decides sandboxing based on whether `iframeSrc` is
+same-origin (relative, or an absolute URL matching `window.location.origin`)
+— internal games render *without* `sandbox` so the Web Speech API (TTS) works;
+only truly external iframes stay sandboxed.
+
+### Building a new Godot game
+
+Full step-by-step workflow — install steps, project config, reusable
+GDScript patterns (Web Speech TTS via `JavaScriptBridge`, tap-to-move,
+Japanese pixel font), Python/PIL sprite generation, build/export/headless-test
+commands, and how to list the finished game in `/admin/games` — lives in
+**`godot-games/game.md`**. Read that file before starting a new Godot game;
+don't duplicate its instructions here.
+
+**Godot MCP** (tool prefix `mcp__godot__*`) is registered locally for driving
+the Godot editor/project from Claude Code — see `game.md` §0 for the one-time
+`claude mcp add godot ...` setup on a fresh machine. It's a local MCP server
+(`~/workspace/godot-mcp`), so it won't be present in every environment; check
+whether the deferred-tools list includes `mcp__godot__*` before assuming it's
+available, and fall back to the `Godot --headless` CLI commands in `game.md`
+(import/export/test) if it isn't.
 
 ## Draw Page (`/draw`) — Key Patterns
 
