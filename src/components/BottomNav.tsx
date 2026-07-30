@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SECTION_CATALOG } from "@/constants/sections";
 
 const HIDDEN_PATTERNS = [/^\/$/, /^\/draw/, /^\/books\/[^/]+\/read\//, /^\/conversations\/[^/]+\/read\//, /^\/picture-books\/[^/]+\/read\//, /^\/games\/.+/, /^\/animal-match/, /^\/left-right/, /^\/memory-hands/, /^\/minemind-connect/, /^\/numberblocks/, /^\/youtube\/[^/]+/];
 
@@ -11,6 +12,14 @@ export default function BottomNav() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [thumb, setThumb] = useState({ widthPct: 100, leftPct: 0 });
+  const [hiddenHrefs, setHiddenHrefs] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    fetch("/api/sections")
+      .then((r) => r.json())
+      .then((data) => setHiddenHrefs(new Set(data.hidden ?? [])))
+      .catch(() => {});
+  }, []);
 
   // Always-visible custom scroll indicator — native scrollbars are OS-controlled
   // overlays on iOS/mobile Safari and fade out even with scrollbar CSS applied,
@@ -72,34 +81,9 @@ export default function BottomNav() {
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t-2 border-pink-100 shadow-2xl shadow-pink-100/50">
         <div ref={scrollRef} className="scrollbar-none flex items-center gap-1 px-2 pt-2 pb-1 overflow-x-auto">
           <BottomNavLink href="/" icon="🏠" label="Home" />
-          <BottomNavLink href="/exam" icon="📝" label="Exam" />
-          <BottomNavLink href="/flashcards" icon="🃏" label="Flashcards" />
-          <BottomNavLink href="/books" icon="📖" label="Books" />
-          <BottomNavLink href="/picture-books" icon="🖼️" label="Picture Books" />
-          <BottomNavLink href="/conversations" icon="💬" label="Conversations" />
-          <BottomNavLink href="/alphabet" icon="あ" label="Alphabet" />
-          <BottomNavLink href="/games" icon="🎮" label="Games" />
-          <BottomNavLink href="/game" icon="🔍" label="Find" />
-          <BottomNavLink href="/family" icon="👨‍👩‍👧" label="Family" />
-          <BottomNavLink href="/animals" icon="🐾" label="Animals" />
-          <BottomNavLink href="/body" icon="🧑" label="Body" />
-          <BottomNavLink href="/home" icon="🏠" label="Home" />
-          <BottomNavLink href="/colors" icon="🎨" label="Colors" />
-          <BottomNavLink href="/directions" icon="🧭" label="Direction" />
-          <BottomNavLink href="/youtube" iconSrc="/youtube-icon.svg" label="YouTube" />
-          <BottomNavLink href="/clock" icon="🕐" label="Clock" />
-          <BottomNavLink href="/themes" icon="🗂️" label="Themes" />
-          <BottomNavLink href="/math" icon="🧮" label="Math" />
-          <BottomNavLink href="/food" icon="🍽️" label="Food" />
-          <BottomNavLink href="/badminton" icon="🏸" label="Badminton" />
-          <BottomNavLink href="/swimming" icon="🏊" label="Swimming" />
-          <BottomNavLink href="/volleyball" icon="🏐" label="Volleyball" />
-          <BottomNavLink href="/english" icon="🇬🇧" label="English" />
-          <BottomNavLink href="/words-english" icon="⌨️" label="Words EN" />
-          <BottomNavLink href="/words" icon="🔤" label="Words" />
-          <BottomNavLink href="/draw" icon="🎨" label="Draw" />
-          <BottomNavLink href="/writing" icon="✍️" label="Writing" />
-          <BottomNavLink href="/dictionary" icon="📝" label="Dictionary" />
+          {SECTION_CATALOG.filter((s) => !hiddenHrefs.has(s.href)).map((s) => (
+            <BottomNavLink key={s.href} href={s.href} icon={s.icon} iconSrc={s.iconSrc} label={s.label} />
+          ))}
           <BottomNavLink href="/admin" icon="⚙️" label="Admin" isAdmin />
         </div>
 
