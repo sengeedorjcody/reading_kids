@@ -203,26 +203,28 @@ export default function EnglishPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-indigo-100 shadow-sm">
-        <div className="px-4 pt-4 pb-2">
-          <h1 className="text-2xl font-black text-gray-800">🔤 English Words</h1>
-          <p className="text-xs text-gray-400 mt-0.5">Tap any word to hear it! · Дарж сонсоорой!</p>
-        </div>
-        {/* Category tabs */}
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => setCategory(cat.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all active:scale-95 ${
-                category === cat.id
-                  ? "bg-indigo-500 text-white shadow-md"
-                  : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
-              }`}
-            >
-              <span>{cat.icon}</span>
-              <span>{cat.label}</span>
-            </button>
-          ))}
+        <div className="max-w-4xl mx-auto">
+          <div className="px-4 pt-4 pb-2">
+            <h1 className="text-2xl font-black text-gray-800">🔤 English Words</h1>
+            <p className="text-xs text-gray-400 mt-0.5">Tap any word to hear it! · Дарж сонсоорой!</p>
+          </div>
+          {/* Category tabs */}
+          <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategory(cat.id)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all active:scale-95 ${
+                  category === cat.id
+                    ? "bg-indigo-500 text-white shadow-md"
+                    : "bg-white text-gray-500 border border-gray-200 hover:border-indigo-300"
+                }`}
+              >
+                <span>{cat.icon}</span>
+                <span>{cat.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

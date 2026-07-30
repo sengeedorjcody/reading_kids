@@ -80,45 +80,49 @@ export default function HomePage() {
     <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50 overflow-hidden">
 
       {/* ── Header ── */}
-      <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-amber-100 shadow-sm px-4 py-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-black text-gray-800">🏠 Home Items</h1>
-          <p className="text-xs text-gray-400">Tap anything to hear its Japanese name</p>
+      <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-amber-100 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-black text-gray-800">🏠 Home Items</h1>
+            <p className="text-xs text-gray-400">Tap anything to hear its Japanese name</p>
+          </div>
+          <button
+            onClick={shuffle}
+            className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-600 font-black text-xs active:scale-95 transition-all"
+          >
+            <span className="text-lg">🔀</span>
+            Shuffle
+          </button>
         </div>
-        <button
-          onClick={shuffle}
-          className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-600 font-black text-xs active:scale-95 transition-all"
-        >
-          <span className="text-lg">🔀</span>
-          Shuffle
-        </button>
       </div>
 
       {/* ── Items area ── */}
       <div className="flex-1 relative overflow-hidden">
-        {placed.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => handleTap(p)}
-            style={{
-              position: "absolute",
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              fontSize: `${p.size}px`,
-              transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.tapped ? 1.4 : 1})`,
-              lineHeight: 1,
-              transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
-              userSelect: "none",
-              WebkitUserSelect: "none",
-              touchAction: "manipulation",
-              zIndex: p.tapped ? 20 : 1,
-            }}
-            className="focus:outline-none"
-            aria-label={p.item.english}
-          >
-            {p.item.emoji}
-          </button>
-        ))}
+        <div className="max-w-4xl mx-auto h-full relative">
+          {placed.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => handleTap(p)}
+              style={{
+                position: "absolute",
+                left: `${p.x}%`,
+                top: `${p.y}%`,
+                fontSize: `${p.size}px`,
+                transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.tapped ? 1.4 : 1})`,
+                lineHeight: 1,
+                transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                touchAction: "manipulation",
+                zIndex: p.tapped ? 20 : 1,
+              }}
+              className="focus:outline-none"
+              aria-label={p.item.english}
+            >
+              {p.item.emoji}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* ── Floating label card ── */}

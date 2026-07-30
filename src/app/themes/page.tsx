@@ -60,7 +60,7 @@ function OrderedGridLayout({
   return (
     <div className="flex-1 overflow-y-auto p-3 pb-28">
       <div
-        className="grid gap-2"
+        className="max-w-4xl mx-auto grid gap-2"
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
       >
         {theme.words.map((word, i) => {
@@ -175,7 +175,7 @@ function WeekCalendarLayout({
       {/* Today's date + live clock banner */}
       <button
         onClick={() => onWordTap(todayWord)}
-        className="w-full px-4 py-3 bg-white/80 border-b border-gray-100 flex items-center justify-between gap-2 active:bg-gray-50"
+        className="w-full max-w-4xl mx-auto px-4 py-3 bg-white/80 border-b border-gray-100 flex items-center justify-between gap-2 active:bg-gray-50"
       >
         <div className="flex items-center gap-2">
           <span className="text-lg">📅</span>
@@ -201,7 +201,7 @@ function WeekCalendarLayout({
         </div>
       </button>
 
-      <div className="p-3">
+      <div className="max-w-4xl mx-auto p-3">
         {/* Week navigation */}
         <div className="flex items-center justify-between mb-3">
           <button
@@ -354,49 +354,51 @@ export default function ThemesPage() {
 
       {/* ── Header ── */}
       <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-gray-100 shadow-sm">
-        <div className="flex items-center justify-between px-4 pt-3 pb-2">
-          <div>
-            <h1 className="text-xl font-black text-gray-800">{theme.icon} {theme.label}</h1>
-            <p className="text-xs text-gray-400">
-              {theme.isSentences ? "Tap a sentence to hear it spoken" : "Tap to hear the Japanese word"}
-            </p>
-          </div>
-          {isScatter && (
-            <button
-              onClick={() => { setPlaced(buildLayout(theme.words)); setActive(null); }}
-              className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-black text-xs active:scale-95 transition-all"
-            >
-              <span className="text-lg">🔀</span>
-              Shuffle
-            </button>
-          )}
-        </div>
-
-        {/* Category tabs — horizontal scroll, single row */}
-        <div className="flex gap-2 px-3 pb-3 overflow-x-auto scrollbar-none">
-          {THEMES.map((t) => {
-            const isActive = themeId === t.id;
-            return (
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-between px-4 pt-3 pb-2">
+            <div>
+              <h1 className="text-xl font-black text-gray-800">{theme.icon} {theme.label}</h1>
+              <p className="text-xs text-gray-400">
+                {theme.isSentences ? "Tap a sentence to hear it spoken" : "Tap to hear the Japanese word"}
+              </p>
+            </div>
+            {isScatter && (
               <button
-                key={t.id}
-                onClick={() => switchTheme(t)}
-                className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all active:scale-95"
-                style={isActive
-                  ? { backgroundColor: t.activeColor, color: "#fff", boxShadow: `0 4px 12px ${t.activeColor}55`, transform: "scale(1.05)" }
-                  : { backgroundColor: "#f3f4f6", color: "#6b7280" }
-                }
+                onClick={() => { setPlaced(buildLayout(theme.words)); setActive(null); }}
+                className="flex flex-col items-center gap-0.5 px-3 py-2 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-600 font-black text-xs active:scale-95 transition-all"
               >
-                <span>{t.icon}</span>
-                <span>{t.label}</span>
+                <span className="text-lg">🔀</span>
+                Shuffle
               </button>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Category tabs — horizontal scroll, single row */}
+          <div className="flex gap-2 px-3 pb-3 overflow-x-auto scrollbar-none">
+            {THEMES.map((t) => {
+              const isActive = themeId === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => switchTheme(t)}
+                  className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-2xl text-sm font-black transition-all active:scale-95"
+                  style={isActive
+                    ? { backgroundColor: t.activeColor, color: "#fff", boxShadow: `0 4px 12px ${t.activeColor}55`, transform: "scale(1.05)" }
+                    : { backgroundColor: "#f3f4f6", color: "#6b7280" }
+                  }
+                >
+                  <span>{t.icon}</span>
+                  <span>{t.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* ── Content area ── */}
       {theme.isSentences ? (
-        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 flex flex-col gap-3">
+        <div className="flex-1 overflow-y-auto px-4 py-4 pb-28 flex flex-col gap-3 max-w-4xl mx-auto w-full">
           {theme.words.map((word, idx) => {
             const isPlaying = playingId === idx;
             return (
@@ -433,29 +435,31 @@ export default function ThemesPage() {
       ) : (
         /* Scatter layout */
         <div className="flex-1 relative overflow-hidden">
-          {placed.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => handleScatterTap(p)}
-              style={{
-                position: "absolute",
-                left: `${p.x}%`,
-                top: `${p.y}%`,
-                fontSize: `${p.size}px`,
-                transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.tapped ? 1.4 : 1})`,
-                lineHeight: 1,
-                transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
-                userSelect: "none",
-                WebkitUserSelect: "none",
-                touchAction: "manipulation",
-                zIndex: p.tapped ? 20 : 1,
-              }}
-              className="focus:outline-none"
-              aria-label={p.word.english}
-            >
-              {p.word.emoji}
-            </button>
-          ))}
+          <div className="max-w-4xl mx-auto h-full relative">
+            {placed.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => handleScatterTap(p)}
+                style={{
+                  position: "absolute",
+                  left: `${p.x}%`,
+                  top: `${p.y}%`,
+                  fontSize: `${p.size}px`,
+                  transform: `translate(-50%, -50%) rotate(${p.rotate}deg) scale(${p.tapped ? 1.4 : 1})`,
+                  lineHeight: 1,
+                  transition: "transform 0.2s cubic-bezier(0.34,1.56,0.64,1)",
+                  userSelect: "none",
+                  WebkitUserSelect: "none",
+                  touchAction: "manipulation",
+                  zIndex: p.tapped ? 20 : 1,
+                }}
+                className="focus:outline-none"
+                aria-label={p.word.english}
+              >
+                {p.word.emoji}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

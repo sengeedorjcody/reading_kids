@@ -118,31 +118,33 @@ export default function SwimmingPage() {
     <div className={`min-h-screen bg-gradient-to-br ${BG[section]} transition-all duration-500`}>
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
-        <div className="px-4 pt-4 pb-2">
-          <h1 className="text-2xl font-black text-gray-800">🏊 Swimming · すいえい</h1>
-          <p className="text-xs text-gray-400 mt-0.5">タップして ことばを きこう！ · Усанд сэлэлтийн нэр томьёо</p>
-        </div>
-        {/* Section tabs */}
-        <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setSection(s.id)}
-              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all active:scale-95 ${
-                section === s.id
-                  ? `${s.activeColor} text-white shadow-md`
-                  : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <span>{s.icon}</span>
-              <span>{s.jp}</span>
-            </button>
-          ))}
+        <div className="max-w-4xl mx-auto">
+          <div className="px-4 pt-4 pb-2">
+            <h1 className="text-2xl font-black text-gray-800">🏊 Swimming · すいえい</h1>
+            <p className="text-xs text-gray-400 mt-0.5">タップして ことばを きこう！ · Усанд сэлэлтийн нэр томьёо</p>
+          </div>
+          {/* Section tabs */}
+          <div className="flex gap-2 px-4 pb-3 overflow-x-auto scrollbar-none">
+            {SECTIONS.map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setSection(s.id)}
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold transition-all active:scale-95 ${
+                  section === s.id
+                    ? `${s.activeColor} text-white shadow-md`
+                    : "bg-white text-gray-500 border border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                <span>{s.icon}</span>
+                <span>{s.jp}</span>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Section heading */}
-      <div className="px-4 py-3 flex items-center gap-2">
+      <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-2">
         <span className="text-3xl">{sec.icon}</span>
         <div>
           <h2 className="text-lg font-black text-gray-800">{sec.jp}</h2>
