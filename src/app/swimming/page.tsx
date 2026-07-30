@@ -151,7 +151,7 @@ export default function SwimmingPage() {
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 px-4 pb-28">
+      <div className="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-3 px-4 pb-28">
         {items.map((term, i) => (
           <button
             key={i}

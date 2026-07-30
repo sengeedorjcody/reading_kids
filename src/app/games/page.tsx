@@ -19,7 +19,7 @@ export default function GamesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-28">
       {/* Header */}
-      <div className="px-5 pt-6 pb-4 max-w-xl mx-auto w-full">
+      <div className="px-5 pt-6 pb-4 max-w-4xl mx-auto w-full">
         <h1 className="text-3xl font-black text-white">🎮 Games</h1>
         <p className="text-sm text-gray-400 mt-1">Тоглоом сонгоорой · Pick a game to play</p>
       </div>
@@ -39,7 +39,7 @@ export default function GamesPage() {
       )}
 
       {/* Game grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-xl mx-auto w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-4xl mx-auto w-full">
         {games.map((game) => (
           <button
             key={game._id}

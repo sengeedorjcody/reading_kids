@@ -227,7 +227,7 @@ export default function EnglishPage() {
       </div>
 
       {/* Word grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-4 pb-28">
+      <div className="max-w-4xl mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-4 pb-28">
         {items.map((word, i) => (
           <button
             key={`${word.word}-${i}`}

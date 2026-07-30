@@ -170,7 +170,7 @@ export default function ClockPage() {
   const timeJP = toTimeJP(hour, minute);
 
   return (
-    <div className="max-w-md mx-auto px-4 py-6 pb-28">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="mb-4">
         <h1 className="text-3xl font-black text-gray-800">🕐 Clock · とけい</h1>

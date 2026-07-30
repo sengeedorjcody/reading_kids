@@ -42,7 +42,7 @@ export default function ColorsPage() {
   };
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 pb-28">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-4xl font-black text-gray-800">🎨 Colors</h1>

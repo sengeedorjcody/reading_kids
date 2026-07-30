@@ -17,7 +17,7 @@ export default async function ConversationsPage() {
   const conversations = await getConversations();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-gray-800 flex items-center gap-3">
           <span className="text-4xl">💬</span> Conversations

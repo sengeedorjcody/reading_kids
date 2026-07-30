@@ -128,7 +128,7 @@ export default function FoodPage() {
       </div>
 
       {/* Food grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-4 pb-28">
+      <div className="max-w-4xl mx-auto grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3 p-4 pb-28">
         {items.map((food, i) => (
           <button
             key={`${food.japanese}-${i}`}

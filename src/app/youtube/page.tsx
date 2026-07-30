@@ -18,7 +18,7 @@ export default function YoutubeListPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black pb-28">
-      <div className="px-5 pt-6 pb-4 max-w-xl mx-auto w-full flex items-center gap-3">
+      <div className="px-5 pt-6 pb-4 max-w-4xl mx-auto w-full flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/youtube-icon.svg" alt="" className="w-8 h-8" />
         <div>
@@ -43,7 +43,7 @@ export default function YoutubeListPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-xl mx-auto w-full">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-4xl mx-auto w-full">
         {videos.map((v) => (
           <button
             key={v._id}

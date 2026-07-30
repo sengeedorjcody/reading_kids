@@ -213,7 +213,7 @@ export default function MathPage() {
   const displayAnswer = missingSlot === "answer" && !revealed ? "?" : answer;
 
   return (
-    <div className="max-w-md mx-auto px-4 py-6 pb-28">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>

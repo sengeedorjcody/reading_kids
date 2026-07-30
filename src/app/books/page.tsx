@@ -15,7 +15,7 @@ export default async function BooksPage() {
   const books = await getBooks();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       <h1 className="text-3xl font-black text-white mb-4">📚 Books · ほんだな</h1>
 
       {books.length === 0 ? (
