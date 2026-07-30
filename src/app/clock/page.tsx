@@ -173,8 +173,8 @@ export default function ClockPage() {
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-3xl font-black text-gray-800">🕐 Clock · とけい</h1>
-        <p className="text-sm text-gray-400">Tap the clock to hear the time in Japanese</p>
+        <h1 className="text-3xl font-black text-white">🕐 Clock · とけい</h1>
+        <p className="text-sm text-white/60">Tap the clock to hear the time in Japanese</p>
       </div>
 
       {/* Mode toggle */}

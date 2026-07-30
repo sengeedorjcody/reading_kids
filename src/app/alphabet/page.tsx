@@ -17,10 +17,10 @@ export default function AlphabetPage() {
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-black text-gray-800 mb-2">
+        <h1 className="text-4xl font-black text-white mb-2">
           Learn the Alphabet!
         </h1>
-        <p className="text-xl text-gray-500">Click a character to hear how it sounds 🔊</p>
+        <p className="text-xl text-white/60">Click a character to hear how it sounds 🔊</p>
       </div>
 
       {/* Tab switcher */}

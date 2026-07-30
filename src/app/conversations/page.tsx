@@ -19,10 +19,10 @@ export default async function ConversationsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       <div className="mb-8">
-        <h1 className="text-3xl font-black text-gray-800 flex items-center gap-3">
+        <h1 className="text-3xl font-black text-white flex items-center gap-3">
           <span className="text-4xl">💬</span> Conversations
         </h1>
-        <p className="text-gray-500 mt-1">かいわ を よもう！</p>
+        <p className="text-white/60 mt-1">かいわ を よもう！</p>
       </div>
 
       {conversations.length === 0 ? (

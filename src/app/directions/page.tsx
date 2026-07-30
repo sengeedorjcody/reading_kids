@@ -99,8 +99,8 @@ export default function DirectionsPage() {
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-4xl font-black text-gray-800">🧭 Directions · ほうこう</h1>
-        <p className="text-base text-gray-400">Tap to hear the direction&apos;s name!</p>
+        <h1 className="text-4xl font-black text-white">🧭 Directions · ほうこう</h1>
+        <p className="text-base text-white/60">Tap to hear the direction&apos;s name!</p>
       </div>
 
       {/* ── Basic 6 directions — 3×2 grid ── */}

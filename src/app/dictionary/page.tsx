@@ -105,8 +105,8 @@ export default function DictionaryPage() {
       {/* Header */}
       <div className="mb-8 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-4xl font-black text-gray-800 mb-2">📝 Dictionary</h1>
-          <p className="text-xl text-gray-500">Look up a word!</p>
+          <h1 className="text-4xl font-black text-white mb-2">📝 Dictionary</h1>
+          <p className="text-xl text-white/60">Look up a word!</p>
         </div>
         <button
           onClick={handleExport}

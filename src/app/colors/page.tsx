@@ -45,8 +45,8 @@ export default function ColorsPage() {
     <div className="max-w-4xl mx-auto px-4 py-8 pb-28">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-4xl font-black text-gray-800">🎨 Colors</h1>
-        <p className="text-base text-gray-400">Tap to hear the color&apos;s name!</p>
+        <h1 className="text-4xl font-black text-white">🎨 Colors</h1>
+        <p className="text-base text-white/60">Tap to hear the color&apos;s name!</p>
       </div>
 
       {/* Color grid */}
