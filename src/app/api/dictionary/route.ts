@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/mongoose";
 import DictionaryWord from "@/lib/db/models/DictionaryWord";
+import { lookupExternalDictionary } from "@/lib/external-dictionary";
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,6 +51,29 @@ export async function GET(request: NextRequest) {
         .lean(),
       DictionaryWord.countDocuments(query),
     ]);
+
+    // Nothing locally for an exact single-word lookup — try free public
+    // dictionary APIs (Jisho / kanjiapi.dev) before giving up. This result
+    // is never persisted, just handed back so the reader UI has something
+    // to show instead of "not found".
+    if (exact && words.length === 0 && q?.trim()) {
+      const external = await lookupExternalDictionary(q);
+      if (external) {
+        return NextResponse.json({
+          words: [{
+            _id: `external-${encodeURIComponent(external.japanese_word)}`,
+            japanese_word: external.japanese_word,
+            hiragana: external.hiragana,
+            english_meaning: external.english_meaning,
+            tags: [external.source],
+          }],
+          total: 1,
+          page: 1,
+          pages: 1,
+          externalSource: external.source,
+        });
+      }
+    }
 
     return NextResponse.json({ words, total, page, pages: Math.ceil(total / limit) });
   } catch (error) {
