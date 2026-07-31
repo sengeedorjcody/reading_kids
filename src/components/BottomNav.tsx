@@ -18,6 +18,9 @@ export default function BottomNav() {
         c.hrefs.some((h) => pathname === h || pathname.startsWith(h + "/"))
       )?.id ?? null;
   const isHomeActive = pathname === "/";
+  const mid = Math.ceil(CATEGORIES.length / 2);
+  const firstHalf = CATEGORIES.slice(0, mid);
+  const secondHalf = CATEGORIES.slice(mid);
 
   return (
     <>
@@ -30,8 +33,11 @@ export default function BottomNav() {
           md:rounded-full md:border-2 md:shadow-2xl md:shadow-black/20"
       >
         <div className="flex items-stretch justify-around px-2 pt-2 pb-3 md:items-center md:justify-center md:gap-2 md:px-3 md:py-2">
+          {firstHalf.map((c) => (
+            <NavTab key={c.id} href={`/category/${c.id}`} icon={c.icon} label={c.label} active={activeCategoryId === c.id} />
+          ))}
           <NavTab href="/" icon="🏠" label="Home" active={isHomeActive} isHome />
-          {CATEGORIES.map((c) => (
+          {secondHalf.map((c) => (
             <NavTab key={c.id} href={`/category/${c.id}`} icon={c.icon} label={c.label} active={activeCategoryId === c.id} />
           ))}
         </div>

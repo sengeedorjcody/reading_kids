@@ -245,7 +245,7 @@ export default function GamePage() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50 overflow-hidden">
 
       {/* ── Header ── */}
       <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-purple-100 shadow-sm">

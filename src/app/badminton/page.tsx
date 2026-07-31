@@ -74,13 +74,6 @@ const SECTIONS: { id: Section; label: string; jp: string; icon: string; color: s
   { id: "phrase", label: "Phrases",    jp: "フレーズ", icon: "💬", color: "bg-orange-500" },
 ];
 
-const BG_COLORS: Record<Section, string> = {
-  kigu:   "from-blue-50 via-sky-50 to-indigo-50",
-  waza:   "from-purple-50 via-fuchsia-50 to-pink-50",
-  rule:   "from-green-50 via-emerald-50 to-teal-50",
-  phrase: "from-orange-50 via-amber-50 to-yellow-50",
-};
-
 const CARD_COLORS: Record<Section, string> = {
   kigu:   "#eff6ff",
   waza:   "#faf5ff",
@@ -110,7 +103,7 @@ export default function BadmintonPage() {
   const sec = SECTIONS.find((s) => s.id === section)!;
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${BG_COLORS[section]} transition-all duration-500`}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50 transition-all duration-500">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
         <div className="max-w-4xl mx-auto">

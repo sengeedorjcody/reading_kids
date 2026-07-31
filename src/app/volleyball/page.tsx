@@ -82,14 +82,6 @@ const SECTIONS: { id: Section; label: string; jp: string; icon: string; activeCo
   { id: "phrase",   label: "Phrases",      jp: "フレーズ", icon: "💬",  activeColor: "bg-purple-500" },
 ];
 
-const BG: Record<Section, string> = {
-  kihon:    "from-yellow-50 via-amber-50 to-orange-50",
-  ugoki:    "from-red-50 via-rose-50 to-pink-50",
-  position: "from-blue-50 via-indigo-50 to-violet-50",
-  sensei:   "from-green-50 via-emerald-50 to-teal-50",
-  phrase:   "from-purple-50 via-fuchsia-50 to-pink-50",
-};
-
 const CARD_BG: Record<Section, string> = {
   kihon:    "#fefce8",
   ugoki:    "#fff1f2",
@@ -121,7 +113,7 @@ export default function VolleyballPage() {
   const sec = SECTIONS.find((s) => s.id === section)!;
 
   return (
-    <div className={`min-h-screen bg-gradient-to-br ${BG[section]} transition-all duration-500`}>
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50 transition-all duration-500">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-100 shadow-sm">
         <div className="max-w-4xl mx-auto">

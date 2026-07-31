@@ -77,7 +77,7 @@ export default function BodyPage() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-rose-50 via-pink-50 to-purple-50 overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50 overflow-hidden">
 
       {/* ── Header ── */}
       <div className="flex-shrink-0 z-20 bg-white/90 backdrop-blur border-b border-rose-100 shadow-sm">

@@ -101,7 +101,7 @@ export default function FoodPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-pink-50">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-yellow-50 to-lime-50">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-orange-100 shadow-sm">
         <div className="max-w-4xl mx-auto">
