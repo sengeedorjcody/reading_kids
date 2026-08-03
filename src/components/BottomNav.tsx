@@ -18,6 +18,9 @@ export default function BottomNav() {
         c.hrefs.some((h) => pathname === h || pathname.startsWith(h + "/"))
       )?.id ?? null;
   const isHomeActive = pathname === "/";
+  const isProfileActive = ["/profile", "/login", "/register", "/my-words"].some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
   const mid = Math.ceil(CATEGORIES.length / 2);
   const firstHalf = CATEGORIES.slice(0, mid);
   const secondHalf = CATEGORIES.slice(mid);
@@ -40,6 +43,7 @@ export default function BottomNav() {
           {secondHalf.map((c) => (
             <NavTab key={c.id} href={`/category/${c.id}`} icon={c.icon} label={c.label} active={activeCategoryId === c.id} />
           ))}
+          <NavTab href="/profile" icon="👤" label="Profile" active={isProfileActive} />
         </div>
       </nav>
     </>

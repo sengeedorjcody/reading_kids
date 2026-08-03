@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 import { IDictionaryWord, IBook } from "@/types";
 import WordCard from "@/components/dictionary/WordCard";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -11,7 +12,9 @@ interface IConversationSimple {
 }
 
 export default function DictionaryPage() {
+  const { data: session } = useSession();
   const [words, setWords] = useState<IDictionaryWord[]>([]);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -35,6 +38,43 @@ export default function DictionaryPage() {
       .then((data) => setConversations(data.conversations ?? []))
       .catch(() => {});
   }, []);
+
+  // Fetch the logged-in user's saved-word ids so WordCard can show the bookmark state
+  useEffect(() => {
+    if (!session?.user) { setSavedIds(new Set()); return; }
+    fetch("/api/saved-words")
+      .then((r) => r.json())
+      .then((data) => setSavedIds(new Set((data.words ?? []).map((w: IDictionaryWord) => w._id))))
+      .catch(() => {});
+  }, [session]);
+
+  const toggleSave = async (wordId: string) => {
+    if (!session?.user) return;
+    const isSaved = savedIds.has(wordId);
+    setSavedIds((prev) => {
+      const next = new Set(prev);
+      if (isSaved) next.delete(wordId); else next.add(wordId);
+      return next;
+    });
+    try {
+      if (isSaved) {
+        await fetch(`/api/saved-words?wordId=${wordId}`, { method: "DELETE" });
+      } else {
+        await fetch("/api/saved-words", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ wordId }),
+        });
+      }
+    } catch {
+      // Revert on failure
+      setSavedIds((prev) => {
+        const next = new Set(prev);
+        if (isSaved) next.add(wordId); else next.delete(wordId);
+        return next;
+      });
+    }
+  };
 
   // Debounce search input
   useEffect(() => {
@@ -224,7 +264,13 @@ export default function DictionaryPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {words.map((word) => (
-            <WordCard key={word._id} word={word} compact />
+            <WordCard
+              key={word._id}
+              word={word}
+              compact
+              saved={savedIds.has(word._id)}
+              onToggleSave={session?.user && !word._id.startsWith("external-") ? () => toggleSave(word._id) : undefined}
+            />
           ))}
         </div>
       )}

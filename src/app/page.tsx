@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import HomeDateWidget from "@/components/HomeDateWidget";
+import DailyExamPrompt from "@/components/DailyExamPrompt";
 import { SECTION_CATALOG, SECTION_CATALOG_BY_HREF, type SectionMeta } from "@/constants/sections";
 
 type AppMeta = SectionMeta;
@@ -84,7 +85,7 @@ function reorder(items: HomeItem[], draggedId: string, targetIndex: number): Hom
 export default function HomePage() {
   const router = useRouter();
   const { data: session } = useSession();
-  const isAdmin = Boolean(session?.user && (session.user as { role?: string }).role === "admin");
+  const isAdmin = Boolean(session?.user && (session.user as { isAdmin?: boolean }).isAdmin);
 
   const [items, setItems] = useState<HomeItem[]>(defaultItems());
   const [savedItems, setSavedItems] = useState<HomeItem[]>(defaultItems());
@@ -267,6 +268,8 @@ export default function HomePage() {
       className="min-h-screen flex flex-col pb-28"
       style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)" }}
     >
+      <DailyExamPrompt />
+
       {/* ── Date / Week widget ── */}
       <div className="px-5 pt-3 mb-4 max-w-xl mx-auto w-full flex items-center gap-3">
         <div className="flex-1"><HomeDateWidget /></div>

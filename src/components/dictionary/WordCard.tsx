@@ -5,9 +5,21 @@ import AudioButton from "./AudioButton";
 interface WordCardProps {
   word: IDictionaryWord;
   compact?: boolean;
+  saved?: boolean;
+  onToggleSave?: () => void;
 }
 
-export default function WordCard({ word, compact = false }: WordCardProps) {
+export default function WordCard({ word, compact = false, saved, onToggleSave }: WordCardProps) {
+  const saveButton = onToggleSave && (
+    <button
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleSave(); }}
+      aria-label={saved ? "Remove from saved words" : "Save word"}
+      className="text-2xl leading-none active:scale-90 transition-transform flex-shrink-0"
+    >
+      {saved ? "💖" : "🤍"}
+    </button>
+  );
+
   if (compact) {
     return (
       <div className="bg-white rounded-2xl p-4 shadow-sm border border-pink-100 flex items-center gap-4">
@@ -26,6 +38,7 @@ export default function WordCard({ word, compact = false }: WordCardProps) {
           {word.romaji && <p className="text-sm text-blue-500 font-medium">{word.romaji}</p>}
           {word.english_meaning && <p className="text-sm text-gray-600">{word.english_meaning}</p>}
         </div>
+        {saveButton}
         <AudioButton text={word.japanese_word} audioUrl={word.pronunciation_audio_url} size="sm" />
       </div>
     );
@@ -54,7 +67,10 @@ export default function WordCard({ word, compact = false }: WordCardProps) {
             <p className="text-2xl text-pink-400 mt-1">{word.hiragana}</p>
           )}
         </div>
-        <AudioButton text={word.japanese_word} audioUrl={word.pronunciation_audio_url} size="lg" />
+        <div className="flex items-center gap-3">
+          {saveButton}
+          <AudioButton text={word.japanese_word} audioUrl={word.pronunciation_audio_url} size="lg" />
+        </div>
       </div>
 
       {/* Romaji */}
