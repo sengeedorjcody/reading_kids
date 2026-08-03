@@ -21,7 +21,7 @@ export const authOptions: NextAuthOptions = {
         const valid = await user.comparePassword(credentials.password);
         if (!valid) return null;
 
-        return { id: String(user._id), name: user.name ?? "Admin", email: user.email, role: user.role };
+        return { id: String(user._id), name: user.name ?? user.email, email: user.email, isAdmin: user.isAdmin };
       },
     }),
   ],
@@ -30,11 +30,14 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      if (user) token.role = (user as { role?: string }).role;
+      if (user) token.isAdmin = (user as { isAdmin?: boolean }).isAdmin ?? false;
       return token;
     },
     async session({ session, token }) {
-      if (session.user) (session.user as { role?: string }).role = token.role as string;
+      if (session.user) {
+        (session.user as { id?: string }).id = token.sub;
+        (session.user as { isAdmin?: boolean }).isAdmin = Boolean(token.isAdmin);
+      }
       return session;
     },
   },

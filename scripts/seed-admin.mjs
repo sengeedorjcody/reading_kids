@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
     name: { type: String, trim: true },
-    role: { type: String, enum: ["admin"], default: "admin" },
+    isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
@@ -38,7 +38,7 @@ async function main() {
     console.log(`✔ User already exists for ${email} — nothing to do.`);
   } else {
     const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10);
-    await User.create({ email, passwordHash, name: "Admin", role: "admin" });
+    await User.create({ email, passwordHash, name: "Admin", isAdmin: true });
     console.log(`✔ Created admin user: ${email}`);
   }
 
