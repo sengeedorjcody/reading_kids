@@ -265,6 +265,71 @@ function makeProblem(level: number): Problem {
   }
 }
 
+// ── Number line 0-20 (counting aid for the 10-20 levels) ─────────────────────
+// First number is a bar from 0 in its own color; the second number's bar sits
+// above it in its color — going right for +, back to the left for −.
+function NumberLine({
+  a, b, op, answer, solved,
+}: {
+  a: number; b: number; op: Op; answer: number; solved: boolean;
+}) {
+  const MAX = 20;
+  const ca = charFor(a), cb = charFor(b);
+  const pct = (n: number) => `${(n / MAX) * 100}%`;
+  const bStart = op === "+" ? a : a - b;
+  const barH = 18;
+
+  return (
+    <div className="w-full max-w-2xl px-3">
+      <div className="relative" style={{ height: barH * 2 + 44 }}>
+        {/* second number bar (top row) */}
+        {b > 0 && (
+          <div
+            className="absolute rounded-md flex items-center justify-center text-white text-xs font-black"
+            style={{
+              left: pct(bStart), width: pct(b), top: 0, height: barH,
+              background: cb.color, border: "1.5px solid rgba(0,0,0,0.15)",
+            }}
+          >
+            {op === "−" ? "←" : ""}{b}{op === "+" ? " →" : ""}
+          </div>
+        )}
+        {/* first number bar (bottom row) */}
+        {a > 0 && (
+          <div
+            className="absolute rounded-md flex items-center justify-center text-white text-xs font-black"
+            style={{
+              left: 0, width: pct(a), top: barH + 4, height: barH,
+              background: ca.color, border: "1.5px solid rgba(0,0,0,0.15)",
+            }}
+          >
+            {a}
+          </div>
+        )}
+        {/* the line with 20 segments */}
+        <div className="absolute left-0 right-0" style={{ top: barH * 2 + 12, height: 4, background: "#475569", borderRadius: 2 }} />
+        {Array.from({ length: MAX + 1 }).map((_, i) => {
+          const isAns = i === answer;
+          return (
+            <div key={i} className="absolute flex flex-col items-center" style={{ left: pct(i), top: barH * 2 + 6, transform: "translateX(-50%)" }}>
+              <div style={{ width: i % 5 === 0 ? 3 : 2, height: i % 5 === 0 ? 16 : 10, background: "#475569" }} />
+              <span
+                className="font-black leading-none mt-1"
+                style={{
+                  fontSize: isAns ? 14 : 10,
+                  color: isAns ? (solved ? "#16a34a" : "#8b5cf6") : "#64748b",
+                }}
+              >
+                {isAns && !solved ? "?" : i}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Page ─────────────────────────────────────────────────────────────────────
 interface DragState {
   char: Character;
@@ -279,6 +344,7 @@ export default function NumberblocksFriends() {
   const [score, setScore] = useState(0);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [slotFlash, setSlotFlash] = useState<"good" | "bad" | null>(null);
+  const [typed, setTyped] = useState(""); // number-pad input on 10-20 levels
   const slotRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
 
@@ -299,6 +365,7 @@ export default function NumberblocksFriends() {
     setProblem(p);
     setSolved(false);
     setSlotFlash(null);
+    setTyped("");
     speakProblem(p);
   }, [level, speakProblem]);
 
@@ -306,6 +373,34 @@ export default function NumberblocksFriends() {
     setLevel(l);
     setScore(0);
     newProblem(l);
+  };
+
+  // Shared answer check for both drag-drop and number-pad input
+  const submitAnswer = useCallback((n: number) => {
+    if (n === problem.correct) {
+      setSolved(true);
+      setScore((s) => s + 1);
+      setSlotFlash("good");
+      speak(`せいかい！ ${JP_NUM[problem.correct]}`);
+      setTimeout(newProblem, 1800);
+    } else {
+      setSlotFlash("bad");
+      speak(`ざんねん…`);
+      setTimeout(() => setSlotFlash(null), 600);
+    }
+  }, [problem.correct, speak, newProblem]);
+
+  // ── Number pad (10-20 levels) ──
+  const padPress = (key: string) => {
+    if (solved) return;
+    if (key === "⌫") { setTyped((t) => t.slice(0, -1)); return; }
+    if (key === "OK") {
+      if (typed === "") return;
+      submitAnswer(parseInt(typed));
+      return;
+    }
+    speak(JP_NUM[parseInt(key)]);
+    setTyped((t) => (t.length >= 2 ? t : t + key));
   };
 
   // ── Dragging from the palette ──
@@ -327,23 +422,14 @@ export default function NumberblocksFriends() {
         ev.clientY >= slot.top && ev.clientY <= slot.bottom;
       if (!inSlot) return;
 
-      if (char.n === problem.correct) {
-        setSolved(true);
-        setScore((s) => s + 1);
-        setSlotFlash("good");
-        speak(`せいかい！ ${JP_NUM[problem.correct]}`);
-        setTimeout(newProblem, 1800);
-      } else {
-        setSlotFlash("bad");
-        speak(`ざんねん…`);
-        setTimeout(() => setSlotFlash(null), 600);
-      }
+      submitAnswer(char.n);
     };
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
   };
 
   const { a, b, op, answer, missing } = problem;
+  const bigLevel = BIG_LEVELS.has(level);
 
   // One equation slot: number on top, its character below (not draggable)
   const EqSlot = ({ value, isMissing }: { value: number; isMissing: boolean }) => {
@@ -359,8 +445,12 @@ export default function NumberblocksFriends() {
             animation: slotFlash === "bad" ? "nbShake 0.3s" : undefined,
           }}
         >
-          <span className="font-black text-4xl text-purple-300 animate-pulse">?</span>
-          <span className="text-[10px] font-bold text-purple-400 mt-1">ここに おいてね</span>
+          {bigLevel && typed !== "" ? (
+            <span className="font-black text-4xl text-purple-600">{typed}</span>
+          ) : (
+            <span className="font-black text-4xl text-purple-300 animate-pulse">?</span>
+          )}
+          <span className="text-[10px] font-bold text-purple-400 mt-1">{bigLevel ? "すうじを おしてね" : "ここに おいてね"}</span>
         </div>
       );
     }
@@ -472,7 +562,37 @@ export default function NumberblocksFriends() {
         <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 せいかい！</p>
       )}
 
-      {/* Character palette — drag these into the "?" slot */}
+      {bigLevel ? (
+        /* 10-20 levels: number line as a counting aid + number pad to type the answer */
+        <div
+          className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto flex flex-col items-center justify-center gap-4 p-4"
+          style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
+        >
+          <NumberLine a={a} b={b} op={op} answer={answer} solved={solved} />
+
+          <div className="grid grid-cols-6 gap-2 w-full max-w-md">
+            {["1","2","3","4","5","⌫","6","7","8","9","0","OK"].map((k) => {
+              const isOk = k === "OK", isDel = k === "⌫";
+              return (
+                <button
+                  key={k}
+                  onClick={() => padPress(k)}
+                  disabled={solved}
+                  className="h-14 rounded-2xl font-black text-2xl shadow active:scale-95 transition-all disabled:opacity-50"
+                  style={isOk
+                    ? { background: "#22c55e", color: "#fff" }
+                    : isDel
+                    ? { background: "#f59e0b", color: "#fff" }
+                    : { background: "#fff", color: "#334155" }}
+                >
+                  {k}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : (
+      /* Character palette — drag these into the "?" slot */
       <div
         className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto"
         style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
@@ -496,6 +616,7 @@ export default function NumberblocksFriends() {
           ))}
         </div>
       </div>
+      )}
 
       {/* Drag ghost following the pointer */}
       {drag && (
