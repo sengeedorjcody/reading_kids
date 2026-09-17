@@ -133,16 +133,16 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
     }
   }, [currentVideoIndex, videoList, router]);
 
-  // Swipe (mobile touch) and wheel (desktop trackpad) both switch videos.
-  // Touches that land on the YouTube iframe never reach these listeners at all
+  // Swipe (mobile touch) switches videos. Wheel/scroll does NOT — on desktop
+  // the ▲▼ buttons are the only way to switch, so trackpad/mouse scrolling
+  // over the transcript or dictionary panels behaves like normal page scroll.
+  // Touches that land on the YouTube iframe never reach this listener at all
   // (separate cross-origin browsing context), so this only fires for gestures
   // starting on our own UI — header, transcript, dictionary, margins — and
   // never steals a tap meant for the video player's own controls.
   useEffect(() => {
     let touchStartY = 0;
     let touchStartX = 0;
-    let wheelAccum = 0;
-    let wheelCooldown = false;
 
     const onTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
@@ -155,24 +155,12 @@ export default function YoutubeStudyPage({ params }: { params: { id: string } })
         if (dy < 0) goToNextVideo(); else goToPrevVideo();
       }
     };
-    const onWheel = (e: WheelEvent) => {
-      if (wheelCooldown) return;
-      wheelAccum += e.deltaY;
-      if (Math.abs(wheelAccum) > 220) {
-        if (wheelAccum > 0) goToNextVideo(); else goToPrevVideo();
-        wheelAccum = 0;
-        wheelCooldown = true;
-        setTimeout(() => { wheelCooldown = false; }, 700);
-      }
-    };
 
     window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
-    window.addEventListener("wheel", onWheel, { passive: true });
     return () => {
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
-      window.removeEventListener("wheel", onWheel);
     };
   }, [goToNextVideo, goToPrevVideo]);
 
