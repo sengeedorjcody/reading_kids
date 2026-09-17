@@ -29,6 +29,9 @@ export const metadata: Metadata = {
     title: "Reading Kids",
   },
   icons: {
+    // Setting `icons` manually replaces Next's automatic pickup of
+    // src/app/icon.svg entirely, so it has to be listed explicitly here too.
+    icon: "/icon.svg",
     apple: "/icons/icon-192x192.png",
   },
   themeColor: "#0f3460",
