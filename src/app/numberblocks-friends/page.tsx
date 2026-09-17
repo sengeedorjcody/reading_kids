@@ -24,17 +24,40 @@ const CHARACTERS: Character[] = [
   { n: 8,  name: "Eight", jp: "はち",    color: "#d10074", accent: "#f472b6" },
   { n: 9,  name: "Nine",  jp: "きゅう",  color: "#808080", accent: "#cbd5e1" },
   { n: 10, name: "Ten",   jp: "じゅう",  color: "#d11a2a", accent: "#ffffff" },
+  { n: 11, name: "Eleven",    jp: "じゅういち",  color: "#f43f5e", accent: "#ffffff" },
+  { n: 12, name: "Twelve",    jp: "じゅうに",    color: "#3b82f6", accent: "#fbbf24" },
+  { n: 13, name: "Thirteen",  jp: "じゅうさん",  color: "#0d9488", accent: "#5eead4" },
+  { n: 14, name: "Fourteen",  jp: "じゅうよん",  color: "#2563eb", accent: "#84cc16" },
+  { n: 15, name: "Fifteen",   jp: "じゅうご",    color: "#e11d48", accent: "#60a5fa" },
+  { n: 16, name: "Sixteen",   jp: "じゅうろく",  color: "#65a30d", accent: "#bef264" },
+  { n: 17, name: "Seventeen", jp: "じゅうなな",  color: "#7c3aed", accent: "#fb923c" },
+  { n: 18, name: "Eighteen",  jp: "じゅうはち",  color: "#f59e0b", accent: "#fde047" },
+  { n: 19, name: "Nineteen",  jp: "じゅうきゅう", color: "#64748b", accent: "#cbd5e1" },
+  { n: 20, name: "Twenty",    jp: "にじゅう",    color: "#ec4899", accent: "#c084fc" },
 ];
+
+// Levels 1-7 use 0-10 only; 10-20 levels open up the whole cast
+const SMALL_CAST = CHARACTERS.filter((c) => c.n <= 10);
 
 function charFor(n: number) {
   return CHARACTERS.find((c) => c.n === n)!;
 }
 
-// Column layout like the show: 1-5 stand tall, 6+ stack into two columns
+// Column layout like the show: 1-5 stand tall, 6-10 stack into two columns,
+// 11-20 are a Ten (two columns of 5) plus the remainder in extra columns of 5
 function columnsFor(n: number): number[] {
   if (n <= 5) return [n];
-  const tall = Math.ceil(n / 2);
-  return [tall, n - tall];
+  if (n <= 10) {
+    const tall = Math.ceil(n / 2);
+    return [tall, n - tall];
+  }
+  const cols: number[] = [];
+  let left = n;
+  while (left > 0) {
+    cols.push(Math.min(5, left));
+    left -= 5;
+  }
+  return cols;
 }
 
 // ── Character visual (blocks + face + arms/legs) ─────────────────────────────
@@ -108,7 +131,8 @@ function FriendBody({
             <div key={ci} className="flex flex-col gap-0.5">
               {Array.from({ length: rows }).map((_, ri) => {
                 const isHead = ci === 0 && ri === 0;
-                const striped = char.n === 10 && ri % 2 === 1;
+                // Ten-part (first two columns) wears stripes, like Ten herself
+                const striped = char.n >= 10 && ci < 2 && ri % 2 === 1;
                 return (
                   <div key={ri}
                     className="rounded-[5px] flex items-center justify-center"
@@ -159,7 +183,10 @@ interface Problem {
   correct: number;
 }
 
-const JP_NUM = ["ぜろ","いち","に","さん","よん","ご","ろく","なな","はち","きゅう","じゅう"];
+const JP_NUM = [
+  "ぜろ","いち","に","さん","よん","ご","ろく","なな","はち","きゅう","じゅう",
+  "じゅういち","じゅうに","じゅうさん","じゅうよん","じゅうご","じゅうろく","じゅうなな","じゅうはち","じゅうきゅう","にじゅう",
+];
 
 const LEVEL_CONFIG: Record<number, { label: string; icon: string }> = {
   1: { label: "たし算",     icon: "➕" },
@@ -169,7 +196,11 @@ const LEVEL_CONFIG: Record<number, { label: string; icon: string }> = {
   5: { label: "たす ？",    icon: "➕❓" },
   6: { label: "ひく ？",    icon: "➖❓" },
   7: { label: "0 と ？",    icon: "0️⃣❓" },
+  8: { label: "10〜20 たす", icon: "🔟➕" },
+  9: { label: "10〜20 ひく", icon: "🔟➖" },
 };
+
+const BIG_LEVELS = new Set([8, 9]);
 
 function rnd(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -218,6 +249,16 @@ function makeProblem(level: number): Problem {
       if (kind === 1) return build(n, 0, "+", "a");   // ? + 0 = n
       if (kind === 2) return build(n, 0, "−", "a");   // ? − 0 = n
       return build(n, n, "−", "b");                   // n − ? = 0
+    }
+    case 8: { // addition landing between 11 and 20: 7 + 6 = ?
+      const answer = rnd(11, 20);
+      const a = rnd(1, answer - 1);
+      return build(a, answer - a, "+", "answer");
+    }
+    case 9: { // subtraction starting from 11-20: 15 - 4 = ?
+      const a = rnd(11, 20);
+      const b = rnd(1, a - 1);
+      return build(a, b, "−", "answer");
     }
     default:
       return makeProblem(1);
@@ -437,7 +478,7 @@ export default function NumberblocksFriends() {
         style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
       >
         <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-6 p-4 pt-8">
-          {CHARACTERS.map((c) => (
+          {(BIG_LEVELS.has(level) ? CHARACTERS : SMALL_CAST).map((c) => (
             <div
               key={c.n}
               onPointerDown={startDrag(c)}
