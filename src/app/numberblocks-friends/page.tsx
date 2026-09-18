@@ -198,9 +198,11 @@ const LEVEL_CONFIG: Record<number, { label: string; icon: string }> = {
   7: { label: "0 と ？",    icon: "0️⃣❓" },
   8: { label: "10〜20 たす", icon: "🔟➕" },
   9: { label: "10〜20 ひく", icon: "🔟➖" },
+  10: { label: "Өөрөө зохио", icon: "✏️🔢" },
 };
 
 const BIG_LEVELS = new Set([8, 9]);
+const CUSTOM_LEVEL = 10;
 
 function rnd(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -348,6 +350,14 @@ export default function NumberblocksFriends() {
   const slotRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
 
+  // ── Level 10 "Өөрөө зохио": kid types both numbers and picks the operator ──
+  const [customA, setCustomA] = useState("");
+  const [customB, setCustomB] = useState("");
+  const [customOp, setCustomOp] = useState<Op>("+");
+  const [customFocus, setCustomFocus] = useState<"a" | "b">("a");
+  const [customAnswer, setCustomAnswer] = useState<number | null>(null);
+  const [customError, setCustomError] = useState(false);
+
   const speakProblem = useCallback((p: Problem) => {
     const opWord = p.op === "+" ? "たす" : "ひく";
     if (p.missing === "a")       speak(`なに ${opWord} ${JP_NUM[p.b]} は ${JP_NUM[p.answer]} ですか？`);
@@ -369,10 +379,19 @@ export default function NumberblocksFriends() {
     speakProblem(p);
   }, [level, speakProblem]);
 
+  const resetCustom = useCallback((focus: "a" | "b" = "a") => {
+    setCustomA("");
+    setCustomB("");
+    setCustomAnswer(null);
+    setCustomError(false);
+    setCustomFocus(focus);
+  }, []);
+
   const switchLevel = (l: number) => {
     setLevel(l);
     setScore(0);
-    newProblem(l);
+    if (l === CUSTOM_LEVEL) resetCustom();
+    else newProblem(l);
   };
 
   // Shared answer check for both drag-drop and number-pad input
@@ -403,6 +422,61 @@ export default function NumberblocksFriends() {
     setTyped((t) => (t.length >= 2 ? t : t + key));
   };
 
+  // ── Level 10 custom equation builder ──
+  const focusCustomSlot = (slot: "a" | "b") => {
+    if (customAnswer !== null) { resetCustom(slot); return; }
+    setCustomFocus(slot);
+    setCustomError(false);
+  };
+
+  const toggleCustomOp = () => {
+    if (customAnswer !== null) { resetCustom(); return; }
+    setCustomOp((o) => (o === "+" ? "−" : "+"));
+    setCustomError(false);
+  };
+
+  const customPadPress = (key: string) => {
+    // Any key after a result is showing starts a brand-new equation.
+    if (customAnswer !== null) {
+      resetCustom("a");
+      if (key !== "⌫" && key !== "OK") {
+        setCustomA(key);
+        speak(JP_NUM[parseInt(key)]);
+      }
+      return;
+    }
+    if (key === "⌫") {
+      setCustomError(false);
+      if (customFocus === "a") setCustomA((v) => v.slice(0, -1));
+      else setCustomB((v) => v.slice(0, -1));
+      return;
+    }
+    if (key === "OK") {
+      if (customA === "" || customB === "") return;
+      const ai = parseInt(customA, 10);
+      const bi = parseInt(customB, 10);
+      const result = customOp === "+" ? ai + bi : ai - bi;
+      if (ai > 20 || bi > 20 || result < 0 || result > 20) {
+        setCustomError(true);
+        speak("0-с 20 хооронд тоо сонгоорой");
+        setTimeout(() => setCustomError(false), 900);
+        return;
+      }
+      setCustomAnswer(result);
+      setScore((s) => s + 1);
+      const opWord = customOp === "+" ? "たす" : "ひく";
+      speak(`${JP_NUM[ai]} ${opWord} ${JP_NUM[bi]} は ${JP_NUM[result]}！`);
+      return;
+    }
+    // digit key
+    setCustomError(false);
+    const field = customFocus === "a" ? customA : customB;
+    if (field.length >= 2) return;
+    speak(JP_NUM[parseInt(key)]);
+    if (customFocus === "a") setCustomA(field + key);
+    else setCustomB(field + key);
+  };
+
   // ── Dragging from the palette ──
   const startDrag = (char: Character) => (e: React.PointerEvent) => {
     e.preventDefault();
@@ -430,6 +504,53 @@ export default function NumberblocksFriends() {
 
   const { a, b, op, answer, missing } = problem;
   const bigLevel = BIG_LEVELS.has(level);
+  const isCustomLevel = level === CUSTOM_LEVEL;
+
+  // One editable slot for level 10: tap to focus, type digits on the pad below
+  const CustomSlot = ({ value, slot }: { value: string; slot: "a" | "b" }) => {
+    const focused = customFocus === slot;
+    const num = value === "" ? null : parseInt(value, 10);
+    const c = num !== null ? charFor(Math.min(20, num)) : null;
+    return (
+      <button
+        onClick={() => focusCustomSlot(slot)}
+        className="flex flex-col items-center justify-center rounded-2xl active:scale-95 transition-all"
+        style={{
+          width: 96, height: 130,
+          border: `3px dashed ${customError && focused ? "#ef4444" : focused ? "#8b5cf6" : "rgba(100,120,200,0.35)"}`,
+          background: customError && focused ? "rgba(239,68,68,0.1)" : focused ? "rgba(139,92,246,0.08)" : "rgba(255,255,255,0.3)",
+          animation: customError && focused ? "nbShake 0.3s" : undefined,
+        }}
+      >
+        {value === "" ? (
+          <span className={`font-black text-4xl ${focused ? "text-purple-400 animate-pulse" : "text-gray-300"}`}>?</span>
+        ) : (
+          <>
+            <span className="font-black text-3xl mb-1" style={{ color: c?.color ?? "#8b5cf6" }}>{value}</span>
+            {c && <FriendBody char={c} block={13} />}
+          </>
+        )}
+      </button>
+    );
+  };
+
+  const CustomAnswerSlot = () => {
+    if (customAnswer === null) {
+      return (
+        <div className="flex flex-col items-center justify-center rounded-2xl" style={{ width: 96, height: 130, border: "3px dashed rgba(100,120,200,0.35)", background: "rgba(255,255,255,0.3)" }}>
+          <span className="font-black text-4xl text-gray-300">?</span>
+        </div>
+      );
+    }
+    const c = charFor(customAnswer);
+    return (
+      <div className="flex flex-col items-center justify-end rounded-2xl" style={{ width: 96, height: 130, background: "rgba(34,197,94,0.12)", border: "3px solid rgba(34,197,94,0.5)" }}>
+        <span className="font-black text-3xl mb-1" style={{ color: c.color }}>{customAnswer}</span>
+        <FriendBody char={c} block={13} />
+        <span className="text-[10px] font-bold text-gray-500 mt-3">{c.jp}</span>
+      </div>
+    );
+  };
 
   // One equation slot: number on top, its character below (not draggable)
   const EqSlot = ({ value, isMissing }: { value: number; isMissing: boolean }) => {
@@ -549,73 +670,143 @@ export default function NumberblocksFriends() {
         })}
       </div>
 
-      {/* Equation with characters */}
-      <div className="flex-shrink-0 flex items-center justify-center gap-1 px-2 py-2">
-        <EqSlot value={a} isMissing={missing === "a"} />
-        <span className="font-black text-4xl text-gray-600 flex-shrink-0">{op}</span>
-        <EqSlot value={b} isMissing={missing === "b"} />
-        <span className="font-black text-4xl text-gray-400 flex-shrink-0">=</span>
-        <EqSlot value={answer} isMissing={missing === "answer"} />
-      </div>
-
-      {solved && (
-        <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 せいかい！</p>
-      )}
-
-      {bigLevel ? (
-        /* 10-20 levels: number line as a counting aid + number pad to type the answer */
-        <div
-          className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto flex flex-col items-center justify-center gap-4 p-4"
-          style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
-        >
-          <NumberLine a={a} b={b} op={op} answer={answer} solved={solved} />
-
-          <div className="grid grid-cols-6 gap-2 w-full max-w-md">
-            {["1","2","3","4","5","⌫","6","7","8","9","0","OK"].map((k) => {
-              const isOk = k === "OK", isDel = k === "⌫";
-              return (
-                <button
-                  key={k}
-                  onClick={() => padPress(k)}
-                  disabled={solved}
-                  className="h-14 rounded-2xl font-black text-2xl shadow active:scale-95 transition-all disabled:opacity-50"
-                  style={isOk
-                    ? { background: "#22c55e", color: "#fff" }
-                    : isDel
-                    ? { background: "#f59e0b", color: "#fff" }
-                    : { background: "#fff", color: "#334155" }}
-                >
-                  {k}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      ) : (
-      /* Character palette — drag these into the "?" slot */
-      <div
-        className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto"
-        style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
-      >
-        <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-6 p-4 pt-8">
-          {(BIG_LEVELS.has(level) ? CHARACTERS : SMALL_CAST).map((c) => (
-            <div
-              key={c.n}
-              onPointerDown={startDrag(c)}
-              className="flex flex-col items-center cursor-grab active:cursor-grabbing touch-none select-none"
-              style={{ opacity: drag?.char.n === c.n ? 0.3 : 1 }}
+      {isCustomLevel ? (
+        <>
+          {/* Custom equation: kid picks both numbers and the operator */}
+          <div className="flex-shrink-0 flex items-center justify-center gap-1 px-2 py-2">
+            <CustomSlot value={customA} slot="a" />
+            <button
+              onClick={toggleCustomOp}
+              className="font-black text-4xl text-gray-600 flex-shrink-0 active:scale-90 transition-all w-10 h-10 rounded-full"
+              style={{ background: "rgba(255,255,255,0.6)" }}
             >
-              <FriendBody char={c} block={15} />
-              <span
-                className="mt-3 px-2 py-0.5 rounded-full font-black text-[10px] text-white"
-                style={{ background: c.color }}
-              >
-                {c.n} · {c.jp}
-              </span>
+              {customOp}
+            </button>
+            <CustomSlot value={customB} slot="b" />
+            <button
+              onClick={() => customPadPress("OK")}
+              disabled={customA === "" || customB === ""}
+              className="font-black text-4xl flex-shrink-0 active:scale-90 transition-all disabled:opacity-30"
+              style={{ color: "#22c55e" }}
+            >
+              =
+            </button>
+            <CustomAnswerSlot />
+          </div>
+
+          {customAnswer !== null && (
+            <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 サイコー！</p>
+          )}
+
+          <div
+            className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto flex flex-col items-center justify-center gap-4 p-4"
+            style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
+          >
+            <p className="text-xs font-bold text-gray-500 text-center">
+              Тоогоо сонгоод, {"+"} эсвэл {"−"} дээр дарж, = дээр дараарай! (0–20)
+            </p>
+            <NumberLine
+              a={Math.min(20, parseInt(customA || "0", 10) || 0)}
+              b={Math.min(20, parseInt(customB || "0", 10) || 0)}
+              op={customOp}
+              answer={customAnswer ?? Math.min(20, Math.max(0,
+                (parseInt(customA || "0", 10) || 0) + (customOp === "+" ? 1 : -1) * (parseInt(customB || "0", 10) || 0)
+              ))}
+              solved={customAnswer !== null}
+            />
+
+            <div className="grid grid-cols-6 gap-2 w-full max-w-md">
+              {["1","2","3","4","5","⌫","6","7","8","9","0","OK"].map((k) => {
+                const isOk = k === "OK", isDel = k === "⌫";
+                return (
+                  <button
+                    key={k}
+                    onClick={() => customPadPress(k)}
+                    className="h-14 rounded-2xl font-black text-2xl shadow active:scale-95 transition-all"
+                    style={isOk
+                      ? { background: "#22c55e", color: "#fff" }
+                      : isDel
+                      ? { background: "#f59e0b", color: "#fff" }
+                      : { background: "#fff", color: "#334155" }}
+                  >
+                    {k}
+                  </button>
+                );
+              })}
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Equation with characters */}
+          <div className="flex-shrink-0 flex items-center justify-center gap-1 px-2 py-2">
+            <EqSlot value={a} isMissing={missing === "a"} />
+            <span className="font-black text-4xl text-gray-600 flex-shrink-0">{op}</span>
+            <EqSlot value={b} isMissing={missing === "b"} />
+            <span className="font-black text-4xl text-gray-400 flex-shrink-0">=</span>
+            <EqSlot value={answer} isMissing={missing === "answer"} />
+          </div>
+
+          {solved && (
+            <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 せいかい！</p>
+          )}
+
+          {bigLevel ? (
+            /* 10-20 levels: number line as a counting aid + number pad to type the answer */
+            <div
+              className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto flex flex-col items-center justify-center gap-4 p-4"
+              style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
+            >
+              <NumberLine a={a} b={b} op={op} answer={answer} solved={solved} />
+
+              <div className="grid grid-cols-6 gap-2 w-full max-w-md">
+                {["1","2","3","4","5","⌫","6","7","8","9","0","OK"].map((k) => {
+                  const isOk = k === "OK", isDel = k === "⌫";
+                  return (
+                    <button
+                      key={k}
+                      onClick={() => padPress(k)}
+                      disabled={solved}
+                      className="h-14 rounded-2xl font-black text-2xl shadow active:scale-95 transition-all disabled:opacity-50"
+                      style={isOk
+                        ? { background: "#22c55e", color: "#fff" }
+                        : isDel
+                        ? { background: "#f59e0b", color: "#fff" }
+                        : { background: "#fff", color: "#334155" }}
+                    >
+                      {k}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+          /* Character palette — drag these into the "?" slot */
+          <div
+            className="flex-1 mx-3 mb-3 mt-1 rounded-3xl overflow-y-auto"
+            style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
+          >
+            <div className="flex flex-wrap items-end justify-center gap-x-2 gap-y-6 p-4 pt-8">
+              {(BIG_LEVELS.has(level) ? CHARACTERS : SMALL_CAST).map((c) => (
+                <div
+                  key={c.n}
+                  onPointerDown={startDrag(c)}
+                  className="flex flex-col items-center cursor-grab active:cursor-grabbing touch-none select-none"
+                  style={{ opacity: drag?.char.n === c.n ? 0.3 : 1 }}
+                >
+                  <FriendBody char={c} block={15} />
+                  <span
+                    className="mt-3 px-2 py-0.5 rounded-full font-black text-[10px] text-white"
+                    style={{ background: c.color }}
+                  >
+                    {c.n} · {c.jp}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+          )}
+        </>
       )}
 
       {/* Drag ghost following the pointer */}
