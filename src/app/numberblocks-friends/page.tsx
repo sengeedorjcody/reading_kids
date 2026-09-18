@@ -350,13 +350,15 @@ export default function NumberblocksFriends() {
   const slotRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
 
-  // ── Level 10 "Өөрөө зохио": kid types both numbers and picks the operator ──
+  // ── Level 10 "Өөрөө зохио": kid picks both numbers AND types their own
+  // answer, which gets checked — not auto-computed like the other levels.
   const [customA, setCustomA] = useState("");
   const [customB, setCustomB] = useState("");
+  const [customAnswerInput, setCustomAnswerInput] = useState("");
   const [customOp, setCustomOp] = useState<Op>("+");
-  const [customFocus, setCustomFocus] = useState<"a" | "b">("a");
-  const [customAnswer, setCustomAnswer] = useState<number | null>(null);
-  const [customError, setCustomError] = useState(false);
+  const [customFocus, setCustomFocus] = useState<"a" | "b" | "answer">("a");
+  const [customSolved, setCustomSolved] = useState(false);
+  const [customErrorSlot, setCustomErrorSlot] = useState<"a" | "b" | "answer" | null>(null);
 
   const speakProblem = useCallback((p: Problem) => {
     const opWord = p.op === "+" ? "たす" : "ひく";
@@ -379,11 +381,12 @@ export default function NumberblocksFriends() {
     speakProblem(p);
   }, [level, speakProblem]);
 
-  const resetCustom = useCallback((focus: "a" | "b" = "a") => {
+  const resetCustom = useCallback((focus: "a" | "b" | "answer" = "a") => {
     setCustomA("");
     setCustomB("");
-    setCustomAnswer(null);
-    setCustomError(false);
+    setCustomAnswerInput("");
+    setCustomSolved(false);
+    setCustomErrorSlot(null);
     setCustomFocus(focus);
   }, []);
 
@@ -423,21 +426,23 @@ export default function NumberblocksFriends() {
   };
 
   // ── Level 10 custom equation builder ──
-  const focusCustomSlot = (slot: "a" | "b") => {
-    if (customAnswer !== null) { resetCustom(slot); return; }
+  // Kid fills in a, the operator, b, AND their own answer — "=" checks it
+  // against a op b rather than computing it for them.
+  const focusCustomSlot = (slot: "a" | "b" | "answer") => {
+    if (customSolved) { resetCustom(slot); return; }
     setCustomFocus(slot);
-    setCustomError(false);
+    setCustomErrorSlot(null);
   };
 
   const toggleCustomOp = () => {
-    if (customAnswer !== null) { resetCustom(); return; }
+    if (customSolved) { resetCustom(); return; }
     setCustomOp((o) => (o === "+" ? "−" : "+"));
-    setCustomError(false);
+    setCustomErrorSlot(null);
   };
 
   const customPadPress = (key: string) => {
-    // Any key after a result is showing starts a brand-new equation.
-    if (customAnswer !== null) {
+    // Any key after a correct check starts a brand-new equation.
+    if (customSolved) {
       resetCustom("a");
       if (key !== "⌫" && key !== "OK") {
         setCustomA(key);
@@ -446,35 +451,54 @@ export default function NumberblocksFriends() {
       return;
     }
     if (key === "⌫") {
-      setCustomError(false);
+      setCustomErrorSlot(null);
       if (customFocus === "a") setCustomA((v) => v.slice(0, -1));
-      else setCustomB((v) => v.slice(0, -1));
+      else if (customFocus === "b") setCustomB((v) => v.slice(0, -1));
+      else setCustomAnswerInput((v) => v.slice(0, -1));
       return;
     }
     if (key === "OK") {
-      if (customA === "" || customB === "") return;
+      if (customA === "" || customB === "" || customAnswerInput === "") return;
       const ai = parseInt(customA, 10);
       const bi = parseInt(customB, 10);
-      const result = customOp === "+" ? ai + bi : ai - bi;
-      if (ai > 20 || bi > 20 || result < 0 || result > 20) {
-        setCustomError(true);
+      const given = parseInt(customAnswerInput, 10);
+
+      if (ai > 20 || bi > 20) {
+        setCustomErrorSlot(ai > 20 ? "a" : "b");
         speak("0-с 20 хооронд тоо сонгоорой");
-        setTimeout(() => setCustomError(false), 900);
+        setTimeout(() => setCustomErrorSlot(null), 900);
         return;
       }
-      setCustomAnswer(result);
-      setScore((s) => s + 1);
+      const expected = customOp === "+" ? ai + bi : ai - bi;
+      if (expected < 0 || expected > 20) {
+        setCustomErrorSlot("b");
+        speak("Хариу нь 0-с 20 хооронд байх ёстой, өөр тоо сонгоорой");
+        setTimeout(() => setCustomErrorSlot(null), 900);
+        return;
+      }
+
       const opWord = customOp === "+" ? "たす" : "ひく";
-      speak(`${JP_NUM[ai]} ${opWord} ${JP_NUM[bi]} は ${JP_NUM[result]}！`);
+      if (given === expected) {
+        setCustomSolved(true);
+        setScore((s) => s + 1);
+        speak(`${JP_NUM[ai]} ${opWord} ${JP_NUM[bi]} は ${JP_NUM[expected]}！ せいかい！`);
+      } else {
+        setCustomErrorSlot("answer");
+        setCustomAnswerInput("");
+        setCustomFocus("answer");
+        speak(`ざんねん… ${JP_NUM[ai]} ${opWord} ${JP_NUM[bi]} は？`);
+        setTimeout(() => setCustomErrorSlot(null), 900);
+      }
       return;
     }
     // digit key
-    setCustomError(false);
-    const field = customFocus === "a" ? customA : customB;
+    setCustomErrorSlot(null);
+    const field = customFocus === "a" ? customA : customFocus === "b" ? customB : customAnswerInput;
     if (field.length >= 2) return;
     speak(JP_NUM[parseInt(key)]);
     if (customFocus === "a") setCustomA(field + key);
-    else setCustomB(field + key);
+    else if (customFocus === "b") setCustomB(field + key);
+    else setCustomAnswerInput(field + key);
   };
 
   // ── Dragging from the palette ──
@@ -506,24 +530,34 @@ export default function NumberblocksFriends() {
   const bigLevel = BIG_LEVELS.has(level);
   const isCustomLevel = level === CUSTOM_LEVEL;
 
-  // One editable slot for level 10: tap to focus, type digits on the pad below
-  const CustomSlot = ({ value, slot }: { value: string; slot: "a" | "b" }) => {
+  // One editable slot for level 10 — a, b, and the answer are all typed in
+  // by the kid; tap to focus, type digits on the pad below.
+  const CustomSlot = ({ value, slot }: { value: string; slot: "a" | "b" | "answer" }) => {
     const focused = customFocus === slot;
+    const isError = customErrorSlot === slot;
     const num = value === "" ? null : parseInt(value, 10);
-    const c = num !== null ? charFor(Math.min(20, num)) : null;
+    const c = num !== null && num >= 0 && num <= 20 ? charFor(num) : null;
     return (
       <button
         onClick={() => focusCustomSlot(slot)}
-        className="flex flex-col items-center justify-center rounded-2xl active:scale-95 transition-all"
+        className="flex flex-col items-center justify-end rounded-2xl active:scale-95 transition-all"
         style={{
           width: 96, height: 130,
-          border: `3px dashed ${customError && focused ? "#ef4444" : focused ? "#8b5cf6" : "rgba(100,120,200,0.35)"}`,
-          background: customError && focused ? "rgba(239,68,68,0.1)" : focused ? "rgba(139,92,246,0.08)" : "rgba(255,255,255,0.3)",
-          animation: customError && focused ? "nbShake 0.3s" : undefined,
+          border: `3px ${customSolved ? "solid" : "dashed"} ${
+            isError ? "#ef4444" : customSolved ? "rgba(34,197,94,0.5)" : focused ? "#8b5cf6" : "rgba(100,120,200,0.35)"
+          }`,
+          background: isError
+            ? "rgba(239,68,68,0.1)"
+            : customSolved
+            ? "rgba(34,197,94,0.12)"
+            : focused
+            ? "rgba(139,92,246,0.08)"
+            : "rgba(255,255,255,0.3)",
+          animation: isError ? "nbShake 0.3s" : undefined,
         }}
       >
         {value === "" ? (
-          <span className={`font-black text-4xl ${focused ? "text-purple-400 animate-pulse" : "text-gray-300"}`}>?</span>
+          <span className={`font-black text-4xl mb-auto mt-auto ${focused ? "text-purple-400 animate-pulse" : "text-gray-300"}`}>?</span>
         ) : (
           <>
             <span className="font-black text-3xl mb-1" style={{ color: c?.color ?? "#8b5cf6" }}>{value}</span>
@@ -531,24 +565,6 @@ export default function NumberblocksFriends() {
           </>
         )}
       </button>
-    );
-  };
-
-  const CustomAnswerSlot = () => {
-    if (customAnswer === null) {
-      return (
-        <div className="flex flex-col items-center justify-center rounded-2xl" style={{ width: 96, height: 130, border: "3px dashed rgba(100,120,200,0.35)", background: "rgba(255,255,255,0.3)" }}>
-          <span className="font-black text-4xl text-gray-300">?</span>
-        </div>
-      );
-    }
-    const c = charFor(customAnswer);
-    return (
-      <div className="flex flex-col items-center justify-end rounded-2xl" style={{ width: 96, height: 130, background: "rgba(34,197,94,0.12)", border: "3px solid rgba(34,197,94,0.5)" }}>
-        <span className="font-black text-3xl mb-1" style={{ color: c.color }}>{customAnswer}</span>
-        <FriendBody char={c} block={13} />
-        <span className="text-[10px] font-bold text-gray-500 mt-3">{c.jp}</span>
-      </div>
     );
   };
 
@@ -672,7 +688,8 @@ export default function NumberblocksFriends() {
 
       {isCustomLevel ? (
         <>
-          {/* Custom equation: kid picks both numbers and the operator */}
+          {/* Custom equation: kid picks both numbers, the operator, AND
+              types their own answer — "✓" checks it instead of solving it. */}
           <div className="flex-shrink-0 flex items-center justify-center gap-1 px-2 py-2">
             <CustomSlot value={customA} slot="a" />
             <button
@@ -683,19 +700,12 @@ export default function NumberblocksFriends() {
               {customOp}
             </button>
             <CustomSlot value={customB} slot="b" />
-            <button
-              onClick={() => customPadPress("OK")}
-              disabled={customA === "" || customB === ""}
-              className="font-black text-4xl flex-shrink-0 active:scale-90 transition-all disabled:opacity-30"
-              style={{ color: "#22c55e" }}
-            >
-              =
-            </button>
-            <CustomAnswerSlot />
+            <span className="font-black text-4xl text-gray-400 flex-shrink-0">=</span>
+            <CustomSlot value={customAnswerInput} slot="answer" />
           </div>
 
-          {customAnswer !== null && (
-            <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 サイコー！</p>
+          {customSolved && (
+            <p className="flex-shrink-0 text-center font-black text-green-600 animate-bounce">🎉 せいかい！</p>
           )}
 
           <div
@@ -703,16 +713,16 @@ export default function NumberblocksFriends() {
             style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
           >
             <p className="text-xs font-bold text-gray-500 text-center">
-              Тоогоо сонгоод, {"+"} эсвэл {"−"} дээр дарж, = дээр дараарай! (0–20)
+              Тоо, тэмдгээ сонгоод хариугаа өөрөө бодож бичээд ✓ дараарай! (0–20)
             </p>
             <NumberLine
               a={Math.min(20, parseInt(customA || "0", 10) || 0)}
               b={Math.min(20, parseInt(customB || "0", 10) || 0)}
               op={customOp}
-              answer={customAnswer ?? Math.min(20, Math.max(0,
+              answer={Math.min(20, Math.max(0,
                 (parseInt(customA || "0", 10) || 0) + (customOp === "+" ? 1 : -1) * (parseInt(customB || "0", 10) || 0)
               ))}
-              solved={customAnswer !== null}
+              solved={customSolved}
             />
 
             <div className="grid grid-cols-6 gap-2 w-full max-w-md">
@@ -729,7 +739,7 @@ export default function NumberblocksFriends() {
                       ? { background: "#f59e0b", color: "#fff" }
                       : { background: "#fff", color: "#334155" }}
                   >
-                    {k}
+                    {isOk ? "✓" : k}
                   </button>
                 );
               })}
