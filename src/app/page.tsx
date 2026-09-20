@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import HomeDateWidget from "@/components/HomeDateWidget";
-import DailyExamPrompt from "@/components/DailyExamPrompt";
 import { SECTION_CATALOG, SECTION_CATALOG_BY_HREF, type SectionMeta } from "@/constants/sections";
 
 type AppMeta = SectionMeta;
@@ -268,8 +267,6 @@ export default function HomePage() {
       className="min-h-screen flex flex-col pb-28"
       style={{ background: "linear-gradient(160deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)" }}
     >
-      <DailyExamPrompt />
-
       {/* ── Date / Week widget ── */}
       <div className="px-5 pt-3 mb-4 max-w-xl mx-auto w-full flex items-center gap-3">
         <div className="flex-1"><HomeDateWidget /></div>
