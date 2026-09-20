@@ -9,6 +9,7 @@ import { ITopic, ITopicSentence } from "@/types";
 import TopicEditPanel from "@/components/admin/TopicEditPanel";
 import SentenceForm from "@/components/admin/SentenceForm";
 import SentenceExcelImport from "@/components/admin/SentenceExcelImport";
+import InsertExampleSentencesButton from "@/components/admin/InsertExampleSentencesButton";
 
 const MAX_SENTENCES_PER_TOPIC = 4;
 
@@ -61,6 +62,9 @@ export default async function AdminTopicDetailPage({ params }: { params: { topic
         </div>
       </div>
 
+      <div className="flex flex-wrap items-center gap-3">
+        <InsertExampleSentencesButton topicId={topicData._id} />
+      </div>
       <SentenceExcelImport topicId={topicData._id} />
 
       <div className="space-y-4">
