@@ -8,6 +8,7 @@ import Sentence from "@/lib/db/models/Sentence";
 import { ITopic, ITopicSentence } from "@/types";
 import TopicEditPanel from "@/components/admin/TopicEditPanel";
 import SentenceForm from "@/components/admin/SentenceForm";
+import SentenceExcelImport from "@/components/admin/SentenceExcelImport";
 
 const MAX_SENTENCES_PER_TOPIC = 4;
 
@@ -59,6 +60,8 @@ export default async function AdminTopicDetailPage({ params }: { params: { topic
           </Link>
         </div>
       </div>
+
+      <SentenceExcelImport topicId={topicData._id} />
 
       <div className="space-y-4">
         <h2 className="text-lg font-black text-gray-600">💬 Sentences ({sentenceList.length}/{MAX_SENTENCES_PER_TOPIC})</h2>
