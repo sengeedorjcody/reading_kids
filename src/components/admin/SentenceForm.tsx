@@ -20,6 +20,7 @@ export default function SentenceForm({ topicId, sentence }: SentenceFormProps) {
 
   const [form, setForm] = useState({
     imageUrl: sentence.imageUrl ?? "",
+    imagePrompt: sentence.imagePrompt ?? "",
     japanese: sentence.japanese ?? "",
     romaji: sentence.romaji ?? "",
     english_meaning: sentence.english_meaning ?? "",
@@ -123,6 +124,18 @@ export default function SentenceForm({ topicId, sentence }: SentenceFormProps) {
           />
         </div>
         <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleImageFile} />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold text-gray-600 mb-1">Image Prompt</label>
+        <textarea
+          name="imagePrompt"
+          value={form.imagePrompt}
+          onChange={handleChange}
+          rows={2}
+          placeholder="Prompt used to generate the image (e.g. for Midjourney/DALL-E)…"
+          className="w-full border-2 border-gray-200 rounded-2xl px-4 py-2 text-sm focus:border-pink-400 focus:outline-none"
+        />
       </div>
 
       <div>

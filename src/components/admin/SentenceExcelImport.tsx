@@ -21,13 +21,13 @@ export default function SentenceExcelImport({ topicId }: { topicId: string }) {
   const downloadTemplate = async () => {
     const XLSX = await import("xlsx");
     const rows = [
-      { japanese: "ねこ が すき です。", romaji: "neko ga suki desu.", english_meaning: "I like cats.", mongolian_meaning: "Би муур дуртай.", image_url: "" },
-      { japanese: "いぬ が います。", romaji: "inu ga imasu.", english_meaning: "There is a dog.", mongolian_meaning: "Нохой байна.", image_url: "" },
-      { japanese: "がっこう へ いきます。", romaji: "gakkou e ikimasu.", english_meaning: "I go to school.", mongolian_meaning: "Би сургууль руу явна.", image_url: "" },
-      { japanese: "ほん を よみます。", romaji: "hon o yomimasu.", english_meaning: "I read a book.", mongolian_meaning: "Би ном уншина.", image_url: "" },
+      { japanese: "ねこ が すき です。", romaji: "neko ga suki desu.", english_meaning: "I like cats.", mongolian_meaning: "Би муур дуртай.", image_url: "", image_prompt: "" },
+      { japanese: "いぬ が います。", romaji: "inu ga imasu.", english_meaning: "There is a dog.", mongolian_meaning: "Нохой байна.", image_url: "", image_prompt: "" },
+      { japanese: "がっこう へ いきます。", romaji: "gakkou e ikimasu.", english_meaning: "I go to school.", mongolian_meaning: "Би сургууль руу явна.", image_url: "", image_prompt: "" },
+      { japanese: "ほん を よみます。", romaji: "hon o yomimasu.", english_meaning: "I read a book.", mongolian_meaning: "Би ном уншина.", image_url: "", image_prompt: "" },
     ];
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws["!cols"] = [{ wch: 28 }, { wch: 24 }, { wch: 24 }, { wch: 24 }, { wch: 30 }];
+    ws["!cols"] = [{ wch: 28 }, { wch: 24 }, { wch: 24 }, { wch: 24 }, { wch: 30 }, { wch: 40 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sentences");
     XLSX.writeFile(wb, "sentences_template.xlsx");
@@ -87,6 +87,7 @@ export default function SentenceExcelImport({ topicId }: { topicId: string }) {
           <span>english_meaning</span>
           <span>mongolian_meaning</span>
           <span className="text-blue-500 font-bold">image_url</span>
+          <span>image_prompt</span>
         </div>
         <p className="text-gray-400">A topic can have at most 4 sentences — extra rows are skipped.</p>
       </div>

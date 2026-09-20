@@ -4,6 +4,7 @@ export interface ISentenceDoc extends Document {
   topicId: mongoose.Types.ObjectId;
   order: number;
   imageUrl?: string;
+  imagePrompt?: string;
   japanese: string;
   romaji?: string;
   english_meaning?: string;
@@ -17,6 +18,7 @@ const SentenceSchema = new Schema<ISentenceDoc>(
     topicId: { type: Schema.Types.ObjectId, ref: "Topic", required: true, index: true },
     order: { type: Number, required: true },
     imageUrl: { type: String, trim: true },
+    imagePrompt: { type: String, trim: true },
     japanese: { type: String, required: true, trim: true },
     romaji: { type: String, trim: true },
     english_meaning: { type: String, trim: true },

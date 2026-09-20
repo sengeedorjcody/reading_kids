@@ -24,6 +24,9 @@ const COL_MAP: Record<string, string> = {
   "image url": "imageUrl",
   imageurl: "imageUrl",
   image: "imageUrl",
+  image_prompt: "imagePrompt",
+  "image prompt": "imagePrompt",
+  imageprompt: "imagePrompt",
 };
 
 function normaliseKey(raw: string): string {

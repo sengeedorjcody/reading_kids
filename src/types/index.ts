@@ -170,6 +170,7 @@ export interface ITopicSentence {
   topicId: string;
   order: number;
   imageUrl?: string;
+  imagePrompt?: string;
   japanese: string;
   romaji?: string;
   english_meaning?: string;
