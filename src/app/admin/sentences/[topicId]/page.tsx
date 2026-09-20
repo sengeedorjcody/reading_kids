@@ -10,6 +10,7 @@ import TopicEditPanel from "@/components/admin/TopicEditPanel";
 import SentenceForm from "@/components/admin/SentenceForm";
 import SentenceExcelImport from "@/components/admin/SentenceExcelImport";
 import InsertExampleSentencesButton from "@/components/admin/InsertExampleSentencesButton";
+import PublishTopicButton from "@/components/admin/PublishTopicButton";
 
 const MAX_SENTENCES_PER_TOPIC = 4;
 
@@ -51,6 +52,7 @@ export default async function AdminTopicDetailPage({ params }: { params: { topic
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <PublishTopicButton topicId={topicData._id} isPublished={topicData.isPublished} />
           <TopicEditPanel topic={topicData} />
           <Link
             href={`/sentences/${topicData._id}`}
