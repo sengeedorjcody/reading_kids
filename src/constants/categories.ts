@@ -39,7 +39,7 @@ export const CATEGORIES: Category[] = [
     label: "Read",
     icon: "📖",
     bg: "from-blue-500 to-cyan-500",
-    hrefs: ["/books", "/picture-books", "/conversations", "/youtube", "/english-tutor"],
+    hrefs: ["/books", "/picture-books", "/conversations", "/sentences", "/youtube", "/english-tutor"],
   },
 ];
 

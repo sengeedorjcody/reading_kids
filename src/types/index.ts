@@ -152,3 +152,28 @@ export interface IPictureBookPage {
   textPosition: PictureBookTextPosition;
   sentences: ISentence[];
 }
+
+export interface ITopic {
+  _id: string;
+  title: string;
+  titleJapanese?: string;
+  description?: string;
+  order: number;
+  totalSentences: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ITopicSentence {
+  _id: string;
+  topicId: string;
+  order: number;
+  imageUrl?: string;
+  japanese: string;
+  romaji?: string;
+  english_meaning?: string;
+  mongolian_meaning?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}

@@ -34,6 +34,7 @@ export const SECTION_CATALOG: SectionMeta[] = [
   { href: "/books",      icon: "📖", label: "Books",       color: "#0ea5e9", bg: "from-sky-400 to-blue-500" },
   { href: "/picture-books", icon: "🖼️", label: "Picture Books", color: "#f59e0b", bg: "from-amber-400 to-orange-500" },
   { href: "/conversations",icon:"💬", label: "Conversations", color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },
+  { href: "/sentences",  icon: "🗣️", label: "Sentences",   color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
   { href: "/dictionary", icon: "📝", label: "Dictionary",  color: "#ec4899", bg: "from-pink-400 to-fuchsia-500" },
   // Row 5 — creative
   { href: "/words",      icon: "🔤", label: "Words",       color: "#f59e0b", bg: "from-yellow-400 to-orange-500" },
