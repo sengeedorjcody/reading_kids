@@ -89,7 +89,7 @@ export default function SentenceExcelImport({ topicId }: { topicId: string }) {
           <span className="text-blue-500 font-bold">image_url</span>
           <span>image_prompt</span>
         </div>
-        <p className="text-gray-400">A topic can have at most 4 sentences — extra rows are skipped.</p>
+        <p className="text-gray-400">Rows whose Japanese text already exists in this topic are skipped as duplicates.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">

@@ -6,6 +6,7 @@ import Topic from "@/lib/db/models/Topic";
 import Sentence from "@/lib/db/models/Sentence";
 import { ITopic } from "@/types";
 import DeleteTopicButton from "@/components/admin/DeleteTopicButton";
+import SentenceGlobalExcelImport from "@/components/admin/SentenceGlobalExcelImport";
 
 async function getTopics() {
   try {
@@ -34,9 +35,12 @@ export default async function AdminSentencesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-gray-700">🗣️ Sentences</h1>
-        <Link href="/admin/sentences/create" className="bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 py-2 rounded-xl transition-colors">
-          + New Topic
-        </Link>
+        <div className="flex items-center gap-3">
+          <SentenceGlobalExcelImport />
+          <Link href="/admin/sentences/create" className="bg-rose-500 hover:bg-rose-600 text-white font-bold px-4 py-2 rounded-xl transition-colors">
+            + New Topic
+          </Link>
+        </div>
       </div>
 
       {topics.length === 0 ? (
@@ -63,7 +67,7 @@ export default async function AdminSentencesPage() {
                     {topic.isPublished ? "Published" : "Draft"}
                   </span>
                 </div>
-                <p className="text-sm text-gray-400 mt-0.5">{topic.totalSentences}/4 sentences</p>
+                <p className="text-sm text-gray-400 mt-0.5">{topic.totalSentences} sentences</p>
               </div>
               <Link
                 href={`/admin/sentences/${topic._id}`}

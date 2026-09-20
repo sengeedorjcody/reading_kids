@@ -17,8 +17,8 @@ export default function InsertExampleSentencesButton({ topicId }: { topicId: str
       if (!res.ok) throw new Error(data.error || "Failed");
       setMessage(
         data.inserted === 0
-          ? "Topic is already full (4/4)."
-          : `Inserted ${data.inserted} example sentence${data.inserted === 1 ? "" : "s"}.`
+          ? "All examples are already in this topic."
+          : `Inserted ${data.inserted} example sentence${data.inserted === 1 ? "" : "s"}${data.skippedDuplicates ? ` (${data.skippedDuplicates} already present)` : ""}.`
       );
       router.refresh();
     } catch (err) {

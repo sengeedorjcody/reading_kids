@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/mongoose";
+import Topic from "@/lib/db/models/Topic";
 import { insertSentencesForTopic, type SentenceRow } from "@/lib/sentences/importSentences";
 
 // xlsx is a server-only package — use require to avoid ESM issues
@@ -7,6 +8,8 @@ import { insertSentencesForTopic, type SentenceRow } from "@/lib/sentences/impor
 const XLSX = require("xlsx");
 
 const COL_MAP: Record<string, string> = {
+  topic: "topic",
+  "topic title": "topic",
   japanese: "japanese",
   japanese_sentence: "japanese",
   "japanese sentence": "japanese",
@@ -30,10 +33,7 @@ function normaliseKey(raw: string): string {
   return raw.trim().toLowerCase().replace(/_/g, " ");
 }
 
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { topicId: string } }
-) {
+export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
   if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
@@ -62,19 +62,59 @@ export async function POST(
     return entry;
   });
 
-  const valid = mapped.filter((e) => Boolean(e.japanese)) as unknown as SentenceRow[];
+  const valid = mapped.filter((e) => Boolean(e.topic && e.japanese)) as unknown as (SentenceRow & { topic: string })[];
   if (valid.length === 0) {
     return NextResponse.json(
-      { error: "No rows with a japanese column found. Check your column headers." },
+      { error: "No rows with both a topic and a japanese column found. Check your column headers." },
       { status: 400 }
     );
   }
 
   await connectDB();
-  const { inserted, skippedDuplicates, errors } = await insertSentencesForTopic(params.topicId, valid);
+
+  // Group rows by topic title (case-insensitive)
+  const groups = new Map<string, { title: string; rows: SentenceRow[] }>();
+  for (const { topic, ...row } of valid) {
+    const key = topic.toLowerCase();
+    if (!groups.has(key)) groups.set(key, { title: topic, rows: [] });
+    groups.get(key)!.rows.push(row);
+  }
+
+  const existingTopics = await Topic.find({}).select("title").lean();
+  const topicIdByTitle = new Map(existingTopics.map((t) => [t.title.toLowerCase(), String(t._id)]));
+
+  let topicsCreated = 0;
+  let inserted = 0;
+  let skippedDuplicates = 0;
+  const errors: string[] = [];
+
+  for (const [key, group] of Array.from(groups.entries())) {
+    let topicId = topicIdByTitle.get(key);
+    if (!topicId) {
+      const created = await Topic.create({ title: group.title, isPublished: false });
+      topicId = String(created._id);
+      topicIdByTitle.set(key, topicId);
+      topicsCreated++;
+    }
+
+    const result = await insertSentencesForTopic(topicId, group.rows);
+    inserted += result.inserted;
+    skippedDuplicates += result.skippedDuplicates;
+    if (result.errors.length > 0) {
+      errors.push(...result.errors.map((e) => `[${group.title}] ${e}`));
+    }
+  }
+
   if (skippedDuplicates > 0) {
     errors.unshift(`${skippedDuplicates} duplicate sentence(s) skipped.`);
   }
 
-  return NextResponse.json({ success: true, total: valid.length, inserted, errors: errors.slice(0, 10) });
+  return NextResponse.json({
+    success: true,
+    total: valid.length,
+    topicsTouched: groups.size,
+    topicsCreated,
+    inserted,
+    errors: errors.slice(0, 10),
+  });
 }

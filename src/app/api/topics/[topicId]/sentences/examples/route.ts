@@ -1,13 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db/mongoose";
-import Topic from "@/lib/db/models/Topic";
-import Sentence from "@/lib/db/models/Sentence";
+import { insertSentencesForTopic } from "@/lib/sentences/importSentences";
 
-const MAX_SENTENCES_PER_TOPIC = 4;
-
-// Canned starter sentences offered by the "Insert Examples" button. There
-// are 5 so admins always have a spare if one doesn't fit a topic — but a
-// topic can only ever hold 4, so the 5th is dropped when all are inserted.
+// Canned starter sentences offered by the "Insert Examples" button.
+// Re-clicking is safe — insertSentencesForTopic skips any that are
+// already present in the topic.
 const EXAMPLE_SENTENCES = [
   { japanese: "ねこ が すき です。", romaji: "neko ga suki desu.", english_meaning: "I like cats.", mongolian_meaning: "Би муур дуртай." },
   { japanese: "いぬ が います。", romaji: "inu ga imasu.", english_meaning: "There is a dog.", mongolian_meaning: "Нохой байна." },
@@ -22,19 +19,8 @@ export async function POST(
 ) {
   try {
     await connectDB();
-    const existingCount = await Sentence.countDocuments({ topicId: params.topicId });
-    const remainingSlots = Math.max(0, MAX_SENTENCES_PER_TOPIC - existingCount);
-    const toInsert = EXAMPLE_SENTENCES.slice(0, remainingSlots);
-
-    for (let i = 0; i < toInsert.length; i++) {
-      await Sentence.create({ ...toInsert[i], topicId: params.topicId, order: existingCount + i + 1 });
-    }
-
-    const total = await Sentence.countDocuments({ topicId: params.topicId });
-    await Topic.findByIdAndUpdate(params.topicId, { totalSentences: total });
-
-    const dropped = EXAMPLE_SENTENCES.length - toInsert.length;
-    return NextResponse.json({ inserted: toInsert.length, dropped });
+    const { inserted, skippedDuplicates } = await insertSentencesForTopic(params.topicId, EXAMPLE_SENTENCES);
+    return NextResponse.json({ inserted, skippedDuplicates });
   } catch {
     return NextResponse.json({ error: "Failed to insert example sentences" }, { status: 500 });
   }

@@ -3,8 +3,6 @@ import { connectDB } from "@/lib/db/mongoose";
 import Topic from "@/lib/db/models/Topic";
 import Sentence from "@/lib/db/models/Sentence";
 
-const MAX_SENTENCES_PER_TOPIC = 4;
-
 export async function GET(
   _request: NextRequest,
   { params }: { params: { topicId: string } }
@@ -25,12 +23,6 @@ export async function POST(
   try {
     await connectDB();
     const count = await Sentence.countDocuments({ topicId: params.topicId });
-    if (count >= MAX_SENTENCES_PER_TOPIC) {
-      return NextResponse.json(
-        { error: `A topic can have at most ${MAX_SENTENCES_PER_TOPIC} sentences` },
-        { status: 400 }
-      );
-    }
     const body = await req.json();
     const sentence = await Sentence.create({ ...body, topicId: params.topicId, order: count + 1 });
     const total = await Sentence.countDocuments({ topicId: params.topicId });

@@ -12,8 +12,6 @@ import SentenceExcelImport from "@/components/admin/SentenceExcelImport";
 import InsertExampleSentencesButton from "@/components/admin/InsertExampleSentencesButton";
 import PublishTopicButton from "@/components/admin/PublishTopicButton";
 
-const MAX_SENTENCES_PER_TOPIC = 4;
-
 async function getData(id: string) {
   try {
     await connectDB();
@@ -48,7 +46,7 @@ export default async function AdminTopicDetailPage({ params }: { params: { topic
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${topicData.isPublished ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
               {topicData.isPublished ? "Published" : "Draft"}
             </span>
-            <span className="text-xs text-gray-400">{sentenceList.length}/{MAX_SENTENCES_PER_TOPIC} sentences</span>
+            <span className="text-xs text-gray-400">{sentenceList.length} sentences</span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -70,15 +68,13 @@ export default async function AdminTopicDetailPage({ params }: { params: { topic
       <SentenceExcelImport topicId={topicData._id} />
 
       <div className="space-y-4">
-        <h2 className="text-lg font-black text-gray-600">💬 Sentences ({sentenceList.length}/{MAX_SENTENCES_PER_TOPIC})</h2>
+        <h2 className="text-lg font-black text-gray-600">💬 Sentences ({sentenceList.length})</h2>
 
         {sentenceList.map((sentence) => (
           <SentenceForm key={sentence._id} topicId={topicData._id} sentence={sentence} />
         ))}
 
-        {sentenceList.length < MAX_SENTENCES_PER_TOPIC && (
-          <AddSentenceButton topicId={topicData._id} />
-        )}
+        <AddSentenceButton topicId={topicData._id} />
       </div>
     </div>
   );
@@ -94,7 +90,6 @@ function AddSentenceButton({ topicId }: { topicId: string }) {
         const TopicModel = (await import("@/lib/db/models/Topic")).default;
         await connectDB();
         const count = await SentenceModel.countDocuments({ topicId });
-        if (count >= MAX_SENTENCES_PER_TOPIC) return;
         await SentenceModel.create({ topicId, order: count + 1, japanese: "" });
         const total = await SentenceModel.countDocuments({ topicId });
         await TopicModel.findByIdAndUpdate(topicId, { totalSentences: total });
