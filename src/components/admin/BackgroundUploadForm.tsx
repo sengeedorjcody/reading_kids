@@ -19,7 +19,9 @@ export default function BackgroundUploadForm() {
     const f = e.target.files?.[0];
     if (!f) return;
     if (f.size > MAX_FILE_SIZE) {
-      setError(`Image is too big (${(f.size / 1024 / 1024).toFixed(1)} MB) — please choose one under 3 MB.`);
+      setError(
+        `Image is too big (${(f.size / 1024 / 1024).toFixed(1)} MB) — please choose one under 3 MB.`,
+      );
       setFile(null);
       setPreview("");
       if (fileRef.current) fileRef.current.value = "";
@@ -42,8 +44,14 @@ export default function BackgroundUploadForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!file && !urlInput.trim()) { setError("Please select an image or enter a URL."); return; }
-    if (!name.trim()) { setError("Name is required."); return; }
+    if (!file && !urlInput.trim()) {
+      setError("Please select an image or enter a URL.");
+      return;
+    }
+    if (!name.trim()) {
+      setError("Name is required.");
+      return;
+    }
 
     setUploading(true);
     setError("");
@@ -78,7 +86,11 @@ export default function BackgroundUploadForm() {
       >
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={preview} alt="preview" className="w-full h-full object-cover" />
+          <img
+            src={preview}
+            alt="preview"
+            className="w-full h-full object-cover"
+          />
         ) : (
           <div className="text-center text-gray-400">
             <div className="text-4xl mb-1">🌄</div>
@@ -86,8 +98,16 @@ export default function BackgroundUploadForm() {
           </div>
         )}
       </div>
-      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFile} />
-      <p className="text-xs text-gray-400 text-center -mt-2">Max file size: 3 MB</p>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={handleFile}
+      />
+      <p className="text-xs text-gray-400 text-center -mt-2">
+        Max file size: 3 MB
+      </p>
 
       {/* URL input */}
       <div className="flex items-center gap-2">
