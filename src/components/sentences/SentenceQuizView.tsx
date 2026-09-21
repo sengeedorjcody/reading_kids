@@ -105,7 +105,7 @@ function QuizScreen({
   const dontOpacity = Math.min(1, Math.max(0, -dragX / 100));
 
   return (
-    <div className="flex flex-col px-4 pt-6 pb-28 select-none overflow-hidden" style={{ height: "100dvh" }}>
+    <div className="flex flex-col px-4 pt-6 pb-28 max-w-md mx-auto w-full select-none overflow-hidden" style={{ height: "100dvh" }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Link
@@ -230,7 +230,7 @@ function RoundResultScreen({
   onFinish: () => void;
 }) {
   return (
-    <div className="min-h-screen flex flex-col items-center px-6 pt-12 pb-28 gap-6">
+    <div className="min-h-screen flex flex-col items-center px-6 pt-12 pb-28 gap-6 max-w-md mx-auto w-full">
       <Link href={`/sentences/${topicId}`} className="self-start text-white/50 hover:text-white text-sm font-bold">
         ← Back to Sentences
       </Link>
@@ -304,7 +304,7 @@ function DoneScreen({
   const pct = Math.round((score / totalCards) * 100);
 
   return (
-    <div className="min-h-screen flex flex-col px-4 pt-10 pb-28 gap-6">
+    <div className="min-h-screen flex flex-col px-4 pt-10 pb-28 gap-6 max-w-md mx-auto w-full">
       <div className="rounded-3xl p-6 text-center"
         style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(14,165,233,0.2))", border: "2px solid rgba(16,185,129,0.3)" }}>
         <div className="text-6xl mb-2">{pct >= 90 ? "🏆" : pct >= 70 ? "⭐" : pct >= 50 ? "💪" : "📚"}</div>
