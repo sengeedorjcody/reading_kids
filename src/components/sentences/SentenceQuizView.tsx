@@ -17,11 +17,13 @@ function QuizScreen({
   deck,
   currentIndex,
   round,
+  topicId,
   onSwipe,
 }: {
   deck: ITopicSentence[];
   currentIndex: number;
   round: number;
+  topicId: string;
   onSwipe: (dir: "left" | "right") => void;
 }) {
   const { speak } = useSpeech();
@@ -105,11 +107,19 @@ function QuizScreen({
   return (
     <div className="flex flex-col px-4 pt-6 pb-28 select-none overflow-hidden" style={{ height: "100dvh" }}>
       <div className="flex items-center justify-between mb-4">
-        <div className="flex flex-col">
-          <span className="text-white font-black text-lg">
-            {round === 1 ? "Round 1" : "Round 2 🔁"}
-          </span>
-          <span className="text-white/50 text-xs">{currentIndex + 1} / {deck.length}</span>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/sentences/${topicId}`}
+            className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl active:scale-90 flex-shrink-0"
+          >
+            ←
+          </Link>
+          <div className="flex flex-col">
+            <span className="text-white font-black text-lg">
+              {round === 1 ? "Round 1" : "Round 2 🔁"}
+            </span>
+            <span className="text-white/50 text-xs">{currentIndex + 1} / {deck.length}</span>
+          </div>
         </div>
         <button
           onClick={() => speak(card.japanese)}
@@ -208,17 +218,23 @@ function RoundResultScreen({
   round,
   known,
   unknown,
+  topicId,
   onNextRound,
   onFinish,
 }: {
   round: number;
   known: ITopicSentence[];
   unknown: ITopicSentence[];
+  topicId: string;
   onNextRound: () => void;
   onFinish: () => void;
 }) {
   return (
     <div className="min-h-screen flex flex-col items-center px-6 pt-12 pb-28 gap-6">
+      <Link href={`/sentences/${topicId}`} className="self-start text-white/50 hover:text-white text-sm font-bold">
+        ← Back to Sentences
+      </Link>
+
       <div className="text-center">
         <div className="text-5xl mb-3">{round === 1 ? "🎯" : "🎊"}</div>
         <h2 className="text-3xl font-black text-white mb-1">Round {round} Done!</h2>
@@ -406,12 +422,12 @@ export default function SentenceQuizView({ topic, sentences }: { topic: ITopic; 
   };
 
   if (phase === "exam") {
-    return <QuizScreen deck={deck} currentIndex={currentIndex} round={round} onSwipe={handleSwipe} />;
+    return <QuizScreen deck={deck} currentIndex={currentIndex} round={round} topicId={topic._id} onSwipe={handleSwipe} />;
   }
 
   if (phase === "roundResult") {
     return (
-      <RoundResultScreen round={round} known={known} unknown={unknown} onNextRound={startRound2} onFinish={goToResults} />
+      <RoundResultScreen round={round} known={known} unknown={unknown} topicId={topic._id} onNextRound={startRound2} onFinish={goToResults} />
     );
   }
 
