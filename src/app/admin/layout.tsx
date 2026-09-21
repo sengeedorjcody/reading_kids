@@ -1,20 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LogoutButton from "@/components/admin/LogoutButton";
 
+const DARK_MODE_KEY = "admin-dark-mode";
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    try {
+      setDarkMode(localStorage.getItem(DARK_MODE_KEY) === "true");
+    } catch {}
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(DARK_MODE_KEY, String(next));
+      } catch {}
+      return next;
+    });
+  };
+
   if (pathname === "/admin/login") return <>{children}</>;
 
   return (
     <div className="flex min-h-[calc(100vh-80px)]">
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 text-white flex flex-col shrink-0 hidden md:flex">
-        <div className="p-6 border-b border-gray-700">
-          <h2 className="text-lg font-black text-pink-400">⚙️ Admin Panel</h2>
-          <p className="text-xs text-gray-400 mt-1">にほんご よもう！</p>
+        <div className="p-6 border-b border-gray-700 flex items-start justify-between gap-2">
+          <div>
+            <h2 className="text-lg font-black text-pink-400">⚙️ Admin Panel</h2>
+            <p className="text-xs text-gray-400 mt-1">にほんご よもう！</p>
+          </div>
+          <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} />
         </div>
         <nav className="flex-1 p-4 space-y-1">
           <NavLink href="/admin" icon="🏠" label="Dashboard" />
@@ -44,9 +68,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Content */}
-      <div className="flex-1 bg-gray-50 overflow-auto">
+      <div className={`flex-1 overflow-auto ${darkMode ? "admin-dark" : "bg-gray-50"}`}>
         {/* Mobile nav */}
-        <div className="md:hidden flex gap-2 p-3 bg-gray-900 overflow-x-auto">
+        <div className="md:hidden flex items-center gap-2 p-3 bg-gray-900 overflow-x-auto">
           {[
             { href: "/admin", icon: "🏠", label: "Home" },
             { href: "/admin/books", icon: "📚", label: "Books" },
@@ -64,11 +88,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <span>{item.label}</span>
             </Link>
           ))}
+          <DarkModeToggle darkMode={darkMode} onToggle={toggleDarkMode} compact />
           <LogoutButton compact />
         </div>
         <div className="p-6 md:p-8">{children}</div>
       </div>
     </div>
+  );
+}
+
+function DarkModeToggle({ darkMode, onToggle, compact }: { darkMode: boolean; onToggle: () => void; compact?: boolean }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      title={darkMode ? "Switch to light mode" : "Switch to dark mode"}
+      className={`flex-shrink-0 flex items-center justify-center rounded-xl bg-gray-800 hover:bg-gray-700 text-lg transition-colors ${compact ? "w-9 h-9" : "w-9 h-9 mt-0.5"}`}
+    >
+      {darkMode ? "☀️" : "🌙"}
+    </button>
   );
 }
 

@@ -136,3 +136,85 @@ img { max-width: 100%; height: auto; }
   100% { transform: rotate(-2deg); }
 }
 .home-icon-wiggle { animation: homeIconWiggle 0.42s ease-in-out infinite; }
+
+/* ── Admin dark mode ──────────────────────────────────────────────────────
+ * The admin panel is built entirely from a handful of neutral Tailwind
+ * utilities (bg-white / bg-gray-50..200 / text-gray-300..800 /
+ * border-gray-50..400). Rather than hand-edit dark: variants into every
+ * admin page and component, this remaps exactly those neutral utilities
+ * within a `.admin-dark` scope (toggled on the admin content wrapper —
+ * never the sidebar, which is already dark). Colored accents (badges,
+ * buttons) are left as-is; they read fine as pastel accents on a dark
+ * card. Selectors are written both as `.admin-dark.bg-white` (utility on
+ * the scoped element itself) and `.admin-dark .bg-white` (on a
+ * descendant, which covers modals too since they're still DOM children
+ * even when `position: fixed`).
+ */
+/* Note: globals.css also has a blanket `.bg-white/.bg-gray-50/.bg-gray-100
+ * { color: #1e293b }` rule for the public site's cards. Any element here
+ * that doesn't get an explicit text-gray-* class of its own would
+ * otherwise inherit that dark navy text straight onto our new dark
+ * background — so each rule below also sets a light default `color`,
+ * which more specific text-gray-* overrides further down still win over. */
+.admin-dark,
+.admin-dark.bg-gray-50,
+.admin-dark .bg-gray-50 { background-color: #0b1120; color: #e7ebf3; }
+
+.admin-dark.bg-white,
+.admin-dark .bg-white { background-color: #1a2333; color: #e7ebf3; }
+
+.admin-dark.bg-gray-100,
+.admin-dark .bg-gray-100 { background-color: #212c40; color: #e7ebf3; }
+
+.admin-dark.bg-gray-200,
+.admin-dark .bg-gray-200 { background-color: #2c3a52; color: #e7ebf3; }
+
+.admin-dark .hover\:bg-gray-50:hover { background-color: #212c40; }
+.admin-dark .hover\:bg-gray-200:hover { background-color: #384766; }
+.admin-dark .disabled\:bg-gray-200:disabled { background-color: #263049; }
+
+.admin-dark.text-gray-800,
+.admin-dark .text-gray-800,
+.admin-dark.text-gray-700,
+.admin-dark .text-gray-700 { color: #e7ebf3; }
+
+.admin-dark.text-gray-600,
+.admin-dark .text-gray-600 { color: #c7cedb; }
+
+.admin-dark.text-gray-500,
+.admin-dark .text-gray-500 { color: #9aa5bd; }
+
+.admin-dark.text-gray-400,
+.admin-dark .text-gray-400 { color: #76819c; }
+
+.admin-dark.text-gray-300,
+.admin-dark .text-gray-300 { color: #566078; }
+
+.admin-dark .hover\:text-gray-600:hover { color: #f1f4f9; }
+.admin-dark .hover\:text-gray-500:hover { color: #dde3ee; }
+.admin-dark .disabled\:text-gray-400:disabled { color: #64708a; }
+
+.admin-dark.border-gray-50,
+.admin-dark .border-gray-50,
+.admin-dark.border-gray-100,
+.admin-dark .border-gray-100 { border-color: #29334a; }
+
+.admin-dark.border-gray-200,
+.admin-dark .border-gray-200,
+.admin-dark.border-gray-300,
+.admin-dark .border-gray-300 { border-color: #3a4762; }
+
+.admin-dark.border-gray-400,
+.admin-dark .border-gray-400 { border-color: #4b5a7a; }
+
+.admin-dark .hover\:border-gray-300:hover { border-color: #4b5a7a; }
+.admin-dark .hover\:border-gray-400:hover { border-color: #5c6d90; }
+
+.admin-dark input,
+.admin-dark textarea,
+.admin-dark select {
+  background-color: #1a2333;
+  color: #e7ebf3;
+}
+.admin-dark input::placeholder,
+.admin-dark textarea::placeholder { color: #6b7690; }
