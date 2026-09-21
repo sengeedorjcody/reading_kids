@@ -7,6 +7,7 @@ import Sentence from "@/lib/db/models/Sentence";
 import { ITopic } from "@/types";
 import DeleteTopicButton from "@/components/admin/DeleteTopicButton";
 import SentenceGlobalExcelImport from "@/components/admin/SentenceGlobalExcelImport";
+import PublishTopicButton from "@/components/admin/PublishTopicButton";
 
 async function getTopics() {
   try {
@@ -32,7 +33,7 @@ export default async function AdminSentencesPage() {
   const { topics, coverByTopic } = await getTopics();
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-gray-700">🗣️ Sentences</h1>
         <div className="flex items-center gap-3">
@@ -69,6 +70,7 @@ export default async function AdminSentencesPage() {
                 </div>
                 <p className="text-sm text-gray-400 mt-0.5">{topic.totalSentences} sentences</p>
               </div>
+              <PublishTopicButton topicId={topic._id} isPublished={topic.isPublished} />
               <Link
                 href={`/admin/sentences/${topic._id}`}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold px-4 py-2 rounded-xl text-sm transition-colors flex-shrink-0"
