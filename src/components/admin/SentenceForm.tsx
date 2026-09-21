@@ -42,7 +42,18 @@ export default function SentenceForm({ topicId, sentence }: SentenceFormProps) {
       const res = await fetch("/api/upload/image", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Upload failed");
-      setForm((f) => ({ ...f, imageUrl: data.url }));
+      const nextForm = { ...form, imageUrl: data.url };
+      setForm(nextForm);
+      // Persist immediately — waiting for a separate "Save Sentence" click
+      // after an upload is an easy step to miss, leaving the image
+      // uploaded to S3 but never attached to the sentence.
+      const saveRes = await fetch(`/api/topics/${topicId}/sentences/${sentence._id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(nextForm),
+      });
+      if (!saveRes.ok) throw new Error("Image uploaded but failed to save to the sentence");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Image upload failed");
     } finally {
