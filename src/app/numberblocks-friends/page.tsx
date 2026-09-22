@@ -267,7 +267,15 @@ function makeProblem(level: number): Problem {
   }
 }
 
-// ── Number line 0-20 (counting aid for the 10-20 levels) ─────────────────────
+// Bars use each number's character color where one exists (0-20); beyond
+// that (level 10 lets a kid type bigger numbers) fall back to a neutral tone.
+function barColor(n: number): string {
+  return n >= 0 && n <= 20 ? charFor(n).color : "#6366f1";
+}
+
+// ── Number line, 20 segments by default — grows by another 10 whenever a
+// bar or the answer would land past the current end, so level 10's custom
+// numbers (which aren't capped at 20) always fit on screen. ─────────────────
 // First number is a bar from 0 in its own color; the second number's bar sits
 // above it in its color — going right for +, back to the left for −.
 function NumberLine({
@@ -275,22 +283,22 @@ function NumberLine({
 }: {
   a: number; b: number; op: Op; answer: number; solved: boolean;
 }) {
-  const MAX = 20;
-  const ca = charFor(a), cb = charFor(b);
-  const pct = (n: number) => `${(n / MAX) * 100}%`;
   const bStart = op === "+" ? a : a - b;
+  const highest = Math.max(20, a, b, bStart + b, answer);
+  const max = Math.ceil(highest / 10) * 10;
+  const pct = (n: number) => `${(n / max) * 100}%`;
   const barH = 18;
 
   return (
-    <div className="w-full max-w-2xl px-3">
-      <div className="relative" style={{ height: barH * 2 + 44 }}>
+    <div className="w-full max-w-2xl px-3 overflow-x-auto">
+      <div className="relative" style={{ height: barH * 2 + 44, minWidth: (max / 20) * 320 }}>
         {/* second number bar (top row) */}
         {b > 0 && (
           <div
             className="absolute rounded-md flex items-center justify-center text-white text-xs font-black"
             style={{
               left: pct(bStart), width: pct(b), top: 0, height: barH,
-              background: cb.color, border: "1.5px solid rgba(0,0,0,0.15)",
+              background: barColor(b), border: "1.5px solid rgba(0,0,0,0.15)",
             }}
           >
             {op === "−" ? "←" : ""}{b}{op === "+" ? " →" : ""}
@@ -302,15 +310,15 @@ function NumberLine({
             className="absolute rounded-md flex items-center justify-center text-white text-xs font-black"
             style={{
               left: 0, width: pct(a), top: barH + 4, height: barH,
-              background: ca.color, border: "1.5px solid rgba(0,0,0,0.15)",
+              background: barColor(a), border: "1.5px solid rgba(0,0,0,0.15)",
             }}
           >
             {a}
           </div>
         )}
-        {/* the line with 20 segments */}
+        {/* the line, one segment per number up to `max` */}
         <div className="absolute left-0 right-0" style={{ top: barH * 2 + 12, height: 4, background: "#475569", borderRadius: 2 }} />
-        {Array.from({ length: MAX + 1 }).map((_, i) => {
+        {Array.from({ length: max + 1 }).map((_, i) => {
           const isAns = i === answer;
           return (
             <div key={i} className="absolute flex flex-col items-center" style={{ left: pct(i), top: barH * 2 + 6, transform: "translateX(-50%)" }}>
@@ -463,16 +471,13 @@ export default function NumberblocksFriends() {
       const bi = parseInt(customB, 10);
       const given = parseInt(customAnswerInput, 10);
 
-      if (ai > 20 || bi > 20) {
-        setCustomErrorSlot(ai > 20 ? "a" : "b");
-        speak("0-с 20 хооронд тоо сонгоорой");
-        setTimeout(() => setCustomErrorSlot(null), 900);
-        return;
-      }
+      // Numbers aren't capped at 20 here — the number line just grows by
+      // another 10 to fit them (see NumberLine). Only a negative result
+      // (subtracting a bigger number) doesn't make sense to ask for.
       const expected = customOp === "+" ? ai + bi : ai - bi;
-      if (expected < 0 || expected > 20) {
+      if (expected < 0) {
         setCustomErrorSlot("b");
-        speak("Хариу нь 0-с 20 хооронд байх ёстой, өөр тоо сонгоорой");
+        speak("Их тооноос жижиг тоог хасаж болохгүй, өөр тоо сонгоорой");
         setTimeout(() => setCustomErrorSlot(null), 900);
         return;
       }
@@ -702,6 +707,14 @@ export default function NumberblocksFriends() {
             <CustomSlot value={customB} slot="b" />
             <span className="font-black text-4xl text-gray-400 flex-shrink-0">=</span>
             <CustomSlot value={customAnswerInput} slot="answer" />
+            <button
+              onClick={() => resetCustom("a")}
+              title="Цэвэрлэх"
+              className="ml-1 flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-lg active:scale-90 transition-all"
+              style={{ background: "rgba(239,68,68,0.15)" }}
+            >
+              🗑️
+            </button>
           </div>
 
           {customSolved && (
@@ -713,15 +726,15 @@ export default function NumberblocksFriends() {
             style={{ border: "3px dashed rgba(100,120,200,0.4)", background: "rgba(255,255,255,0.4)" }}
           >
             <p className="text-xs font-bold text-gray-500 text-center">
-              Тоо, тэмдгээ сонгоод хариугаа өөрөө бодож бичээд ✓ дараарай! (0–20)
+              Тоо, тэмдгээ сонгоод хариугаа өөрөө бодож бичээд ✓ дараарай!
             </p>
             <NumberLine
-              a={Math.min(20, parseInt(customA || "0", 10) || 0)}
-              b={Math.min(20, parseInt(customB || "0", 10) || 0)}
+              a={parseInt(customA || "0", 10) || 0}
+              b={parseInt(customB || "0", 10) || 0}
               op={customOp}
-              answer={Math.min(20, Math.max(0,
+              answer={Math.max(0,
                 (parseInt(customA || "0", 10) || 0) + (customOp === "+" ? 1 : -1) * (parseInt(customB || "0", 10) || 0)
-              ))}
+              )}
               solved={customSolved}
             />
 
