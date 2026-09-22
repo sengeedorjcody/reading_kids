@@ -305,6 +305,10 @@ function DoneScreen({
 
   return (
     <div className="min-h-screen flex flex-col px-4 pt-10 pb-28 gap-6 max-w-md mx-auto w-full">
+      <Link href={`/sentences/${topicId}`} className="self-start text-white/50 hover:text-white text-sm font-bold">
+        ← Back to Sentences
+      </Link>
+
       <div className="rounded-3xl p-6 text-center"
         style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(14,165,233,0.2))", border: "2px solid rgba(16,185,129,0.3)" }}>
         <div className="text-6xl mb-2">{pct >= 90 ? "🏆" : pct >= 70 ? "⭐" : pct >= 50 ? "💪" : "📚"}</div>
