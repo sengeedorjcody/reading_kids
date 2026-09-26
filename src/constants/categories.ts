@@ -24,7 +24,7 @@ export const CATEGORIES: Category[] = [
     bg: "from-purple-500 to-indigo-500",
     hrefs: [
       "/animals", "/body", "/home", "/colors", "/directions", "/family", "/clock", "/math",
-      "/themes", "/food", "/badminton", "/swimming", "/volleyball", "/english",
+      "/themes", "/food", "/badminton", "/swimming", "/volleyball", "/english", "/family-talk",
     ],
   },
   {
