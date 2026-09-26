@@ -9,6 +9,7 @@ import { IFamilyTalkTopic, IFamilyTalkWord } from "@/types";
 import FamilyTopicEditPanel from "@/components/admin/FamilyTopicEditPanel";
 import FamilyWordForm from "@/components/admin/FamilyWordForm";
 import PublishFamilyTopicButton from "@/components/admin/PublishFamilyTopicButton";
+import { enrichFamilyWordsFromDictionary } from "@/lib/familyTalk/enrichFromDictionary";
 
 async function getData(id: string) {
   try {
@@ -28,7 +29,9 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
   if (!topic) notFound();
 
   const topicData = JSON.parse(JSON.stringify(topic)) as IFamilyTalkTopic;
-  const wordList = JSON.parse(JSON.stringify(words)) as IFamilyTalkWord[];
+  const wordList = await enrichFamilyWordsFromDictionary(
+    JSON.parse(JSON.stringify(words)) as IFamilyTalkWord[]
+  );
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

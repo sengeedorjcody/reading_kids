@@ -6,6 +6,7 @@ import FamilyTalkTopic from "@/lib/db/models/FamilyTalkTopic";
 import FamilyTalkWord from "@/lib/db/models/FamilyTalkWord";
 import { IFamilyTalkTopic, IFamilyTalkWord } from "@/types";
 import VocabularyBoard from "@/components/family-talk/VocabularyBoard";
+import { enrichFamilyWordsFromDictionary } from "@/lib/familyTalk/enrichFromDictionary";
 
 async function getData(id: string) {
   try {
@@ -25,7 +26,9 @@ export default async function FamilyTalkTopicPage({ params }: { params: { topicI
   if (!topic) notFound();
 
   const topicData = JSON.parse(JSON.stringify(topic)) as IFamilyTalkTopic;
-  const wordList = JSON.parse(JSON.stringify(words)) as IFamilyTalkWord[];
+  const wordList = await enrichFamilyWordsFromDictionary(
+    JSON.parse(JSON.stringify(words)) as IFamilyTalkWord[]
+  );
 
   return <VocabularyBoard topic={topicData} words={wordList} />;
 }

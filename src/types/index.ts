@@ -196,6 +196,7 @@ export interface IFamilyTalkWord {
   _id: string;
   topicId: string;
   japanese: string;
+  hiragana?: string;
   romaji?: string;
   english_meaning?: string;
   mongolian_meaning?: string;

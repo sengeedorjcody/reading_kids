@@ -76,6 +76,11 @@ export default function VocabularyBoard({ topic, words }: { topic: IFamilyTalkTo
                 <p className="text-gray-800 font-black text-sm mt-1 text-center px-1 leading-tight">
                   {word.japanese}
                 </p>
+                {word.hiragana && word.hiragana !== word.japanese && (
+                  <p className="text-gray-400 text-[10px] text-center px-1 leading-tight">
+                    {word.hiragana}
+                  </p>
+                )}
                 {word.romaji && (
                   <p className="text-pink-500 text-[10px] font-bold text-center px-1 leading-tight">
                     {word.romaji}

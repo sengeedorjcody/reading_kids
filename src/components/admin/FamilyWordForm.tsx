@@ -21,6 +21,7 @@ export default function FamilyWordForm({ topicId, word }: FamilyWordFormProps) {
   const [form, setForm] = useState({
     imageUrl: word.imageUrl ?? "",
     japanese: word.japanese ?? "",
+    hiragana: word.hiragana ?? "",
     romaji: word.romaji ?? "",
     english_meaning: word.english_meaning ?? "",
     mongolian_meaning: word.mongolian_meaning ?? "",
@@ -140,6 +141,18 @@ export default function FamilyWordForm({ topicId, word }: FamilyWordFormProps) {
           onChange={handleChange}
           placeholder="ねこ"
           className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-2xl focus:border-pink-400 focus:outline-none"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-bold text-gray-600 mb-1">Hiragana</label>
+        <input
+          type="text"
+          name="hiragana"
+          value={form.hiragana}
+          onChange={handleChange}
+          placeholder="ねこ"
+          className="w-full border-2 border-gray-200 rounded-2xl px-4 py-3 text-xl focus:border-pink-400 focus:outline-none"
         />
       </div>
 
