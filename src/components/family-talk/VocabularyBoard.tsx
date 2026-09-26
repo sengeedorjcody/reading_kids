@@ -3,17 +3,17 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
-import { IConversation, IDictionaryWord } from "@/types";
+import { IFamilyTalkTopic, IFamilyTalkWord } from "@/types";
 import { buildScatterLayout } from "@/lib/scatterLayout";
 
-export default function VocabularyBoard({ topic, words }: { topic: IConversation; words: IDictionaryWord[] }) {
+export default function VocabularyBoard({ topic, words }: { topic: IFamilyTalkTopic; words: IFamilyTalkWord[] }) {
   const { speak } = useSpeech();
   const layout = useMemo(() => buildScatterLayout(words.length), [words.length]);
   const [playingId, setPlayingId] = useState<string | null>(null);
   const playTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleTap = (word: IDictionaryWord) => {
-    speak(word.japanese_word, word.pronunciation_audio_url);
+  const handleTap = (word: IFamilyTalkWord) => {
+    speak(word.japanese, word.audioUrl);
     setPlayingId(word._id);
     if (playTimer.current) clearTimeout(playTimer.current);
     playTimer.current = setTimeout(() => setPlayingId(null), 2200);
@@ -66,15 +66,15 @@ export default function VocabularyBoard({ topic, words }: { topic: IConversation
                 }}
               >
                 <div className="w-full h-16 bg-gray-50 flex items-center justify-center overflow-hidden">
-                  {word.example_image_url ? (
+                  {word.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={word.example_image_url} alt="" className="w-full h-full object-contain p-1" />
+                    <img src={word.imageUrl} alt="" className="w-full h-full object-contain p-1" />
                   ) : (
                     <span className="text-3xl">🔤</span>
                   )}
                 </div>
                 <p className="text-gray-800 font-black text-sm mt-1 text-center px-1 leading-tight">
-                  {word.japanese_word}
+                  {word.japanese}
                 </p>
                 {word.romaji && (
                   <p className="text-pink-500 text-[10px] font-bold text-center px-1 leading-tight">

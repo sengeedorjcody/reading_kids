@@ -178,3 +178,29 @@ export interface ITopicSentence {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface IFamilyTalkTopic {
+  _id: string;
+  title: string;
+  titleJapanese?: string;
+  description?: string;
+  coverImageUrl?: string;
+  order: number;
+  totalWords: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IFamilyTalkWord {
+  _id: string;
+  topicId: string;
+  japanese: string;
+  romaji?: string;
+  english_meaning?: string;
+  mongolian_meaning?: string;
+  imageUrl?: string;
+  audioUrl?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
