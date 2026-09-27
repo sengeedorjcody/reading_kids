@@ -65,6 +65,8 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
 
       <FamilyTopicEditPanel topic={topicData} />
 
+      <FamilyWordPicker topicId={topicData._id} existingJapanese={wordList.map((w) => w.japanese)} />
+
       <div className="space-y-3">
         <h2 className="text-lg font-black text-gray-600">🔤 Words ({wordList.length})</h2>
 
@@ -72,8 +74,6 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
           <FamilyWordListItem key={word._id} topicId={topicData._id} word={word} />
         ))}
       </div>
-
-      <FamilyWordPicker topicId={topicData._id} existingJapanese={wordList.map((w) => w.japanese)} />
     </div>
   );
 }
