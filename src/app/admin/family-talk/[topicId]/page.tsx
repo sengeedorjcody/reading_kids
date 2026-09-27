@@ -8,6 +8,7 @@ import FamilyTalkWord from "@/lib/db/models/FamilyTalkWord";
 import { IFamilyTalkTopic, IFamilyTalkWord } from "@/types";
 import FamilyTopicEditPanel from "@/components/admin/FamilyTopicEditPanel";
 import FamilyWordForm from "@/components/admin/FamilyWordForm";
+import FamilyWordPicker from "@/components/admin/FamilyWordPicker";
 import PublishFamilyTopicButton from "@/components/admin/PublishFamilyTopicButton";
 import { enrichFamilyWordsFromDictionary } from "@/lib/familyTalk/enrichFromDictionary";
 
@@ -69,35 +70,9 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
         {wordList.map((word) => (
           <FamilyWordForm key={word._id} topicId={topicData._id} word={word} />
         ))}
-
-        <AddWordButton topicId={topicData._id} />
       </div>
-    </div>
-  );
-}
 
-function AddWordButton({ topicId }: { topicId: string }) {
-  return (
-    <form
-      action={async () => {
-        "use server";
-        const { connectDB } = await import("@/lib/db/mongoose");
-        const WordModel = (await import("@/lib/db/models/FamilyTalkWord")).default;
-        const TopicModel = (await import("@/lib/db/models/FamilyTalkTopic")).default;
-        await connectDB();
-        await WordModel.create({ topicId, japanese: "" });
-        const total = await WordModel.countDocuments({ topicId });
-        await TopicModel.findByIdAndUpdate(topicId, { totalWords: total });
-        const { revalidatePath } = await import("next/cache");
-        revalidatePath(`/admin/family-talk/${topicId}`);
-      }}
-    >
-      <button
-        type="submit"
-        className="w-full border-2 border-dashed border-gray-200 hover:border-rose-300 text-gray-400 hover:text-rose-500 font-bold py-4 rounded-2xl transition-all hover:bg-rose-50"
-      >
-        + Add Word
-      </button>
-    </form>
+      <FamilyWordPicker topicId={topicData._id} existingJapanese={wordList.map((w) => w.japanese)} />
+    </div>
   );
 }
