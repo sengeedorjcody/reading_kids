@@ -53,7 +53,6 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
         </div>
         <div className="flex items-center gap-2">
           <PublishFamilyTopicButton topicId={topicData._id} isPublished={topicData.isPublished} />
-          <FamilyTopicEditPanel topic={topicData} />
           <Link
             href={`/family-talk/${topicData._id}`}
             target="_blank"
@@ -63,6 +62,8 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
           </Link>
         </div>
       </div>
+
+      <FamilyTopicEditPanel topic={topicData} />
 
       <div className="space-y-3">
         <h2 className="text-lg font-black text-gray-600">🔤 Words ({wordList.length})</h2>
