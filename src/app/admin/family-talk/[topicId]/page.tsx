@@ -7,7 +7,7 @@ import FamilyTalkTopic from "@/lib/db/models/FamilyTalkTopic";
 import FamilyTalkWord from "@/lib/db/models/FamilyTalkWord";
 import { IFamilyTalkTopic, IFamilyTalkWord } from "@/types";
 import FamilyTopicEditPanel from "@/components/admin/FamilyTopicEditPanel";
-import FamilyWordForm from "@/components/admin/FamilyWordForm";
+import FamilyWordListItem from "@/components/admin/FamilyWordListItem";
 import FamilyWordPicker from "@/components/admin/FamilyWordPicker";
 import PublishFamilyTopicButton from "@/components/admin/PublishFamilyTopicButton";
 import { enrichFamilyWordsFromDictionary } from "@/lib/familyTalk/enrichFromDictionary";
@@ -64,11 +64,11 @@ export default async function AdminFamilyTopicDetailPage({ params }: { params: {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         <h2 className="text-lg font-black text-gray-600">🔤 Words ({wordList.length})</h2>
 
         {wordList.map((word) => (
-          <FamilyWordForm key={word._id} topicId={topicData._id} word={word} />
+          <FamilyWordListItem key={word._id} topicId={topicData._id} word={word} />
         ))}
       </div>
 
