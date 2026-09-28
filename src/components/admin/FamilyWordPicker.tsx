@@ -9,15 +9,25 @@ interface FamilyWordPickerProps {
   existingJapanese: string[];
 }
 
+const PAGE_SIZE = 30;
+
 export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWordPickerProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
   const [results, setResults] = useState<IDictionaryWord[]>([]);
+  const [total, setTotal] = useState(0);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [addingId, setAddingId] = useState<string | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const existingSet = new Set(existingJapanese);
+
+  // Typing a new search always restarts at page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [query]);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -28,11 +38,17 @@ export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWo
         // so admins can browse the full dictionary before they've typed
         // anything.
         const q = query.trim();
-        const res = await fetch(`/api/dictionary?limit=50${q ? `&q=${encodeURIComponent(q)}` : ""}`);
+        const res = await fetch(
+          `/api/dictionary?limit=${PAGE_SIZE}&page=${page}${q ? `&q=${encodeURIComponent(q)}` : ""}`
+        );
         const data = await res.json();
         setResults(data.words ?? []);
+        setTotal(data.total ?? 0);
+        setPages(data.pages ?? 1);
       } catch {
         setResults([]);
+        setTotal(0);
+        setPages(1);
       } finally {
         setLoading(false);
       }
@@ -40,7 +56,7 @@ export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWo
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [query]);
+  }, [query, page]);
 
   const handleAdd = async (word: IDictionaryWord) => {
     setAddingId(word._id);
@@ -115,6 +131,30 @@ export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWo
           );
         })}
       </div>
+
+      {total > 0 && (
+        <div className="flex items-center justify-between pt-1">
+          <span className="text-xs text-gray-400 font-bold">
+            Page {page} / {pages} · {total} words
+          </span>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-600 font-bold text-xs transition-colors"
+            >
+              ← Prev
+            </button>
+            <button
+              onClick={() => setPage((p) => Math.min(pages, p + 1))}
+              disabled={page >= pages}
+              className="px-3 py-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 disabled:opacity-40 text-gray-600 font-bold text-xs transition-colors"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
