@@ -21,14 +21,14 @@ export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWo
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/dictionary?q=${encodeURIComponent(query.trim())}&limit=20`);
+        // Empty query still hits the API — it just omits the q filter,
+        // so admins can browse the full dictionary before they've typed
+        // anything.
+        const q = query.trim();
+        const res = await fetch(`/api/dictionary?limit=50${q ? `&q=${encodeURIComponent(q)}` : ""}`);
         const data = await res.json();
         setResults(data.words ?? []);
       } catch {
@@ -77,7 +77,7 @@ export default function FamilyWordPicker({ topicId, existingJapanese }: FamilyWo
 
       {loading && <p className="text-sm text-gray-400 font-bold">Searching…</p>}
 
-      {!loading && query.trim() && results.length === 0 && (
+      {!loading && results.length === 0 && (
         <p className="text-sm text-gray-400 font-bold">No dictionary words found.</p>
       )}
 
