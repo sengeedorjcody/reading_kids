@@ -7,6 +7,7 @@ export interface IUserDoc extends Document {
   name?: string;
   isAdmin: boolean;
   savedWords: mongoose.Types.ObjectId[];
+  completedWeeklyWords: number[];
   lastExamPromptDate?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,7 @@ const UserSchema = new Schema<IUserDoc>(
     name: { type: String, trim: true },
     isAdmin: { type: Boolean, default: false },
     savedWords: [{ type: Schema.Types.ObjectId, ref: "DictionaryWord", default: [] }],
+    completedWeeklyWords: [{ type: Number, default: [] }],
     lastExamPromptDate: { type: String },
   },
   { timestamps: true }

@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "seed:admin": "node --env-file=.env.local scripts/seed-admin.mjs"
+    "seed:admin": "node --env-file=.env.local scripts/seed-admin.mjs",
+    "seed:weekly-words": "node --env-file=.env scripts/seed-weekly-words.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",

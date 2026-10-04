@@ -205,3 +205,34 @@ export interface IFamilyTalkWord {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface IWeeklyWordItem {
+  _id?: string;
+  wordId?: string;
+  japanese_word: string;
+  hiragana?: string;
+  romaji?: string;
+  english_meaning?: string;
+  mongolian_meaning?: string;
+  example_sentence?: string;
+  example_sentence_reading?: string;
+  example_image_url?: string;
+  pronunciation_audio_url?: string;
+  order?: number;
+}
+
+export interface IWeeklyWords {
+  _id: string;
+  weekNumber: number;
+  title: string;
+  titleJapanese?: string;
+  description?: string;
+  coverImageUrl?: string;
+  words: IWeeklyWordItem[];
+  totalWords: number;
+  order: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+

@@ -15,7 +15,7 @@ export const CATEGORIES: Category[] = [
     label: "Learn",
     icon: "📝",
     bg: "from-orange-500 to-pink-500",
-    hrefs: ["/exam", "/flashcards", "/alphabet", "/writing", "/dictionary", "/sentences", "/words", "/words-english"],
+    hrefs: ["/exam", "/flashcards", "/alphabet", "/writing", "/dictionary", "/sentences", "/weekly-words", "/words", "/words-english"],
   },
   {
     id: "vocabulary",
@@ -24,7 +24,7 @@ export const CATEGORIES: Category[] = [
     bg: "from-purple-500 to-indigo-500",
     hrefs: [
       "/animals", "/body", "/home", "/colors", "/directions", "/family", "/clock", "/math",
-      "/themes", "/food", "/badminton", "/swimming", "/volleyball", "/english", "/family-talk",
+      "/themes", "/food", "/badminton", "/swimming", "/volleyball", "/english", "/family-talk", "/weekly-words",
     ],
   },
   {
