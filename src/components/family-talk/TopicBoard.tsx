@@ -20,19 +20,21 @@ export default function TopicBoard({ topics }: { topics: IFamilyTalkTopic[] }) {
       className="fixed inset-0 flex flex-col overflow-hidden"
       style={{ background: "linear-gradient(160deg, #7c2d12 0%, #831843 45%, #3b0764 100%)" }}
     >
-      <div className="flex-shrink-0 px-5 pt-6 pb-3 flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2">
-            <span className="text-3xl">👨‍👩‍👧‍👦</span> Family Talk
-          </h1>
-          <p className="text-white/70 text-sm mt-1">Тавь сэдвийг сонгоод үгсийг хамт үзье!</p>
+      <div className="flex-shrink-0 px-5 pt-6 pb-3 flex items-center justify-between gap-3 z-10">
+        <div className="flex gap-3 items-start min-w-0">
+          <Link
+            href="/category/vocabulary"
+            className="flex-shrink-0 w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl text-white hover:bg-white/20 transition-all active:scale-90"
+          >
+            ←
+          </Link>
+          <div>
+            <h1 className="text-2xl font-black text-white flex items-center gap-2 leading-tight">
+              <span className="text-3xl">👨‍👩‍👧‍👦</span> Family Talk
+            </h1>
+            <p className="text-white/70 text-sm mt-1">Тавь сэдвийг сонгоод үгсийг хамт үзье!</p>
+          </div>
         </div>
-        <Link
-          href="/"
-          className="flex-shrink-0 w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-xl active:scale-90"
-        >
-          🏠
-        </Link>
       </div>
 
       <div className="flex-1 relative">
