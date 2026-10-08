@@ -20,6 +20,7 @@ export const SECTION_CATALOG: SectionMeta[] = [
   { href: "/game",       icon: "🔍", label: "Find Letter", color: "#22c55e", bg: "from-green-400 to-emerald-500" },
   { href: "/numberblocks-friends", icon: "🧱", label: "Numberblocks", color: "#ec4899", bg: "from-pink-400 to-rose-500" },
   // Row 2 — vocabulary
+  { href: "/clothes",    icon: "👕", label: "Clothes",     color: "#3b82f6", bg: "from-blue-400 to-indigo-500" },
   { href: "/animals",    icon: "🐾", label: "Animals",     color: "#f59e0b", bg: "from-amber-400 to-yellow-500" },
   { href: "/body",       icon: "🧑", label: "Body",        color: "#06b6d4", bg: "from-cyan-400 to-sky-500" },
   { href: "/home",       icon: "🏠", label: "Home",        color: "#10b981", bg: "from-emerald-400 to-teal-500" },

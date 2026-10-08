@@ -23,7 +23,7 @@ export const CATEGORIES: Category[] = [
     icon: "🗂️",
     bg: "from-purple-500 to-indigo-500",
     hrefs: [
-      "/animals", "/body", "/home", "/colors", "/directions", "/family", "/clock", "/math",
+      "/clothes", "/animals", "/body", "/home", "/colors", "/directions", "/family", "/clock", "/math",
       "/themes", "/food", "/badminton", "/swimming", "/volleyball", "/english", "/family-talk", "/weekly-words",
     ],
   },
