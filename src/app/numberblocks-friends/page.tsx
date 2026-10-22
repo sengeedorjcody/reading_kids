@@ -189,6 +189,29 @@ const JP_NUM = [
   "じゅういち","じゅうに","じゅうさん","じゅうよん","じゅうご","じゅうろく","じゅうなな","じゅうはち","じゅうきゅう","にじゅう",
 ];
 
+function toJapaneseNumber(n: number): string {
+  if (n <= 20) return JP_NUM[n] ?? String(n);
+  if (n < 100) {
+    const tens = Math.floor(n / 10);
+    const ones = n % 10;
+    const tensWords = [
+      "",
+      "じゅう",
+      "にじゅう",
+      "さんじゅう",
+      "よんじゅう",
+      "ごじゅう",
+      "ろくじゅう",
+      "ななじゅう",
+      "はちじゅう",
+      "きゅうじゅう",
+    ];
+    const onesWord = ones > 0 ? JP_NUM[ones] : "";
+    return `${tensWords[tens]}${onesWord}`;
+  }
+  return String(n);
+}
+
 const LEVEL_CONFIG: Record<number, { label: string; icon: string }> = {
   1: { label: "たし算",     icon: "➕" },
   2: { label: "ひき算",     icon: "➖" },
@@ -391,9 +414,9 @@ export default function NumberblocksFriends() {
 
   const speakProblem = useCallback((p: Problem) => {
     const opWord = p.op === "+" ? "たす" : "ひく";
-    if (p.missing === "a")       speak(`なに ${opWord} ${JP_NUM[p.b]} は ${JP_NUM[p.answer]} ですか？`);
-    else if (p.missing === "b")  speak(`${JP_NUM[p.a]} ${opWord} なに は ${JP_NUM[p.answer]} ですか？`);
-    else                         speak(`${JP_NUM[p.a]} ${opWord} ${JP_NUM[p.b]} は？`);
+    if (p.missing === "a")       speak(`なに ${opWord} ${toJapaneseNumber(p.b)} は ${toJapaneseNumber(p.answer)} ですか？`, "ja-JP");
+    else if (p.missing === "b")  speak(`${toJapaneseNumber(p.a)} ${opWord} なに は ${toJapaneseNumber(p.answer)} ですか？`, "ja-JP");
+    else                         speak(`${toJapaneseNumber(p.a)} ${opWord} ${toJapaneseNumber(p.b)} は？`, "ja-JP");
   }, [speak]);
 
   useEffect(() => {
@@ -440,11 +463,11 @@ export default function NumberblocksFriends() {
       setSolved(true);
       setScore((s) => s + 1);
       setSlotFlash("good");
-      speak(`せいかい！ ${JP_NUM[problem.correct]}`);
+      speak(`せいかい！ ${toJapaneseNumber(problem.correct)}`, "ja-JP");
       setTimeout(newProblem, 1800);
     } else {
       setSlotFlash("bad");
-      speak(`ざんねん…`);
+      speak(`ざんねん…`, "ja-JP");
       setTimeout(() => setSlotFlash(null), 600);
     }
   }, [problem.correct, speak, newProblem]);
@@ -455,10 +478,10 @@ export default function NumberblocksFriends() {
     if (key === "⌫") { setTyped((t) => t.slice(0, -1)); return; }
     if (key === "OK") {
       if (typed === "") return;
-      submitAnswer(parseInt(typed));
+      submitAnswer(parseInt(typed, 10));
       return;
     }
-    speak(JP_NUM[parseInt(key)]);
+    speak(toJapaneseNumber(parseInt(key, 10)), "ja-JP");
     setTyped((t) => (t.length >= 2 ? t : t + key));
   };
 
@@ -487,8 +510,8 @@ export default function NumberblocksFriends() {
       resetCustom("a");
       if (key !== "⌫" && key !== "OK") {
         setCustomA(key);
-        const kn = parseInt(key);
-        if (kn <= 20) speak(JP_NUM[kn]);
+        const kn = parseInt(key, 10);
+        speak(toJapaneseNumber(kn), "ja-JP");
       }
       return;
     }
@@ -510,7 +533,7 @@ export default function NumberblocksFriends() {
         const expected = customOp === "+" ? ai + bi : ai - bi;
         if (expected < 0) {
           setCustomErrorSlot("b");
-          speak("Их тооноос жижиг тоог хасаж болохгүй, өөр тоо сонгоорой");
+          speak("ひくことが できません", "ja-JP");
           setTimeout(() => setCustomErrorSlot(null), 900);
           return;
         }
@@ -519,17 +542,15 @@ export default function NumberblocksFriends() {
         if (given === expected) {
           setCustomSolved(true);
           setScore((s) => s + 1);
-          const spA = ai <= 20 ? JP_NUM[ai] : String(ai);
-          const spB = bi <= 20 ? JP_NUM[bi] : String(bi);
-          const spExp = expected <= 20 ? JP_NUM[expected] : String(expected);
-          speak(`${spA} ${opWord} ${spB} は ${spExp}！ せいかい！`);
+          const spA = toJapaneseNumber(ai);
+          const spB = toJapaneseNumber(bi);
+          const spExp = toJapaneseNumber(expected);
+          speak(`${spA} ${opWord} ${spB} は ${spExp}！ せいかい！`, "ja-JP");
         } else {
           setCustomErrorSlot("answer");
           setCustomAnswerInput("");
           setCustomFocus("answer");
-          const spA = ai <= 20 ? JP_NUM[ai] : String(ai);
-          const spB = bi <= 20 ? JP_NUM[bi] : String(bi);
-          speak(`ざんねん… ${spA} ${opWord} ${spB} は？`);
+          speak("ざんねん… もういちど かんがえてね！", "ja-JP");
           setTimeout(() => setCustomErrorSlot(null), 900);
         }
       } else {
@@ -543,14 +564,14 @@ export default function NumberblocksFriends() {
         const step1 = customOp === "+" ? ai + bi : ai - bi;
         if (step1 < 0) {
           setCustomErrorSlot("b");
-          speak("Их тооноос жижиг тоог хасаж болохгүй");
+          speak("ひくことが できません", "ja-JP");
           setTimeout(() => setCustomErrorSlot(null), 900);
           return;
         }
         const expected = customOp2 === "+" ? step1 + ci : step1 - ci;
         if (expected < 0) {
           setCustomErrorSlot("c");
-          speak("Хасахад үр дүн 0-ээс бага байж болохгүй");
+          speak("ひくことが できません", "ja-JP");
           setTimeout(() => setCustomErrorSlot(null), 900);
           return;
         }
@@ -560,16 +581,16 @@ export default function NumberblocksFriends() {
         if (given === expected) {
           setCustomSolved(true);
           setScore((s) => s + 1);
-          const spA = ai <= 20 ? JP_NUM[ai] : String(ai);
-          const spB = bi <= 20 ? JP_NUM[bi] : String(bi);
-          const spC = ci <= 20 ? JP_NUM[ci] : String(ci);
-          const spExp = expected <= 20 ? JP_NUM[expected] : String(expected);
-          speak(`${spA} ${opWord1} ${spB} ${opWord2} ${spC} は ${spExp}！ せいかい！`);
+          const spA = toJapaneseNumber(ai);
+          const spB = toJapaneseNumber(bi);
+          const spC = toJapaneseNumber(ci);
+          const spExp = toJapaneseNumber(expected);
+          speak(`${spA} ${opWord1} ${spB} ${opWord2} ${spC} は ${spExp}！ せいかい！`, "ja-JP");
         } else {
           setCustomErrorSlot("answer");
           setCustomAnswerInput("");
           setCustomFocus("answer");
-          speak(`ざんねん… дахин бодоорой`);
+          speak("ざんねん… もういちど かんがえてね！", "ja-JP");
           setTimeout(() => setCustomErrorSlot(null), 900);
         }
       }
@@ -586,8 +607,8 @@ export default function NumberblocksFriends() {
         ? customC
         : customAnswerInput;
     if (field.length >= 2) return;
-    const kn = parseInt(key);
-    if (kn <= 20) speak(JP_NUM[kn]);
+    const kn = parseInt(key, 10);
+    speak(toJapaneseNumber(kn), "ja-JP");
     if (customFocus === "a") setCustomA(field + key);
     else if (customFocus === "b") setCustomB(field + key);
     else if (customFocus === "c") setCustomC(field + key);
@@ -597,7 +618,7 @@ export default function NumberblocksFriends() {
   // ── Dragging from the palette ──
   const startDrag = (char: Character) => (e: React.PointerEvent) => {
     e.preventDefault();
-    speak(char.jp); // speak Japanese name on grab
+    speak(char.jp, "ja-JP"); // speak Japanese name on grab
     if (solved) return;
     setDrag({ char, x: e.clientX, y: e.clientY });
 
