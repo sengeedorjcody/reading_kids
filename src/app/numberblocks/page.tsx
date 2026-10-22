@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { useSpeech } from "@/hooks/useSpeech";
 
 // ── Japanese number words (for TTS) ─────────────────────────────────────────
@@ -157,6 +158,7 @@ function makeRound(level: number): Round {
 }
 
 export default function NumberBlocksGame() {
+  const router = useRouter();
   const [level, setLevel] = useState(1);
   const [round, setRound] = useState<Round>(() => makeRound(1));
   const [selected, setSelected] = useState<number[]>([]);
@@ -265,11 +267,27 @@ export default function NumberBlocksGame() {
 
       {/* Header */}
       <div className="flex-shrink-0 flex items-center justify-between px-4 pt-4 pb-2">
-        <div>
-          <h1 className="text-xl font-black text-gray-800">🧱 Numberblocks · ナンバーブロックス</h1>
-          <p className="text-xs text-gray-600 font-bold">
-            Level {level} · {round.mode === "add" ? "➕ Add" : "➖ Subtract"} · ⏱ {timeLeft}s
-          </p>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                router.back();
+              } else {
+                router.push("/games");
+              }
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/80 hover:bg-white text-gray-700 font-bold text-sm shadow-sm active:scale-95 transition-all"
+            title="Буцах"
+          >
+            <span className="text-base leading-none">←</span>
+            <span>Буцах</span>
+          </button>
+          <div>
+            <h1 className="text-lg sm:text-xl font-black text-gray-800">🧱 Numberblocks · ナンバーブロックス</h1>
+            <p className="text-xs text-gray-600 font-bold">
+              Level {level} · {round.mode === "add" ? "➕ Add" : "➖ Subtract"} · ⏱ {timeLeft}s
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/70 shadow">
           <span className="text-sm font-black text-orange-600">⭐ {score}</span>

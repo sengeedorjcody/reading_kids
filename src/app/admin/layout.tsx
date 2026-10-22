@@ -60,6 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <NavLink href="/admin/srt" icon="🎬" label="SRT Import" />
           </div>
           <div className="pt-4 mt-4 border-t border-gray-700">
+            <NavLink href="/admin/users" icon="👥" label="Users" />
             <NavLink href="/admin/sections" icon="🗂️" label="Sections" />
           </div>
           <div className="pt-4 mt-4 border-t border-gray-700">
@@ -84,6 +85,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             { href: "/admin/sentences", icon: "🗣️", label: "Sentences" },
             { href: "/admin/family-talk", icon: "👨‍👩‍👧‍👦", label: "Family" },
             { href: "/admin/srt", icon: "🎬", label: "SRT" },
+            { href: "/admin/users", icon: "👥", label: "Users" },
             { href: "/admin/sections", icon: "🗂️", label: "Sections" },
           ].map((item) => (
             <Link key={item.href} href={item.href} className="flex flex-col items-center gap-1 px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-gray-700 text-xs font-bold whitespace-nowrap">

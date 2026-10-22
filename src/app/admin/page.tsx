@@ -3,33 +3,36 @@ export const dynamic = "force-dynamic";
 import { connectDB } from "@/lib/db/mongoose";
 import Book from "@/lib/db/models/Book";
 import DictionaryWord from "@/lib/db/models/DictionaryWord";
+import User from "@/lib/db/models/User";
 import Link from "next/link";
 
 async function getStats() {
   try {
     await connectDB();
-    const [bookCount, wordCount] = await Promise.all([
+    const [bookCount, wordCount, userCount] = await Promise.all([
       Book.countDocuments(),
       DictionaryWord.countDocuments(),
+      User.countDocuments(),
     ]);
     const recentBooks = await Book.find().sort({ createdAt: -1 }).limit(5).lean();
-    return { bookCount, wordCount, recentBooks: JSON.parse(JSON.stringify(recentBooks)) };
+    return { bookCount, wordCount, userCount, recentBooks: JSON.parse(JSON.stringify(recentBooks)) };
   } catch {
-    return { bookCount: 0, wordCount: 0, recentBooks: [] };
+    return { bookCount: 0, wordCount: 0, userCount: 0, recentBooks: [] };
   }
 }
 
 export default async function AdminDashboard() {
-  const { bookCount, wordCount, recentBooks } = await getStats();
+  const { bookCount, wordCount, userCount, recentBooks } = await getStats();
 
   return (
     <div className="space-y-8">
       <h1 className="text-3xl font-black text-gray-800">Dashboard</h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard icon="📚" label="Total Books" value={bookCount} color="bg-pink-50 border-pink-200" href="/admin/books" />
         <StatCard icon="📝" label="Dictionary Words" value={wordCount} color="bg-purple-50 border-purple-200" href="/admin/dictionary" />
+        <StatCard icon="👥" label="Users" value={userCount} color="bg-blue-50 border-blue-200" href="/admin/users" />
         <StatCard icon="🎮" label="Games" value={null} color="bg-green-50 border-green-200" href="/admin/games" />
         <StatCard icon="📺" label="YouTube" value={null} color="bg-red-50 border-red-200" href="/admin/youtube" />
         <StatCard icon="🖼️" label="Picture Books" value={null} color="bg-amber-50 border-amber-200" href="/admin/picture-books" />
@@ -39,6 +42,9 @@ export default async function AdminDashboard() {
       <div>
         <h2 className="text-xl font-black text-gray-700 mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
+          <Link href="/admin/users" className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-2xl transition-all hover:-translate-y-0.5 shadow-md">
+            👥 Register / View Users
+          </Link>
           <Link href="/admin/books/upload" className="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-2xl transition-all hover:-translate-y-0.5 shadow-md">
             📤 Upload Book
           </Link>
