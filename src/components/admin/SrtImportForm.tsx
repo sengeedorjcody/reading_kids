@@ -129,14 +129,21 @@ export default function SrtImportForm() {
       {/* Preview: all cues; long / run-on ones highlighted for manual review */}
       {cues.length > 0 && (
         <div className="rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="grid grid-cols-[3rem_1fr] bg-gray-50 text-xs font-black text-gray-400 uppercase tracking-wide">
+          <div className="grid grid-cols-[3rem_13rem_1fr] bg-gray-50 text-xs font-black text-gray-400 uppercase tracking-wide">
             <div className="p-3">#</div>
+            <div className="p-3">Time</div>
             <div className="p-3">Text</div>
           </div>
           <div className="divide-y divide-gray-100 max-h-96 overflow-auto">
             {cues.map((c, i) => (
-              <div key={i} className={`grid grid-cols-[3rem_1fr] ${isSuspiciousCue(c) ? "bg-amber-50" : ""}`}>
+              <div
+                key={i}
+                className={`grid grid-cols-[3rem_13rem_1fr] ${isSuspiciousCue(c) ? "border-l-4 border-amber-400" : ""}`}
+              >
                 <div className="p-3 text-gray-300 font-mono text-sm">{i + 1}</div>
+                <div className="p-3 text-gray-400 font-mono text-xs whitespace-nowrap">
+                  {c.start} → {c.end}
+                </div>
                 <div className="p-3 text-gray-800 leading-relaxed whitespace-pre-wrap">
                   {c.text}
                 </div>

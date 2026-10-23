@@ -109,6 +109,10 @@ export function stringifySrt(cues: SrtCue[]): string {
 // then merge consecutive pieces until a sentence end, so 1 cue = 1 sentence.
 
 const SENTENCE_END = ["。", "!", "?", "！", "？", "…"];
+const MAX_CHARS = 45;
+const MAX_MS = 9000;
+
+const charCount = (t: string) => t.replace(/\s/g, "").length;
 
 function toMs(t: string): number {
   const [h, m, rest] = t.replace(".", ",").split(":");
@@ -143,9 +147,20 @@ export function mergeSentences(cues: SrtCue[]): SrtCue[] {
     });
   }
 
+  // No sentence punctuation at all (e.g. song lyrics) → nothing to merge on;
+  // keep the original cue lines and timing.
+  if (!pieces.some((p) => SENTENCE_END.some((end) => p.text.endsWith(end)))) {
+    return cues.map((c, i) => ({ ...c, index: i + 1, text: c.text.trim() }));
+  }
+
   const merged: { s: number; e: number; text: string }[] = [];
   let open: { s: number; e: number; text: string } | null = null;
   for (const p of pieces) {
+    // Never grow a cue past the "too long" limits, even without punctuation.
+    if (open && (charCount(open.text + p.text) > MAX_CHARS || p.e - open.s > MAX_MS)) {
+      merged.push(open);
+      open = null;
+    }
     if (!open) open = { ...p };
     else {
       open.e = p.e;
@@ -163,7 +178,7 @@ export function mergeSentences(cues: SrtCue[]): SrtCue[] {
 
 /** A cue that is probably still a run-on sentence worth checking by hand. */
 export function isSuspiciousCue(c: SrtCue): boolean {
-  return c.text.replace(/\s/g, "").length > 45 || toMs(c.end) - toMs(c.start) > 9000;
+  return charCount(c.text) > MAX_CHARS || toMs(c.end) - toMs(c.start) > MAX_MS;
 }
 
 export interface FixSrtOptions {
