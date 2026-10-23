@@ -21,7 +21,7 @@ export default function SentenceReader({ sentences, rawText, onPrev, onNext, has
             <p className="text-2xl text-[#a07840]/50 italic book-font">{rawText || "このページはからです。"}</p>
           </div>
         ) : (
-          <div className="sentence-in flex flex-col gap-1 py-2">
+          <div className="sentence-in flex flex-col gap-0.5 py-2">
             {sentences.map((sentence, i) => (
               <SentenceDisplay key={i} sentence={sentence} index={i} />
             ))}

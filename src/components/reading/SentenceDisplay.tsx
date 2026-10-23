@@ -10,7 +10,7 @@ export default function SentenceDisplay({ sentence }: SentenceDisplayProps) {
   // Plain text fallback (no words)
   if (!sentence.words || sentence.words.length === 0) {
     return (
-      <p className="text-2xl md:text-3xl leading-relaxed text-[#2d1f0e] text-center py-1 book-font font-bold">
+      <p className="text-lg md:text-2xl leading-relaxed text-[#2d1f0e] text-center py-1 book-font font-bold">
         {sentence.text}
       </p>
     );
