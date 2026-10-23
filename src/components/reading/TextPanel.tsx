@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { IPage } from "@/types";
 import SentenceReader from "./SentenceReader";
 import Link from "next/link";
@@ -16,17 +15,12 @@ interface TextPanelProps {
 export default function TextPanel({ page, bookId, currentPage, totalPages }: TextPanelProps) {
   const router = useRouter();
   const sentences = page.sentences ?? [];
-  const [sentenceIndex, setSentenceIndex] = useState(0);
 
   const hasPrevPage = currentPage > 1;
   const hasNextPage = currentPage < totalPages;
-  const hasPrevSentence = sentenceIndex > 0;
-  const hasNextSentence = sentenceIndex < sentences.length - 1;
 
   function handlePrev() {
-    if (hasPrevSentence) {
-      setSentenceIndex((i) => i - 1);
-    } else if (hasPrevPage) {
+    if (hasPrevPage) {
       router.push(`/books/${bookId}/read/${currentPage - 1}`);
     } else {
       router.push(`/books/${bookId}`);
@@ -34,9 +28,7 @@ export default function TextPanel({ page, bookId, currentPage, totalPages }: Tex
   }
 
   function handleNext() {
-    if (hasNextSentence) {
-      setSentenceIndex((i) => i + 1);
-    } else if (hasNextPage) {
+    if (hasNextPage) {
       router.push(`/books/${bookId}/read/${currentPage + 1}`);
     } else {
       router.push("/books");
@@ -86,8 +78,9 @@ export default function TextPanel({ page, bookId, currentPage, totalPages }: Tex
           <SentenceReader
             sentences={sentences}
             rawText={page.rawText}
-            index={sentenceIndex}
-            onIndexChange={setSentenceIndex}
+            onPrev={handlePrev}
+            onNext={handleNext}
+            hasPrev={hasPrevPage}
           />
         </div>
 

@@ -23,9 +23,8 @@ export interface SrtCue {
 const TIME_RE =
   /(\d{2}:\d{2}:\d{2}[,.]\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2}[,.]\d{3})/;
 
-// Known noise to drop on import.
-const WATERMARK =
-  "(Transcribed by TurboScribe. Go Unlimited to remove this message.) ";
+// Known noise to drop on import (any TurboScribe watermark variant).
+const WATERMARK_RE = /\(Transcribed by TurboScribe\.[^)]*\)\s*/g;
 const NOISE_MARKERS = ["[音楽]", "[拍手]", "[笑い]"];
 
 // Punctuation that must NOT have a space inserted before it.
@@ -36,7 +35,7 @@ const NO_SPACE_BEFORE = new Set([
 
 /** Split raw .srt text into structured cues. */
 export function parseSrt(content: string): SrtCue[] {
-  const normalized = content.replace(/\r\n/g, "\n").replace(WATERMARK, "");
+  const normalized = content.replace(/\r\n/g, "\n").replace(WATERMARK_RE, "");
   const blocks = normalized.trim().split(/\n\s*\n/);
   const cues: SrtCue[] = [];
 
@@ -104,9 +103,74 @@ export function stringifySrt(cues: SrtCue[]): string {
   );
 }
 
+// ── Sentence re-segmentation ────────────────────────────────────────────────
+// Transcribers cut cues mid-sentence and also pack several sentences into one
+// cue. Split each cue at internal sentence ends (time shared by text length),
+// then merge consecutive pieces until a sentence end, so 1 cue = 1 sentence.
+
+const SENTENCE_END = ["。", "!", "?", "！", "？", "…"];
+
+function toMs(t: string): number {
+  const [h, m, rest] = t.replace(".", ",").split(":");
+  const [sec, ms] = rest.split(",");
+  return ((+h * 60 + +m) * 60 + +sec) * 1000 + +ms;
+}
+
+function fromMs(v: number): string {
+  const pad = (n: number, w = 2) => String(n).padStart(w, "0");
+  const h = Math.floor(v / 3600000);
+  const m = Math.floor((v % 3600000) / 60000);
+  const s = Math.floor((v % 60000) / 1000);
+  return `${pad(h)}:${pad(m)}:${pad(s)},${pad(v % 1000, 3)}`;
+}
+
+/** Re-cut cues so each one holds exactly one sentence. */
+export function mergeSentences(cues: SrtCue[]): SrtCue[] {
+  const pieces: { s: number; e: number; text: string }[] = [];
+  for (const c of cues) {
+    const s = toMs(c.start);
+    const e = toMs(c.end);
+    const text = c.text.replace(/\n/g, " ").trim();
+    const parts = (text.match(/.*?(?:[。!?！？]|…+|$)/g) ?? []).filter(Boolean);
+    const total = parts.reduce((n, p) => n + p.length, 0) || 1;
+    let cur = s;
+    let acc = 0;
+    parts.forEach((p, i) => {
+      acc += p.length;
+      const d = i === parts.length - 1 ? e : s + Math.round(((e - s) * acc) / total);
+      pieces.push({ s: cur, e: d, text: p.trim() });
+      cur = d;
+    });
+  }
+
+  const merged: { s: number; e: number; text: string }[] = [];
+  let open: { s: number; e: number; text: string } | null = null;
+  for (const p of pieces) {
+    if (!open) open = { ...p };
+    else {
+      open.e = p.e;
+      open.text += p.text;
+    }
+    if (SENTENCE_END.some((end) => open!.text.endsWith(end))) {
+      merged.push(open);
+      open = null;
+    }
+  }
+  if (open) merged.push(open);
+
+  return merged.map((m, i) => ({ index: i + 1, start: fromMs(m.s), end: fromMs(m.e), text: m.text }));
+}
+
+/** A cue that is probably still a run-on sentence worth checking by hand. */
+export function isSuspiciousCue(c: SrtCue): boolean {
+  return c.text.replace(/\s/g, "").length > 45 || toMs(c.end) - toMs(c.start) > 9000;
+}
+
 export interface FixSrtOptions {
   /** Add wakachigaki spacing between words. Default true. */
   spacing?: boolean;
+  /** Re-cut cues so each holds one full sentence. Default true. */
+  sentences?: boolean;
 }
 
 /** One-shot: raw .srt in, cleaned + spaced .srt out (plus the parsed cues). */
@@ -114,8 +178,9 @@ export function fixSrt(
   content: string,
   opts: FixSrtOptions = {}
 ): { srt: string; cues: SrtCue[] } {
-  const { spacing = true } = opts;
-  const cues = parseSrt(content).map((c) => ({
+  const { spacing = true, sentences = true } = opts;
+  const parsed = parseSrt(content);
+  const cues = (sentences ? mergeSentences(parsed) : parsed).map((c) => ({
     ...c,
     text: spacing ? spaceText(c.text) : c.text,
   }));

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { fixSrt, type SrtCue } from "@/lib/srt/spacing";
+import { fixSrt, isSuspiciousCue, type SrtCue } from "@/lib/srt/spacing";
 
 export default function SrtImportForm() {
   const [raw, setRaw] = useState("");
   const [fileName, setFileName] = useState("");
   const [spacing, setSpacing] = useState(true);
+  const [sentences, setSentences] = useState(true);
+  const [inputCount, setInputCount] = useState(0);
   const [cues, setCues] = useState<SrtCue[]>([]);
   const [fixed, setFixed] = useState("");
   const [error, setError] = useState("");
@@ -28,7 +30,8 @@ export default function SrtImportForm() {
       return;
     }
     try {
-      const { srt, cues: parsed } = fixSrt(content, { spacing });
+      const { srt, cues: parsed } = fixSrt(content, { spacing, sentences });
+      setInputCount(fixSrt(content, { spacing: false, sentences: false }).cues.length);
       setCues(parsed);
       setFixed(srt);
     } catch (err) {
@@ -64,6 +67,15 @@ export default function SrtImportForm() {
         <label className="ml-auto flex items-center gap-2 text-sm font-bold text-gray-700 select-none">
           <input
             type="checkbox"
+            checked={sentences}
+            onChange={(e) => setSentences(e.target.checked)}
+            className="w-4 h-4 accent-purple-500"
+          />
+          1 cue = 1 өгүүлбэр
+        </label>
+        <label className="flex items-center gap-2 text-sm font-bold text-gray-700 select-none">
+          <input
+            type="checkbox"
             checked={spacing}
             onChange={(e) => setSpacing(e.target.checked)}
             className="w-4 h-4 accent-purple-500"
@@ -84,7 +96,7 @@ export default function SrtImportForm() {
           onClick={() => process()}
           className="bg-gray-800 hover:bg-black text-white font-bold py-2 px-5 rounded-2xl transition-all"
         >
-          ✨ Fix spacing
+          ✨ Format
         </button>
         {fixed && (
           <>
@@ -101,7 +113,10 @@ export default function SrtImportForm() {
               📋 Copy
             </button>
             <span className="text-sm text-gray-500 font-bold ml-auto">
-              {cues.length} cues
+              {inputCount} → {cues.length} cues
+              {cues.some(isSuspiciousCue) && (
+                <span className="text-amber-500"> · ⚠️ {cues.filter(isSuspiciousCue).length} урт</span>
+              )}
             </span>
           </>
         )}
@@ -111,7 +126,7 @@ export default function SrtImportForm() {
         <p className="text-red-500 font-bold text-sm">⚠️ {error}</p>
       )}
 
-      {/* Preview: first 10 cues, before → after */}
+      {/* Preview: all cues; long / run-on ones highlighted for manual review */}
       {cues.length > 0 && (
         <div className="rounded-2xl border border-gray-100 overflow-hidden">
           <div className="grid grid-cols-[3rem_1fr] bg-gray-50 text-xs font-black text-gray-400 uppercase tracking-wide">
@@ -119,8 +134,8 @@ export default function SrtImportForm() {
             <div className="p-3">Text</div>
           </div>
           <div className="divide-y divide-gray-100 max-h-96 overflow-auto">
-            {cues.slice(0, 10).map((c, i) => (
-              <div key={i} className="grid grid-cols-[3rem_1fr]">
+            {cues.map((c, i) => (
+              <div key={i} className={`grid grid-cols-[3rem_1fr] ${isSuspiciousCue(c) ? "bg-amber-50" : ""}`}>
                 <div className="p-3 text-gray-300 font-mono text-sm">{i + 1}</div>
                 <div className="p-3 text-gray-800 leading-relaxed whitespace-pre-wrap">
                   {c.text}
@@ -128,11 +143,6 @@ export default function SrtImportForm() {
               </div>
             ))}
           </div>
-          {cues.length > 10 && (
-            <div className="p-3 text-center text-xs text-gray-400 font-bold bg-gray-50">
-              … +{cues.length - 10} more
-            </div>
-          )}
         </div>
       )}
     </div>

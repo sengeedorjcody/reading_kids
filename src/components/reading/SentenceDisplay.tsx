@@ -10,14 +10,14 @@ export default function SentenceDisplay({ sentence }: SentenceDisplayProps) {
   // Plain text fallback (no words)
   if (!sentence.words || sentence.words.length === 0) {
     return (
-      <p className="text-3xl md:text-4xl leading-relaxed text-[#2d1f0e] text-center py-4 book-font font-bold">
+      <p className="text-2xl md:text-3xl leading-relaxed text-[#2d1f0e] text-center py-1 book-font font-bold">
         {sentence.text}
       </p>
     );
   }
 
   return (
-    <div className="flex flex-wrap items-end justify-center gap-0 py-4">
+    <div className="flex flex-wrap items-end justify-center gap-0 py-1">
       {sentence.words.map((word, i) => (
         <WordToken key={`${word.surface}-${i}`} word={word} />
       ))}
