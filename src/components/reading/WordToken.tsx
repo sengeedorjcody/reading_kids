@@ -31,7 +31,7 @@ export default function WordToken({ word }: WordTokenProps) {
       onClick={handleClick}
       className={cn(
         "word-token inline-flex flex-col items-center justify-end",
-        "mx-1 my-2 px-2 pt-5 pb-2 rounded-xl",
+        "mx-0.5 my-1 px-1.5 pt-4 pb-1.5 rounded-xl",
         "transition-all duration-200 book-font",
         "hover:bg-[#f5ecd4]/80 hover:scale-110 active:scale-95",
         isSelected
@@ -40,14 +40,14 @@ export default function WordToken({ word }: WordTokenProps) {
       )}
     >
       {hasFurigana ? (
-        <ruby className="text-5xl font-bold leading-none">
+        <ruby className="text-3xl md:text-4xl font-bold leading-none">
           {word.surface}
-          <rt className="text-sm font-bold" style={{ color: isSelected ? "#c05621" : "#e879a0" }}>
+          <rt className="text-xs font-bold" style={{ color: isSelected ? "#c05621" : "#e879a0" }}>
             {word.reading}
           </rt>
         </ruby>
       ) : (
-        <span className="text-5xl font-bold leading-none">{word.surface}</span>
+        <span className="text-3xl md:text-4xl font-bold leading-none">{word.surface}</span>
       )}
     </button>
   );
