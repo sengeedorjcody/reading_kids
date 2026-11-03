@@ -14,7 +14,9 @@ export async function enrichFamilyWordsFromDictionary<T extends IFamilyTalkWord>
   const matches = await DictionaryWord.find({
     $or: [{ japanese_word: { $in: lookupTexts } }, { hiragana: { $in: lookupTexts } }],
   })
-    .select("japanese_word hiragana romaji example_image_url")
+    .select(
+      "japanese_word hiragana romaji english_meaning mongolian_meaning pronunciation_audio_url example_sentence example_sentence_reading example_image_url"
+    )
     .lean();
 
   const byText = new Map<string, (typeof matches)[number]>();
@@ -31,6 +33,12 @@ export async function enrichFamilyWordsFromDictionary<T extends IFamilyTalkWord>
       imageUrl: w.imageUrl || dictWord.example_image_url || w.imageUrl,
       romaji: w.romaji || dictWord.romaji || w.romaji,
       hiragana: w.hiragana || dictWord.hiragana || w.hiragana,
+      english_meaning: w.english_meaning || dictWord.english_meaning || w.english_meaning,
+      mongolian_meaning: w.mongolian_meaning || dictWord.mongolian_meaning || w.mongolian_meaning,
+      audioUrl: w.audioUrl || dictWord.pronunciation_audio_url || w.audioUrl,
+      example_sentence: w.example_sentence || dictWord.example_sentence || w.example_sentence,
+      example_sentence_reading:
+        w.example_sentence_reading || dictWord.example_sentence_reading || w.example_sentence_reading,
     };
   });
 }

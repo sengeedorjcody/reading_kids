@@ -40,6 +40,37 @@ export default function GamesPage() {
 
       {/* Game grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 px-5 max-w-4xl mx-auto w-full">
+        {/* Built-in Japanese Club card */}
+        <button
+          onClick={() => router.push("/japanese-club")}
+          className="flex flex-col rounded-3xl overflow-hidden shadow-xl active:scale-95 transition-all hover:shadow-2xl text-left"
+          style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)" }}
+        >
+          <div className="w-full aspect-video flex items-center justify-center relative bg-gradient-to-br from-rose-500 via-pink-500 to-purple-600">
+            <span className="text-6xl drop-shadow-lg">🎌</span>
+            <div className="absolute bottom-2 right-2 flex gap-1 flex-wrap justify-end">
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-black/40 text-white/80">
+                Sensei
+              </span>
+              <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-black/40 text-white/80">
+                Club
+              </span>
+            </div>
+          </div>
+          <div className="p-3">
+            <h2 className="text-sm font-black text-white leading-tight">Japanese Club</h2>
+            <p className="text-[11px] text-gray-400 mt-1 leading-snug line-clamp-2">
+              Sensei сонгоод яриа болон өгүүлбэрийн картуудаар асуулт хариулт тоглох
+            </p>
+            <div
+              className="mt-2.5 py-1.5 rounded-xl text-center text-xs font-black text-white"
+              style={{ background: "#f43f5e" }}
+            >
+              ▶ Play
+            </div>
+          </div>
+        </button>
+
         {games.map((game) => (
           <button
             key={game._id}

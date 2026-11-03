@@ -202,6 +202,8 @@ export interface IFamilyTalkWord {
   mongolian_meaning?: string;
   imageUrl?: string;
   audioUrl?: string;
+  example_sentence?: string;
+  example_sentence_reading?: string;
   createdAt?: string;
   updatedAt?: string;
 }

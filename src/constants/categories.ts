@@ -32,7 +32,7 @@ export const CATEGORIES: Category[] = [
     label: "Play",
     icon: "🎮",
     bg: "from-green-500 to-teal-500",
-    hrefs: ["/games", "/game", "/draw", "/numberblocks-friends"],
+    hrefs: ["/japanese-club", "/games", "/game", "/draw", "/numberblocks-friends"],
   },
   {
     id: "read",

@@ -94,6 +94,7 @@ export default function HomePage() {
   const [saving, setSaving] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragPos, setDragPos] = useState<{ x: number; y: number } | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const itemsRef = useRef<HomeItem[]>(items);
   useEffect(() => { itemsRef.current = items; }, [items]);
@@ -300,33 +301,103 @@ export default function HomePage() {
         </p>
       )}
 
+      {/* ── Search menu bar ── */}
+      <div className="px-5 mb-5 max-w-xl mx-auto w-full">
+        <div
+          className="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl border transition-colors"
+          style={{
+            background: "rgba(255,255,255,0.08)",
+            borderColor: searchQuery ? "rgba(244,63,94,0.6)" : "rgba(255,255,255,0.12)",
+          }}
+        >
+          <span className="text-white/50 text-base select-none">🔍</span>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Цэс хайх / Search menu..."
+            className="flex-1 bg-transparent text-white placeholder-white/40 text-sm font-bold outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="text-white/50 hover:text-white text-xs font-black w-5 h-5 rounded-full bg-white/10 flex items-center justify-center"
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* ── App grid ── */}
       <div className="flex-1 px-5">
-        <div className="grid grid-cols-4 gap-x-4 gap-y-6 max-w-xl mx-auto">
-          {visibleItems.map((item, index) => {
-            const isDragging = dragId === item.id;
+        {searchQuery.trim() ? (
+          (() => {
+            const q = searchQuery.trim().toLowerCase();
+            const matchedApps = APPS.filter(
+              (a) =>
+                !hiddenHrefs.has(a.href) &&
+                (a.label.toLowerCase().includes(q) || a.href.toLowerCase().includes(q))
+            );
+            const matchedFolders = visibleItems.filter(
+              (item) => item.type === "folder" && (item.name ?? "").toLowerCase().includes(q)
+            );
+            if (matchedApps.length === 0 && matchedFolders.length === 0) {
+              return (
+                <div className="text-center py-12 text-white/40">
+                  <div className="text-4xl mb-2">🔍</div>
+                  <p className="text-sm font-bold">Цэс олдсонгүй · No menu found</p>
+                </div>
+              );
+            }
             return (
-              <div
-                key={item.id}
-                ref={registerRef(item.id)}
-                onPointerDown={(e) => handlePointerDown(e, item.id)}
-                className={editMode && !isDragging ? "home-icon-wiggle" : ""}
-                style={{
-                  touchAction: editMode ? "none" : "auto",
-                  opacity: isDragging ? 0.25 : 1,
-                  cursor: editMode ? "grab" : "pointer",
-                  animationDelay: editMode ? `${(index % 4) * 0.09}s` : undefined,
-                }}
-              >
-                {item.type === "folder" ? (
-                  <FolderIcon item={item} />
-                ) : (
-                  <AppIconView meta={APPS_BY_HREF.get(item.href!)} suppressNav={editMode} />
-                )}
+              <div className="grid grid-cols-4 gap-x-4 gap-y-6 max-w-xl mx-auto">
+                {matchedFolders.map((folder) => (
+                  <div
+                    key={folder.id}
+                    onClick={() => setOpenFolderId(folder.id)}
+                    className="cursor-pointer"
+                  >
+                    <FolderIcon item={folder} />
+                  </div>
+                ))}
+                {matchedApps.map((meta) => (
+                  <div key={meta.href}>
+                    <AppIconView meta={meta} suppressNav={editMode} />
+                  </div>
+                ))}
               </div>
             );
-          })}
-        </div>
+          })()
+        ) : (
+          <div className="grid grid-cols-4 gap-x-4 gap-y-6 max-w-xl mx-auto">
+            {visibleItems.map((item, index) => {
+              const isDragging = dragId === item.id;
+              return (
+                <div
+                  key={item.id}
+                  ref={registerRef(item.id)}
+                  onPointerDown={(e) => handlePointerDown(e, item.id)}
+                  className={editMode && !isDragging ? "home-icon-wiggle" : ""}
+                  style={{
+                    touchAction: editMode ? "none" : "auto",
+                    opacity: isDragging ? 0.25 : 1,
+                    cursor: editMode ? "grab" : "pointer",
+                    animationDelay: editMode ? `${(index % 4) * 0.09}s` : undefined,
+                  }}
+                >
+                  {item.type === "folder" ? (
+                    <FolderIcon item={item} />
+                  ) : (
+                    <AppIconView meta={APPS_BY_HREF.get(item.href!)} suppressNav={editMode} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── Floating dragged icon ── */}
