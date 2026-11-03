@@ -3,6 +3,7 @@ export interface SectionMeta {
   icon?: string;
   iconSrc?: string;
   label: string;
+  keywords?: string[];
   color: string;
   bg: string;
 }
@@ -36,11 +37,11 @@ export const SECTION_CATALOG: SectionMeta[] = [
   { href: "/themes",     icon: "🗂️", label: "Themes",      color: "#f97316", bg: "from-orange-400 to-red-400" },
   { href: "/books",      icon: "📖", label: "Books",       color: "#0ea5e9", bg: "from-sky-400 to-blue-500" },
   { href: "/picture-books", icon: "🖼️", label: "Picture Books", color: "#f59e0b", bg: "from-amber-400 to-orange-500" },
-  { href: "/conversations",icon:"💬", label: "Conversations", color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },
-  { href: "/sentences",  icon: "🗣️", label: "Sentences",   color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
+  { href: "/conversations",icon:"💬", label: "Conversations", keywords: ["conversation", "kaiwa", "яриа", "харилцан яриа"], color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },
+  { href: "/sentences",  icon: "🗣️", label: "Sentences",   keywords: ["sentence", "өгүүлбэр"], color: "#f43f5e", bg: "from-rose-400 to-pink-500" },
   { href: "/weekly-words", icon: "📅", label: "Weekly Words", color: "#3b82f6", bg: "from-blue-500 to-indigo-600" },
   { href: "/dictionary", icon: "📝", label: "Dictionary",  color: "#ec4899", bg: "from-pink-400 to-fuchsia-500" },
-  { href: "/family-talk", icon: "👨‍👩‍👧‍👦", label: "Family Talk", color: "#fb7185", bg: "from-orange-400 to-fuchsia-500" },
+  { href: "/family-talk", icon: "👨‍👩‍👧‍👦", label: "Family Talk", keywords: ["conversation", "family", "яриа", "гэр бүл"], color: "#fb7185", bg: "from-orange-400 to-fuchsia-500" },
   // Row 5 — creative
   { href: "/words",      icon: "🔤", label: "Words",       color: "#f59e0b", bg: "from-yellow-400 to-orange-500" },
   { href: "/draw",       icon: "🎨", label: "Draw",        color: "#a855f7", bg: "from-fuchsia-400 to-purple-600" },

@@ -336,10 +336,13 @@ export default function HomePage() {
         {searchQuery.trim() ? (
           (() => {
             const q = searchQuery.trim().toLowerCase();
+            // Search across ALL sections in SECTION_CATALOG (including sections
+            // hidden from the main grid via /admin/sections) so any menu can be found.
             const matchedApps = APPS.filter(
               (a) =>
-                !hiddenHrefs.has(a.href) &&
-                (a.label.toLowerCase().includes(q) || a.href.toLowerCase().includes(q))
+                a.label.toLowerCase().includes(q) ||
+                a.href.toLowerCase().includes(q) ||
+                (a.keywords ?? []).some((k) => k.toLowerCase().includes(q))
             );
             const matchedFolders = visibleItems.filter(
               (item) => item.type === "folder" && (item.name ?? "").toLowerCase().includes(q)

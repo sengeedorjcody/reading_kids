@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import { CATEGORY_BY_ID } from "@/constants/categories";
-import { SECTION_CATALOG_BY_HREF, type SectionMeta } from "@/constants/sections";
+import { SECTION_CATALOG, SECTION_CATALOG_BY_HREF, type SectionMeta } from "@/constants/sections";
 
 export default function CategoryPage({ params }: { params: { id: string } }) {
   const category = CATEGORY_BY_ID.get(params.id);
@@ -20,14 +20,16 @@ export default function CategoryPage({ params }: { params: { id: string } }) {
   if (!category) notFound();
 
   const q = searchQuery.trim().toLowerCase();
-  const items = category.hrefs
-    .map((href) => SECTION_CATALOG_BY_HREF.get(href))
-    .filter(
-      (s): s is SectionMeta =>
-        s !== undefined &&
-        !hiddenHrefs.has(s.href) &&
-        (!q || s.label.toLowerCase().includes(q) || s.href.toLowerCase().includes(q))
-    );
+  const items = q
+    ? SECTION_CATALOG.filter(
+        (s) =>
+          s.label.toLowerCase().includes(q) ||
+          s.href.toLowerCase().includes(q) ||
+          (s.keywords ?? []).some((k) => k.toLowerCase().includes(q))
+      )
+    : category.hrefs
+        .map((href) => SECTION_CATALOG_BY_HREF.get(href))
+        .filter((s): s is SectionMeta => s !== undefined && !hiddenHrefs.has(s.href));
 
   return (
     <div

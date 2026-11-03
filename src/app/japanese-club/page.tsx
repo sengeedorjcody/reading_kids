@@ -24,9 +24,9 @@ async function getClubData(): Promise<{
     await connectDB();
 
     const [familyTopicsRaw, conversationsRaw, sentenceTopicsRaw] = await Promise.all([
-      FamilyTalkTopic.find({ isPublished: true }).sort({ order: 1, createdAt: -1 }).lean(),
-      Conversation.find({ isPublished: true }).sort({ createdAt: -1 }).lean(),
-      Topic.find({ isPublished: true }).sort({ order: 1, createdAt: -1 }).lean(),
+      FamilyTalkTopic.find({}).sort({ order: 1, createdAt: -1 }).lean(),
+      Conversation.find({}).sort({ createdAt: -1 }).lean(),
+      Topic.find({}).sort({ order: 1, createdAt: -1 }).lean(),
     ]);
 
     const familyTopics = JSON.parse(JSON.stringify(familyTopicsRaw)) as IFamilyTalkTopic[];
