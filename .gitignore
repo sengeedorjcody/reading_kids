@@ -44,3 +44,12 @@ public/workbox-*.js.map
 public/swe-worker-*.js
 public/swe-worker-*.js.map
 godot-games/*/.godot/
+
+# raw photos of the driving-test workbook (large HEIC files)
+/collectionOfExercise/
+
+# generated illustrations for the driving test (hosted on S3)
+/geminiImages/
+
+# local secrets (AWS keys etc.)
+/.env

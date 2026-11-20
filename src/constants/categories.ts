@@ -15,7 +15,7 @@ export const CATEGORIES: Category[] = [
     label: "Learn",
     icon: "📝",
     bg: "from-orange-500 to-pink-500",
-    hrefs: ["/exam", "/flashcards", "/alphabet", "/writing", "/dictionary", "/sentences", "/weekly-words", "/words", "/words-english"],
+    hrefs: ["/exam", "/driving-test", "/flashcards", "/alphabet", "/writing", "/dictionary", "/sentences", "/weekly-words", "/words", "/words-english"],
   },
   {
     id: "vocabulary",
