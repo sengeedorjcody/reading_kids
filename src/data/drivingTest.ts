@@ -32,7 +32,28 @@ export const ITEMS: DrivingItem[] = [
   { id: 2, stage: 1, num: 2, ja: "信号に従うこと", mn: "Гэрлэн дохио, дохиог дагах", en: "Obeying signals" },
   { id: 5, stage: 1, num: 5, ja: "緊急自動車などの優先", mn: "Яаралтай тээврийн хэрэгсэл зэргийн тэргүүлэх эрх", en: "Priority for emergency vehicles, etc." },
   { id: 6, stage: 1, num: 6, ja: "交差点・踏切", mn: "Уулзвар ба төмөр замын гарам", en: "Intersections and railroad crossings" },
+  { id: 7, stage: 1, num: 7, ja: "安全な速度と車間距離", mn: "Аюулгүй хурд ба хоорондын зай", en: "Safe speed and following distance" },
+  { id: 8, stage: 1, num: 8, ja: "歩行者の保護など", mn: "Явган зорчигчийг хамгаалах зэрэг", en: "Protecting pedestrians, etc." },
+  { id: 9, stage: 1, num: 9, ja: "安全の確認と合図・警音器の使用", mn: "Аюулгүй байдлыг шалгах, дохио ба дуут дохио хэрэглэх", en: "Confirming safety, signaling, and using the horn" },
+  { id: 10, stage: 1, num: 10, ja: "進路変更など", mn: "Чиглэл өөрчлөх зэрэг", en: "Changing course, etc." },
+  { id: 11, stage: 1, num: 11, ja: "追い越し", mn: "Гүйцэж түрүүлэх", en: "Overtaking" },
+  { id: 12, stage: 1, num: 12, ja: "行き違い", mn: "Зөрж өнгөрөх", en: "Passing oncoming traffic" },
+  { id: 13, stage: 1, num: 13, ja: "運転免許制度・交通反則通告制度", mn: "Жолооны үнэмлэхийн тогтолцоо ба замын хөдөлгөөний зөрчлийн мэдэгдлийн тогтолцоо", en: "Driver's license system and traffic violation notification system" },
+  { id: 14, stage: 1, num: 14, ja: "オートマチック車などの運転", mn: "Автомат кроптой машин зэргийн жолоодлого", en: "Driving automatic vehicles, etc." },
+  { id: 104, stage: 2, num: 4, ja: "死角と運転", mn: "Харагдахгүй бүс ба жолоодлого", en: "Blind spots and driving" },
+  { id: 105, stage: 2, num: 5, ja: "適性検査結果に基づく行動分析", mn: "Жолоочийн чадварын сорилын үр дүнд суурилсан үйлдлийн шинжилгээ", en: "Behavioral analysis based on aptitude test results" },
   { id: 106, stage: 2, num: 6, ja: "人間の能力と運転", mn: "Хүний чадвар ба жолоодлого", en: "Human abilities and driving" },
+  { id: 107, stage: 2, num: 7, ja: "車に働く自然の力と運転", mn: "Машинд үйлчлэх байгалийн хүч ба жолоодлого", en: "Natural forces acting on vehicles and driving" },
+  { id: 108, stage: 2, num: 8, ja: "悪条件下での運転", mn: "Хүндрэлтэй нөхцөл дэх жолоодлого", en: "Driving under adverse conditions" },
+  { id: 109, stage: 2, num: 9, ja: "特徴的な事故と事故の悲惨さ", mn: "Онцлог осол ба ослын эмгэнэлт хор уршиг", en: "Characteristic accidents and the tragedy of accidents" },
+  { id: 110, stage: 2, num: 10, ja: "自動車の保守管理", mn: "Автомашины арчилгаа, техникийн үйлчилгээ", en: "Vehicle maintenance and management" },
+  { id: 111, stage: 2, num: 11, ja: "駐車と停車", mn: "Удаан зогсох ба түр зогсох", en: "Parking and stopping" },
+  { id: 112, stage: 2, num: 12, ja: "乗車と積載", mn: "Зорчигч тээвэрлэх ба ачаа ачих", en: "Carrying passengers and loading cargo" },
+  { id: 113, stage: 2, num: 13, ja: "けん引", mn: "Чирэх", en: "Towing" },
+  { id: 114, stage: 2, num: 14, ja: "交通事故のとき", mn: "Замын хөдөлгөөний ослын үед", en: "In case of a traffic accident" },
+  { id: 115, stage: 2, num: 15, ja: "自動車の所有者などの心得と保険制度", mn: "Автомашин эзэмшигчийн анхаарах зүйлс ба даатгалын тогтолцоо", en: "Responsibilities of vehicle owners and the insurance system" },
+  { id: 116, stage: 2, num: 16, ja: "経路の設計", mn: "Замын чиглэл төлөвлөх", en: "Route planning" },
+  { id: 117, stage: 2, num: 17, ja: "高速道路での運転", mn: "Хурдны зам дээрх жолоодлого", en: "Driving on expressways" },
 ];
 
 // Illustrations live in S3 under `driving-test/<item>-<no>.jpeg`. Set
@@ -41,8 +62,19 @@ export const ITEMS: DrivingItem[] = [
 // and every question listed in IMAGE_NOS gets its image automatically.
 const IMAGE_BASE = (process.env.NEXT_PUBLIC_DRIVING_IMAGE_BASE ?? "").replace(/\/$/, "");
 const IMAGE_NOS: Record<number, number[]> = {
-  // 1-21, 1-22, 1-25, 1-28 have no image yet.
-  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 23, 24, 26, 27, 29, 30],
+  // Only 1-28 has no image yet. Items 2+ mix generated pictures and crops of the book's own figures.
+  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30],
+  2: [1, 2, 4, 5, 6, 7, 8, 9, 12, 13, 21],
+  5: [18, 19, 20, 25, 26, 27],
+  6: [9, 10, 11, 15, 17, 18, 22, 24],
+  7: [3, 4, 16],
+  8: [6],
+  9: [21, 27],
+  10: [13, 15, 16, 17, 24, 25, 26, 27],
+  11: [27, 28],
+  13: [15],
+  111: [11, 24],
+  117: [3, 6, 8],
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
@@ -247,6 +279,27 @@ const ITEM6_NOTES_EN: string[] = [
 import * as item2 from "./driving/item2";
 import * as item5 from "./driving/item5";
 import * as item6 from "./driving/item6";
+import * as item7 from "./driving/item7";
+import * as item8 from "./driving/item8";
+import * as item9 from "./driving/item9";
+import * as item10 from "./driving/item10";
+import * as item11 from "./driving/item11";
+import * as item12 from "./driving/item12";
+import * as item13 from "./driving/item13";
+import * as item14 from "./driving/item14";
+import * as item104 from "./driving/item104";
+import * as item105 from "./driving/item105";
+import * as item107 from "./driving/item107";
+import * as item108 from "./driving/item108";
+import * as item109 from "./driving/item109";
+import * as item110 from "./driving/item110";
+import * as item111 from "./driving/item111";
+import * as item112 from "./driving/item112";
+import * as item113 from "./driving/item113";
+import * as item114 from "./driving/item114";
+import * as item115 from "./driving/item115";
+import * as item116 from "./driving/item116";
+import * as item117 from "./driving/item117";
 
 export function itemLabel(id: number): string {
   const it = ITEMS.find((x) => x.id === id);
@@ -258,5 +311,26 @@ export const QUESTIONS: DrivingQuestion[] = [
   ...build(2, item2.ROWS, item2.NOTES, item2.EN, item2.NOTES_EN, item2.FIGURE_NOS),
   ...build(5, item5.ROWS, item5.NOTES, item5.EN, item5.NOTES_EN, item5.FIGURE_NOS),
   ...build(6, item6.ROWS, item6.NOTES, item6.EN, item6.NOTES_EN, item6.FIGURE_NOS),
+  ...build(7, item7.ROWS, item7.NOTES, item7.EN, item7.NOTES_EN, item7.FIGURE_NOS),
+  ...build(8, item8.ROWS, item8.NOTES, item8.EN, item8.NOTES_EN, item8.FIGURE_NOS),
+  ...build(9, item9.ROWS, item9.NOTES, item9.EN, item9.NOTES_EN, item9.FIGURE_NOS),
+  ...build(10, item10.ROWS, item10.NOTES, item10.EN, item10.NOTES_EN, item10.FIGURE_NOS),
+  ...build(11, item11.ROWS, item11.NOTES, item11.EN, item11.NOTES_EN, item11.FIGURE_NOS),
+  ...build(12, item12.ROWS, item12.NOTES, item12.EN, item12.NOTES_EN, item12.FIGURE_NOS),
+  ...build(13, item13.ROWS, item13.NOTES, item13.EN, item13.NOTES_EN, item13.FIGURE_NOS),
+  ...build(14, item14.ROWS, item14.NOTES, item14.EN, item14.NOTES_EN, item14.FIGURE_NOS),
+  ...build(104, item104.ROWS, item104.NOTES, item104.EN, item104.NOTES_EN, item104.FIGURE_NOS),
+  ...build(105, item105.ROWS, item105.NOTES, item105.EN, item105.NOTES_EN, item105.FIGURE_NOS),
   ...build(106, ITEM6_ROWS, ITEM6_NOTES, ITEM6_EN, ITEM6_NOTES_EN),
+  ...build(107, item107.ROWS, item107.NOTES, item107.EN, item107.NOTES_EN, item107.FIGURE_NOS),
+  ...build(108, item108.ROWS, item108.NOTES, item108.EN, item108.NOTES_EN, item108.FIGURE_NOS),
+  ...build(109, item109.ROWS, item109.NOTES, item109.EN, item109.NOTES_EN, item109.FIGURE_NOS),
+  ...build(110, item110.ROWS, item110.NOTES, item110.EN, item110.NOTES_EN, item110.FIGURE_NOS),
+  ...build(111, item111.ROWS, item111.NOTES, item111.EN, item111.NOTES_EN, item111.FIGURE_NOS),
+  ...build(112, item112.ROWS, item112.NOTES, item112.EN, item112.NOTES_EN, item112.FIGURE_NOS),
+  ...build(113, item113.ROWS, item113.NOTES, item113.EN, item113.NOTES_EN, item113.FIGURE_NOS),
+  ...build(114, item114.ROWS, item114.NOTES, item114.EN, item114.NOTES_EN, item114.FIGURE_NOS),
+  ...build(115, item115.ROWS, item115.NOTES, item115.EN, item115.NOTES_EN, item115.FIGURE_NOS),
+  ...build(116, item116.ROWS, item116.NOTES, item116.EN, item116.NOTES_EN, item116.FIGURE_NOS),
+  ...build(117, item117.ROWS, item117.NOTES, item117.EN, item117.NOTES_EN, item117.FIGURE_NOS),
 ];

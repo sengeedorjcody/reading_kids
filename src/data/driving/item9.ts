@@ -1,0 +1,91 @@
+import type { Row, Note } from "../drivingTest";
+
+// 第1段階 項目9 安全の確認と合図・警音器の使用. Q21 (1図), Q27 (2図)
+// need their figures — hidden until images exist.
+export const FIGURE_NOS = [21, 27];
+
+export const ROWS: Row[] = [
+  [1, "車に乗る前には、車の前後に人がいないか、車の下にこどもがいないか確かめる必要がある。", "Машинд суухын өмнө машины урд, хойно хүн байгаа эсэх, машины доор хүүхэд байгаа эсэхийг шалгах шаардлагатай.", true],
+  [2, "交通量の多いところでは、左側のドアから乗り降りするほうが安全である。", "Хөдөлгөөн ихтэй газарт зүүн талын хаалгаар сууж, буух нь илүү аюулгүй.", true],
+  [3, "車に乗ってからドアを閉めるときは、少し手前で一度止め、力を入れて閉めるようにする。", "Машинд суугаад хаалгаа хаахдаа хаагдахаас бага зэрэг өмнө нэг зогсоож байгаад хүчтэй хаах хэрэгтэй.", true],
+  [4, "バックでの発進は危険なので、車庫などに車を入れるときは、発進しやすいようにあらかじめバックで入れておくとよい。", "Ухарч хөдлөх нь аюултай тул гарааш зэрэгт машин оруулахдаа хөдлөхөд хялбар байхаар урьдчилан ухарч оруулж тавих нь зүйтэй.", true],
+  [5, "運転席から見た四輪車の死角は、前方より後方のほうが多い。", "Жолоочийн суудлаас харахад дөрвөн дугуйт машины сохор бүс нь урд талаасаа хойд талдаа илүү их байдаг.", true],
+  [6, "車の運転中は、前方に注意するだけでなく、バックミラーなどで周囲の交通の状況にも注意する必要がある。", "Машин жолоодож байх үед зөвхөн урд талдаа анхаараад зогсохгүй голын болон хажуугийн толь зэргээр эргэн тойрны хөдөлгөөний нөхцөл байдалд ч анхаарах шаардлагатай.", true],
+  [7, "合図は、その行為が終わったあとも安全のためにしばらく続けたほうがよい。", "Дохиог тухайн үйлдэл дууссаны дараа ч аюулгүйн үүднээс хэсэг хугацаанд үргэлжлүүлэн өгөх нь дээр.", false],
+  [8, "進路変更・転回などをしようとするときは、あらかじめバックミラーなどで安全を確かめたあとに合図を行う。", "Эгнээ солих, буцаж эргэх зэрэг үйлдэл хийх гэж байгаа бол урьдчилан толь зэргээр аюулгүй байдлыг магадласны дараа дохио өгнө.", true],
+  [9, "進路変更するときは、先に合図をしてから安全を確かめるのがよい。", "Эгнээ солихдоо эхлээд дохиогоо өгсний дараа аюулгүй байдлыг шалгах нь зүйтэй.", false],
+  [10, "徐行や停止の手による合図は、腕を車の外に出して斜め下にのばし、手のひらを後ろに向け、腕を前後に動かす。", "Удаан явах болон зогсох дохиог гараар өгөхдөө гараа машины гадна гарган ташуу доош сунгаж, алгаа хойш харуулан гараа урагш хойш хөдөлгөнө.", false],
+  [11, "徐行や停止の合図の時期は、徐行や停止をしようとする3秒前である。", "Удаан явах болон зогсох дохио өгөх хугацаа нь удаан явах эсвэл зогсох гэж буйгаас 3 секундийн өмнө байна.", false],
+  [12, "左折の合図をやめる時期は、左折が終わった3秒後である。", "Зүүн эргэх дохиог болих хугацаа нь зүүн эргэж дууссанаас хойш 3 секундийн дараа байна.", false],
+  [13, "後退の合図の時期は、後退をしようとする30メートル手前である。", "Ухрах дохио өгөх хугацаа нь ухрах гэж буй газраас 30 метрийн өмнө байна.", false],
+  [14, "徐行・停止・後退の合図の時期は、その行為をしようとするときである。", "Удаан явах, зогсох, ухрах дохио өгөх хугацаа нь тухайн үйлдлийг хийх гэж буй яг тэр мөч юм.", true],
+  [15, "転回の合図の時期は、転回しようとする3秒前である。", "Буцаж эргэх дохио өгөх хугацаа нь буцаж эргэх гэж буйгаас 3 секундийн өмнө байна.", false],
+  [16, "転回の合図の時期は、右折の場合と同じである。", "Буцаж эргэх дохио өгөх хугацаа нь баруун эргэх тохиолдолтой ижил байна.", true],
+  [17, "右折の合図の時期は、右折をしようとする約3秒前である。", "Баруун эргэх дохио өгөх хугацаа нь баруун эргэх гэж буйгаас ойролцоогоор 3 секундийн өмнө байна.", false],
+  [18, "右折や転回の合図の時期は、その行為をしようとする地点から30メートル手前の地点に達したときである。", "Баруун эргэх болон буцаж эргэх дохио өгөх хугацаа нь тухайн үйлдлийг хийх цэгээс 30 метрийн өмнөх цэгт хүрсэн үе юм.", true],
+  [19, "進路変更の合図の時期は、進路を変えようとする3秒前である。", "Эгнээ солих дохио өгөх хугацаа нь чиглэлээ өөрчлөх гэж буйгаас 3 секундийн өмнө байна.", true],
+  [20, "夕日の反射などによって方向指示器が見えにくいときは、方向指示器の操作とあわせて手による合図もするのがよい。", "Жаргах нарны тусгал зэргээс болж эргэх дохионы гэрэл харагдахад бэрх байвал эргэх дохиог ажиллуулахын зэрэгцээ гараар дохио өгөх нь зүйтэй.", true],
+  [21, "1図のような手による合図は、左折の合図である。", "1-р зурагт үзүүлсэн шиг гараар өгөх дохио нь зүүн эргэх дохио юм.", false],
+  [22, "右折や左折の合図は、右折や左折が終わるまで続けなければならない。", "Баруун эргэх болон зүүн эргэх дохиог баруун эсвэл зүүн эргэж дуустал үргэлжлүүлэн өгөх ёстой.", true],
+  [23, "夜間、前車の尾灯が急に明るくなったときは、その車の運転者がブレーキペダルを踏んだと考えてよい。", "Шөнийн цагт урд яваа машины арын гэрэл гэнэт тодорвол тухайн машины жолооч тоормосны дөрөө гишгэлээ гэж үзэж болно.", true],
+  [24, "道路の左端に止まっている車が方向指示器で右に合図をしたときは、その車は発進すると考えてよい。", "Замын зүүн захад зогсож буй машин баруун тийш эргэх дохио өгвөл тухайн машин хөдлөх гэж байна гэж үзэж болно.", true],
+  [25, "右腕を車の右側の外に出して、ひじを垂直に上にまげる合図は、転回することを表している。", "Баруун гараа машины баруун талын гадна гаргаж, тохойгоо эгц дээш нугалах дохио нь буцаж эргэхийг илэрхийлдэг.", false],
+  [26, "警音器は、危険防止のためでも「警笛鳴らせ」の標識がなければ鳴らしてはならない。", "Дуут дохиог аюулаас сэргийлэх зорилгоор ч «Дуут дохио өг» гэсэн тэмдэг байхгүй бол дуугаргаж болохгүй.", false],
+  [27, "2図の標識のある場所でも、交通量が少ないときは、警音器を鳴らさないで速度を落とせばよい。", "2-р зурагт заасан тэмдэгтэй газарт ч хөдөлгөөн багатай үед дуут дохио дуугаргалгүй хурдаа хасахад л болно.", false],
+  [28, "前車が青信号に変わっても発進しないので、警音器を鳴らした。", "Гэрлэн дохио ногоон болсон ч урд талын машин хөдлөхгүй байсан тул дуут дохио дуугаргасан.", false],
+  [29, "見通しのきかない上り坂の頂上に近づいたときは、「警笛鳴らせ」の標識がなくても警音器を鳴らさなければならない。", "Орчин харагдахгүй өгсүүр замын оройд ойртох үед «Дуут дохио өг» гэсэн тэмдэг байхгүй ч дуут дохио дуугаргах ёстой.", false],
+  [30, "「警笛区間」の区間内で、見通しのきかない上り坂の頂上を通行するときは、そこに「警笛鳴らせ」の標識がなくても警音器を鳴らさなければならない。", "«Дуут дохионы бүс»-ийн дотор орчин харагдахгүй өгсүүр замын оройгоор явахдаа тэнд «Дуут дохио өг» гэсэн тэмдэг байхгүй ч дуут дохио дуугаргах ёстой.", true],
+];
+
+export const NOTES: Note[] = [
+  [[5, 6], "普通自動車の死角は前方で約3〜4m、後方で約7〜8m。また、ミラーに映らない部分を知っておこう。", "Энгийн автомашины сохор бүс нь урд талдаа ойролцоогоор 3–4 м, хойд талдаа ойролцоогоор 7–8 м байдаг. Мөн толинд харагддаггүй хэсгийг мэдэж авцгаая."],
+  [[8, 9], "進路変更をするときは、「安全確認→合図→安全の再確認」の手順で。また、無理な進路変更はしない。", "Эгнээ солихдоо «аюулгүй байдлыг шалгах → дохио өгөх → аюулгүй байдлыг дахин шалгах» дарааллаар хийнэ. Мөн хүчээр эгнээ солихгүй."],
+  [[10], "腕を前後に振るのは後退の合図。", "Гараа урагш хойш хөдөлгөх нь ухрах дохио юм."],
+  [[15, 16, 17], "右左折と転回の合図の時期は、その行為をしようとする30m手前。", "Баруун, зүүн эргэх болон буцаж эргэх дохио өгөх хугацаа нь тухайн үйлдлийг хийх газраас 30 м-ийн өмнө байна."],
+  [[21], "右腕を外に出し、水平にのばしているときは、右折・転回または右方への進路変更の合図。", "Баруун гараа гадна гаргаж хэвтээ сунгасан байвал баруун эргэх, буцаж эргэх эсвэл баруун тийш эгнээ солих дохио юм."],
+  [[26, 27, 28], "警音器は「警笛鳴らせ」の標識のあるところでは鳴らさなくてはいけないが、それ以外は危険防止の場合を除き、鳴らさない。", "Дуут дохиог «Дуут дохио өг» тэмдэгтэй газарт заавал дуугаргах ёстой бөгөөд түүнээс бусад үед аюулаас сэргийлэх тохиолдлоос гадна дуугаргахгүй."],
+  [[29, 30], "見通しのきかない上り坂の頂上で警音器を鳴らさなければならないのは、「警笛区間」の区間内か、「警笛鳴らせ」の標識がある場合。", "Орчин харагдахгүй өгсүүр замын орой дээр дуут дохио дуугаргах ёстой тохиолдол нь «Дуут дохионы бүс»-ийн дотор эсвэл «Дуут дохио өг» гэсэн тэмдэг байгаа үе юм."],
+];
+
+export const EN: string[] = [
+  "Before getting into a car, you need to check that there is no one in front of or behind the car and no child under the car.",
+  "Where traffic is heavy, it is safer to get in and out through the left-side door.",
+  "When closing the door after getting in, stop it once just before it shuts and then pull it closed firmly.",
+  "Starting out in reverse is dangerous, so when putting a car into a garage it is best to back it in ahead of time so that it is easy to pull out.",
+  "From the driver's seat of a four-wheeled vehicle, the blind spot is larger to the rear than to the front.",
+  "While driving, you need to pay attention not only to the road ahead, but also to surrounding traffic conditions using the rearview mirrors.",
+  "For safety, it is better to keep signaling for a while even after the maneuver is completed.",
+  "When about to change lanes or make a U-turn, first confirm safety using the rearview mirrors and then give a signal.",
+  "When changing lanes, it is best to signal first and then check for safety.",
+  "The hand signal for slowing to a crawl or stopping is to extend your arm out of the car diagonally downward, turn your palm to the rear, and move your arm back and forth.",
+  "The timing for signaling to drive at a crawl or stop is 3 seconds before slowing to a crawl or stopping.",
+  "The timing to cancel a left-turn signal is 3 seconds after completing the left turn.",
+  "The timing for a reversing signal is 30 meters before the point where you intend to reverse.",
+  "The timing for signaling to drive at a crawl, stop, or reverse is at the moment you are about to perform that maneuver.",
+  "The timing for a U-turn signal is 3 seconds before making the U-turn.",
+  "The timing for a U-turn signal is the same as that for a right turn.",
+  "The timing for a right-turn signal is about 3 seconds before making the right turn.",
+  "The timing for a right-turn or U-turn signal is when you reach a point 30 meters before the point where you intend to make the maneuver.",
+  "The timing for a lane-change signal is 3 seconds before changing lanes.",
+  "When the turn signal is hard to see because of glare from the setting sun, it is good to give a hand signal along with operating the turn signal.",
+  "The hand signal shown in Figure 1 is the signal for a left turn.",
+  "A right-turn or left-turn signal must be continued until the right or left turn is completed.",
+  "At night, when the taillights of the vehicle ahead suddenly become brighter, you may assume that its driver has pressed the brake pedal.",
+  "When a vehicle stopped at the left edge of the road signals right with its turn indicator, you may assume that the vehicle is about to pull out.",
+  "Extending your right arm out of the right side of the car and bending your elbow vertically upward indicates a U-turn.",
+  "You must not sound the horn even to prevent danger unless there is a \"Sound Horn\" sign.",
+  "Even at a place with the sign in Figure 2, when traffic is light it is enough to slow down without sounding the horn.",
+  "Because the vehicle ahead did not start moving even after the traffic light turned green, I sounded the horn.",
+  "When approaching the top of an uphill slope with poor visibility, you must sound the horn even if there is no \"Sound Horn\" sign.",
+  "Within a \"Horn Zone,\" when passing the top of an uphill slope with poor visibility, you must sound the horn even if there is no \"Sound Horn\" sign right there.",
+];
+
+export const NOTES_EN: string[] = [
+  "The blind spot of an ordinary automobile is about 3 to 4 m in front and about 7 to 8 m behind. Also make sure to know the areas not visible in the mirrors.",
+  "When changing lanes, follow the order: \"check safety -> signal -> re-check safety.\" Do not make forced lane changes.",
+  "Moving the arm back and forth is the signal for reversing.",
+  "The timing for signaling a right turn, left turn, or U-turn is 30 m before the point where you intend to perform the maneuver.",
+  "Extending the right arm horizontally outside the vehicle is the signal for a right turn, a U-turn, or changing lanes to the right.",
+  "You must sound the horn where there is a \"Sound Horn\" sign, but otherwise do not sound it except when necessary to prevent danger.",
+  "You must sound the horn at the top of an uphill slope with poor visibility only when inside a \"Horn Zone\" or when a \"Sound Horn\" sign is present.",
+];
