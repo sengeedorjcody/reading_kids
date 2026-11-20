@@ -4,7 +4,9 @@
 // it's a new 項目). `answer: true` = ○, `false` = ×.
 
 export interface DrivingItem {
-  id: number;
+  id: number; // stage 1 → 1..17, stage 2 → 100 + n (the book restarts numbering per stage)
+  stage: 1 | 2;
+  num: number; // 項目 number as printed in the book
   ja: string;
   mn: string;
   en: string;
@@ -26,8 +28,11 @@ export interface DrivingQuestion {
 }
 
 export const ITEMS: DrivingItem[] = [
-  { id: 1, ja: "運転者の心得", mn: "Жолоочийн сэтгэлгээ, ёс зүй", en: "Driver's attitude and manners" },
-  { id: 6, ja: "人間の能力と運転", mn: "Хүний чадвар ба жолоодлого", en: "Human abilities and driving" },
+  { id: 1, stage: 1, num: 1, ja: "運転者の心得", mn: "Жолоочийн сэтгэлгээ, ёс зүй", en: "Driver's attitude and manners" },
+  { id: 2, stage: 1, num: 2, ja: "信号に従うこと", mn: "Гэрлэн дохио, дохиог дагах", en: "Obeying signals" },
+  { id: 5, stage: 1, num: 5, ja: "緊急自動車などの優先", mn: "Яаралтай тээврийн хэрэгсэл зэргийн тэргүүлэх эрх", en: "Priority for emergency vehicles, etc." },
+  { id: 6, stage: 1, num: 6, ja: "交差点・踏切", mn: "Уулзвар ба төмөр замын гарам", en: "Intersections and railroad crossings" },
+  { id: 106, stage: 2, num: 6, ja: "人間の能力と運転", mn: "Хүний чадвар ба жолоодлого", en: "Human abilities and driving" },
 ];
 
 // Illustrations live in S3 under `driving-test/<item>-<no>.jpeg`. Set
@@ -36,18 +41,19 @@ export const ITEMS: DrivingItem[] = [
 // and every question listed in IMAGE_NOS gets its image automatically.
 const IMAGE_BASE = (process.env.NEXT_PUBLIC_DRIVING_IMAGE_BASE ?? "").replace(/\/$/, "");
 const IMAGE_NOS: Record<number, number[]> = {
-  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+  // 1-21, 1-22, 1-25, 1-28 have no image yet.
+  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 23, 24, 26, 27, 29, 30],
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
   return `${IMAGE_BASE}/${item}-${no}.jpeg`;
 }
 
-type Row = [no: number, ja: string, mn: string, answer: boolean];
-type Note = [nos: number[], ja: string, mn: string];
+export type Row = [no: number, ja: string, mn: string, answer: boolean];
+export type Note = [nos: number[], ja: string, mn: string];
 
 // `en` / `enNotes` are aligned by position with `rows` / `notes`.
-function build(item: number, rows: Row[], notes: Note[], en: string[], enNotes: string[]): DrivingQuestion[] {
+function build(item: number, rows: Row[], notes: Note[], en: string[], enNotes: string[], figureNos: number[] = []): DrivingQuestion[] {
   return rows.map(([no, ja, mn, answer], i) => {
     const ni = notes.findIndex(([nos]) => nos.includes(no));
     return {
@@ -63,7 +69,7 @@ function build(item: number, rows: Row[], notes: Note[], en: string[], enNotes: 
       explainMn: ni >= 0 ? notes[ni][2] : undefined,
       explainEn: ni >= 0 ? enNotes[ni] : undefined,
     };
-  });
+  }).filter((q) => !figureNos.includes(q.no) || q.image); // figure-dependent questions stay hidden until their image exists
 }
 
 // ── 項目1 運転者の心得 ────────────────────────────────────────────────
@@ -238,7 +244,19 @@ const ITEM6_NOTES_EN: string[] = [
   "Most traffic accidents are caused by perception. Inattention to the front, overlooking things and delayed perception lead to accidents.",
 ];
 
+import * as item2 from "./driving/item2";
+import * as item5 from "./driving/item5";
+import * as item6 from "./driving/item6";
+
+export function itemLabel(id: number): string {
+  const it = ITEMS.find((x) => x.id === id);
+  return it ? `第${it.stage}段階 項目${it.num}` : `項目${id}`;
+}
+
 export const QUESTIONS: DrivingQuestion[] = [
   ...build(1, ITEM1_ROWS, ITEM1_NOTES, ITEM1_EN, ITEM1_NOTES_EN),
-  ...build(6, ITEM6_ROWS, ITEM6_NOTES, ITEM6_EN, ITEM6_NOTES_EN),
+  ...build(2, item2.ROWS, item2.NOTES, item2.EN, item2.NOTES_EN, item2.FIGURE_NOS),
+  ...build(5, item5.ROWS, item5.NOTES, item5.EN, item5.NOTES_EN, item5.FIGURE_NOS),
+  ...build(6, item6.ROWS, item6.NOTES, item6.EN, item6.NOTES_EN, item6.FIGURE_NOS),
+  ...build(106, ITEM6_ROWS, ITEM6_NOTES, ITEM6_EN, ITEM6_NOTES_EN),
 ];

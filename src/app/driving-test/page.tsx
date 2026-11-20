@@ -3,11 +3,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
-import { ITEMS, QUESTIONS, type DrivingQuestion } from "@/data/drivingTest";
+import { ITEMS, QUESTIONS, itemLabel, type DrivingQuestion } from "@/data/drivingTest";
 
 const MOCK_SIZE = 50;
 const PASS_RATE = 0.9;
-const WRONG_KEY = "drivingTestWrongIds";
+const WRONG_KEY = "drivingTestWrongIds.v2"; // v2: item ids changed (stage 2 → 100+n)
 
 type Mode = "mock" | "item" | "wrong";
 type Screen = "menu" | "quiz" | "result";
@@ -163,25 +163,34 @@ export default function DrivingTestPage() {
         </button>
 
         <h2 className="font-black text-white/80 mb-2">Сэдвээр бодох</h2>
-        <div className="grid gap-2">
-          {ITEMS.map((it) => (
-            <button
-              key={it.id}
-              onClick={() => startItem(it.id)}
-              className="flex items-center gap-3 text-left rounded-2xl p-4 bg-white/10 active:scale-[0.98] transition-transform"
-            >
-              <span className="w-9 h-9 rounded-full bg-white text-slate-800 font-black flex items-center justify-center shrink-0">
-                {it.id}
-              </span>
-              <span className="flex-1">
-                <span className="block font-black">{it.ja}</span>
-                <span className="block text-white/60 text-xs font-bold">{it.mn}</span>
-                <span className="block text-white/40 text-xs font-bold">{it.en}</span>
-              </span>
-              <span className="text-white/60 text-sm font-bold">{itemCounts.get(it.id)} асуулт</span>
-            </button>
-          ))}
-        </div>
+        {([1, 2] as const).map((stage) => {
+          const items = ITEMS.filter((it) => it.stage === stage && itemCounts.has(it.id));
+          if (items.length === 0) return null;
+          return (
+            <div key={stage} className="mb-4">
+              <h3 className="text-white/50 text-xs font-black mb-1.5">第{stage}段階</h3>
+              <div className="grid gap-2">
+                {items.map((it) => (
+                  <button
+                    key={it.id}
+                    onClick={() => startItem(it.id)}
+                    className="flex items-center gap-3 text-left rounded-2xl p-4 bg-white/10 active:scale-[0.98] transition-transform"
+                  >
+                    <span className="w-9 h-9 rounded-full bg-white text-slate-800 font-black flex items-center justify-center shrink-0">
+                      {it.num}
+                    </span>
+                    <span className="flex-1">
+                      <span className="block font-black">{it.ja}</span>
+                      <span className="block text-white/60 text-xs font-bold">{it.mn}</span>
+                      <span className="block text-white/40 text-xs font-bold">{it.en}</span>
+                    </span>
+                    <span className="text-white/60 text-sm font-bold">{itemCounts.get(it.id)} асуулт</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
         <p className="text-white/40 text-xs font-bold mt-5">
           Нийт {QUESTIONS.length} асуулт нэмэгдсэн. Дараагийн хуудсуудыг нэмсээр байна.
         </p>
@@ -214,7 +223,7 @@ export default function DrivingTestPage() {
               {wrong.map((w) => (
                 <div key={w.id} className="rounded-2xl bg-white text-slate-800 p-4">
                   <div className="text-xs font-black text-slate-400 mb-1">
-                    項目{w.item} · {w.no}問
+                    {itemLabel(w.item)} · {w.no}問
                   </div>
                   <p className="font-bold leading-relaxed">{w.ja}</p>
                   <p className="text-sm text-slate-500 mt-1">{w.mn}</p>
@@ -303,7 +312,7 @@ export default function DrivingTestPage() {
 
       <div className="rounded-3xl bg-white text-slate-800 p-5 shadow-xl">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-black text-slate-400">項目{q.item} · {q.no}問</span>
+          <span className="text-xs font-black text-slate-400">{itemLabel(q.item)} · {q.no}問</span>
           <button
             onClick={() => speak(q.ja)}
             aria-label="Унших"
