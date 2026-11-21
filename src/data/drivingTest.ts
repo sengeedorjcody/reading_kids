@@ -74,7 +74,7 @@ const IMAGE_NOS: Record<number, number[]> = {
   11: [27, 28],
   13: [15],
   111: [11, 24],
-  117: [3, 6, 8],
+  117: [3, 6, 8, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
