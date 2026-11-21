@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
 import { ITEMS, QUESTIONS, itemLabel, type DrivingQuestion } from "@/data/drivingTest";
+import { HAZARD } from "@/data/driving/hazard";
 
 const MOCK_SIZE = 50;
 const PASS_RATE = 0.9;
@@ -150,6 +151,14 @@ export default function DrivingTestPage() {
             {Math.min(MOCK_SIZE, QUESTIONS.length)} санамсаргүй асуулт · {Math.round(PASS_RATE * 100)}% зөв бол тэнцнэ
           </div>
         </button>
+
+        <Link
+          href="/driving-test/hazard"
+          className="block w-full text-left rounded-3xl p-5 mb-3 bg-gradient-to-r from-amber-500 to-orange-600 active:scale-[0.98] transition-transform"
+        >
+          <div className="font-black text-lg">⚠️ 危険予測</div>
+          <div className="text-white/90 text-sm font-bold">Зурагтай аюул таамаглах асуулт · {HAZARD.length} асуулт</div>
+        </Link>
 
         <button
           onClick={startWrong}

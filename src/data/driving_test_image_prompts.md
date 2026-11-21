@@ -741,3 +741,42 @@ Q3 (Figure 1), Q6 and Q8 (Figure 2) use the book's own figures, so they are crop
 *   **117-28:** A car at high speed with a small steering input turning sharply, a caution symbol, top-down view --ar 16:9
 *   **117-29:** A driver driving continuously for long hours on an expressway, red X, with fatigue icon, flat vector --ar 16:9
 *   **117-30:** A car at an expressway tunnel exit hit by a strong crosswind with a red X over the 'do not slow down' idea, flat vector --ar 16:9
+
+## Stage 1 Item 3: Obeying signs and markings (標識・標示などに従うこと) — ID `3`
+
+Q5–Q30 (Figures 1–26) are cropped from the book photos and already exist, so only Q1–Q4 need generated pictures.
+
+*   **3-1:** A diagram of road signs split into main signs and supplementary signs, with the four main-sign types (regulatory, instruction, warning, guide) shown as four example signs, flat vector educational style --ar 16:9
+*   **3-2:** A road with a blue instruction sign beside a red regulatory sign, red X over the wrong claim that instruction signs prohibit traffic, flat vector --ar 16:9
+*   **3-3:** A road with a red regulatory sign prohibiting entry and a blue instruction sign, red X over the wrong claim that regulatory signs only permit things, flat vector --ar 16:9
+*   **3-4:** A road surface seen from above with white and yellow painted lines, arrows, symbols and road studs, labeled as regulatory markings and instruction markings, flat vector educational style --ar 16:9
+
+## Stage 1 Tricky questions (まぎらわしい問題特集) — ID `201`
+
+Name the files `201-<no>.jpeg`. These are common mistakes, so the pictures show the wrong action with a red X.
+
+*   **201-1:** A car and a streetcar slowing to a crawl at a flashing yellow signal, red X because they only need to proceed with care, flat vector --ar 16:9
+*   **201-2:** A small special vehicle license card next to a moped, red X because it does not cover mopeds, flat vector --ar 16:9
+*   **201-3:** A car crossing into the right half of a road to overtake on a road with the left part 6 m or less, red X, top-down view --ar 16:9
+*   **201-4:** A car passing a pedestrian leaving a safe gap and also crawling, red X because either one is enough, top-down view --ar 16:9
+*   **201-5:** A car passing a child walking alone and a person with a guide dog, flat vector, the driver must stop or crawl, red X --ar 16:9
+*   **201-6:** A car in a bus priority lane leaving the lane or keeping a distance as a route bus approaches, red X on the wrong wording, top-down view --ar 16:9
+*   **201-7:** A pedestrian crossing at an intersection without a crosswalk with a car only crawling, red X because the car must stop, top-down view --ar 16:9
+*   **201-8:** A pedestrian crossing and bicycle crossing zone with a 30 m zone before and after, red X on the wrong wording about the zone, top-down view --ar 16:9
+*   **201-9:** A car on a priority road entering a blind intersection at normal speed without crawling, red X, top-down view --ar 16:9
+*   **201-10:** A car on a priority road racing ahead of a crossing car and claiming the right of way, red X, top-down view --ar 16:9
+
+## Stage 2 Tricky questions (まぎらわしい問題特集) — ID `202`
+
+Name the files `202-<no>.jpeg`.
+
+*   **202-1:** A parking lot entrance with a 3 m no-parking zone marked on the road and a car parked just outside it, flat vector --ar 16:9
+*   **202-2:** A car with its headlights on in dense fog and in a tunnel where it cannot see 50 m ahead, with a 100 m label for expressways, flat vector --ar 16:9
+*   **202-3:** A truck waiting for cargo for 3 minutes with the driver ready to drive off, shown with a clock and a parking sign, red X on the wrong wording, flat vector --ar 16:9
+*   **202-4:** A cargo truck driven with a few workers riding on the cargo bed, red X, flat vector --ar 16:9
+*   **202-5:** A semi-medium cargo truck with a 3,000 kg capacity label loaded with 4,000 kg of gravel and a police permit document, red X on the wrong wording, flat vector --ar 16:9
+*   **202-6:** A large truck towing more vehicles than allowed with a permit document from the police chief, red X on the wrong office, flat vector --ar 16:9
+*   **202-7:** A truck with an oversize undivided load and a permit stamp from the destination police station with a red X, flat vector --ar 16:9
+*   **202-8:** An expressway shoulder with a motorcycle and a car, red X on the car, flat vector --ar 16:9
+*   **202-9:** A cargo truck with a length label showing the vehicle length plus 1.2 times its length, red X, side view --ar 16:9
+*   **202-10:** A truck stopped for 10 minutes to load cargo where less than 3.5 m of road remains on its right, driver ready to drive off, flat vector --ar 16:9

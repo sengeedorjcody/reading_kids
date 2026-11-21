@@ -53,3 +53,4 @@ godot-games/*/.godot/
 
 # local secrets (AWS keys etc.)
 /.env
+.env*

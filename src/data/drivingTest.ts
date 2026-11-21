@@ -30,6 +30,7 @@ export interface DrivingQuestion {
 export const ITEMS: DrivingItem[] = [
   { id: 1, stage: 1, num: 1, ja: "運転者の心得", mn: "Жолоочийн сэтгэлгээ, ёс зүй", en: "Driver's attitude and manners" },
   { id: 2, stage: 1, num: 2, ja: "信号に従うこと", mn: "Гэрлэн дохио, дохиог дагах", en: "Obeying signals" },
+  { id: 3, stage: 1, num: 3, ja: "標識・標示などに従うこと", mn: "Замын тэмдэг, тэмдэглэгээ зэргийг дагах", en: "Obeying signs and markings, etc." },
   { id: 5, stage: 1, num: 5, ja: "緊急自動車などの優先", mn: "Яаралтай тээврийн хэрэгсэл зэргийн тэргүүлэх эрх", en: "Priority for emergency vehicles, etc." },
   { id: 6, stage: 1, num: 6, ja: "交差点・踏切", mn: "Уулзвар ба төмөр замын гарам", en: "Intersections and railroad crossings" },
   { id: 7, stage: 1, num: 7, ja: "安全な速度と車間距離", mn: "Аюулгүй хурд ба хоорондын зай", en: "Safe speed and following distance" },
@@ -54,6 +55,8 @@ export const ITEMS: DrivingItem[] = [
   { id: 115, stage: 2, num: 15, ja: "自動車の所有者などの心得と保険制度", mn: "Автомашин эзэмшигчийн анхаарах зүйлс ба даатгалын тогтолцоо", en: "Responsibilities of vehicle owners and the insurance system" },
   { id: 116, stage: 2, num: 16, ja: "経路の設計", mn: "Замын чиглэл төлөвлөх", en: "Route planning" },
   { id: 117, stage: 2, num: 17, ja: "高速道路での運転", mn: "Хурдны зам дээрх жолоодлого", en: "Driving on expressways" },
+  { id: 201, stage: 1, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
+  { id: 202, stage: 2, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
 ];
 
 // Illustrations live in S3 under `driving-test/<item>-<no>.jpeg`. Set
@@ -62,9 +65,10 @@ export const ITEMS: DrivingItem[] = [
 // and every question listed in IMAGE_NOS gets its image automatically.
 const IMAGE_BASE = (process.env.NEXT_PUBLIC_DRIVING_IMAGE_BASE ?? "").replace(/\/$/, "");
 const IMAGE_NOS: Record<number, number[]> = {
-  // Only 1-28 has no image yet. Items 2+ mix generated pictures and crops of the book's own figures.
-  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 29, 30],
-  2: [1, 2, 4, 5, 6, 7, 8, 9, 12, 13, 21],
+  // Items 2+ mix generated pictures and crops of the book's own figures.
+  1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+  2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 19, 20, 21],
+  3: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
   5: [18, 19, 20, 25, 26, 27],
   6: [9, 10, 11, 15, 17, 18, 22, 24],
   7: [3, 4, 16],
@@ -79,6 +83,11 @@ const IMAGE_NOS: Record<number, number[]> = {
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
   return `${IMAGE_BASE}/${item}-${no}.jpeg`;
+}
+
+/** Illustration for 危険予測 question `no` (S3 key `driving-test/900-<no>.jpeg`). */
+export function hazardImageUrl(no: number): string | undefined {
+  return IMAGE_BASE ? `${IMAGE_BASE}/900-${no}.jpeg` : undefined;
 }
 
 export type Row = [no: number, ja: string, mn: string, answer: boolean];
@@ -277,6 +286,7 @@ const ITEM6_NOTES_EN: string[] = [
 ];
 
 import * as item2 from "./driving/item2";
+import * as item3 from "./driving/item3";
 import * as item5 from "./driving/item5";
 import * as item6 from "./driving/item6";
 import * as item7 from "./driving/item7";
@@ -300,6 +310,8 @@ import * as item114 from "./driving/item114";
 import * as item115 from "./driving/item115";
 import * as item116 from "./driving/item116";
 import * as item117 from "./driving/item117";
+import * as item201 from "./driving/item201";
+import * as item202 from "./driving/item202";
 
 export function itemLabel(id: number): string {
   const it = ITEMS.find((x) => x.id === id);
@@ -309,6 +321,7 @@ export function itemLabel(id: number): string {
 export const QUESTIONS: DrivingQuestion[] = [
   ...build(1, ITEM1_ROWS, ITEM1_NOTES, ITEM1_EN, ITEM1_NOTES_EN),
   ...build(2, item2.ROWS, item2.NOTES, item2.EN, item2.NOTES_EN, item2.FIGURE_NOS),
+  ...build(3, item3.ROWS, item3.NOTES, item3.EN, item3.NOTES_EN, item3.FIGURE_NOS),
   ...build(5, item5.ROWS, item5.NOTES, item5.EN, item5.NOTES_EN, item5.FIGURE_NOS),
   ...build(6, item6.ROWS, item6.NOTES, item6.EN, item6.NOTES_EN, item6.FIGURE_NOS),
   ...build(7, item7.ROWS, item7.NOTES, item7.EN, item7.NOTES_EN, item7.FIGURE_NOS),
@@ -333,4 +346,6 @@ export const QUESTIONS: DrivingQuestion[] = [
   ...build(115, item115.ROWS, item115.NOTES, item115.EN, item115.NOTES_EN, item115.FIGURE_NOS),
   ...build(116, item116.ROWS, item116.NOTES, item116.EN, item116.NOTES_EN, item116.FIGURE_NOS),
   ...build(117, item117.ROWS, item117.NOTES, item117.EN, item117.NOTES_EN, item117.FIGURE_NOS),
+  ...build(201, item201.ROWS, item201.NOTES, item201.EN, item201.NOTES_EN, item201.FIGURE_NOS),
+  ...build(202, item202.ROWS, item202.NOTES, item202.EN, item202.NOTES_EN, item202.FIGURE_NOS),
 ];
