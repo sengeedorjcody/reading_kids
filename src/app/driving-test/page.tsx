@@ -368,6 +368,27 @@ export default function DrivingTestPage() {
         />
       </div>
 
+      <div className="mb-3 flex gap-2">
+        <button
+          onClick={goPrev}
+          disabled={idx === 0}
+          aria-label="Өмнөх асуулт"
+          className="font-mn rounded-2xl px-5 py-3 font-black bg-white/10 disabled:opacity-30 active:scale-95 transition-transform"
+        >
+          ← Өмнөх
+        </button>
+        <button
+          onClick={() => goNext()}
+          className={`font-mn flex-1 rounded-2xl py-3 font-black active:scale-95 transition-transform ${
+            showFeedback || idx + 1 >= questions.length
+              ? "bg-gradient-to-r from-orange-500 to-rose-500"
+              : "bg-white/10"
+          }`}
+        >
+          {idx + 1 >= questions.length ? "Дүн харах" : "Дараагийн →"}
+        </button>
+      </div>
+
       <div className="rounded-3xl bg-white text-slate-800 p-5 shadow-xl">
         <div className="flex items-center justify-between mb-2">
           <span className="text-xs font-black text-slate-400">{itemLabel(q.item)} · {q.no}問</span>
@@ -436,26 +457,6 @@ export default function DrivingTestPage() {
         </div>
       )}
 
-      <div className="mt-4 flex gap-2">
-        <button
-          onClick={goPrev}
-          disabled={idx === 0}
-          aria-label="Өмнөх асуулт"
-          className="rounded-2xl px-5 py-3.5 font-black bg-white/10 disabled:opacity-30 active:scale-95 transition-transform"
-        >
-          ← Өмнөх
-        </button>
-        <button
-          onClick={() => goNext()}
-          className={`flex-1 rounded-2xl py-3.5 font-black active:scale-95 transition-transform ${
-            showFeedback || idx + 1 >= questions.length
-              ? "bg-gradient-to-r from-orange-500 to-rose-500"
-              : "bg-white/10"
-          }`}
-        >
-          {idx + 1 >= questions.length ? "Дүн харах" : "Дараагийн →"}
-        </button>
-      </div>
     </div>
   );
 }
