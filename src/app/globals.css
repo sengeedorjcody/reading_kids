@@ -218,3 +218,10 @@ img { max-width: 100%; height: auto; }
 }
 .admin-dark input::placeholder,
 .admin-dark textarea::placeholder { color: #6b7690; }
+
+/* Mongolian (Cyrillic) text: Noto Sans JP's Cyrillic glyphs are wide and loosely spaced,
+   so use the system sans-serif, which has proper Cyrillic letterforms. */
+.font-mn {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  letter-spacing: normal;
+}

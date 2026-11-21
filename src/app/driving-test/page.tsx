@@ -120,7 +120,8 @@ export default function DrivingTestPage() {
   const showFeedback = answered && instant;
 
   function choose(value: boolean) {
-    if (!q || answered) return;
+    // Mock mode has no instant feedback, so an earlier answer can still be changed.
+    if (!q || (answered && instant)) return;
     const next = { ...answers, [q.id]: value };
     setAnswers(next);
     if (!instant) goNext(next);
@@ -130,6 +131,45 @@ export default function DrivingTestPage() {
     stop();
     if (idx + 1 >= questions.length) finish(current);
     else setIdx(idx + 1);
+  }
+
+  // Move between questions without answering (arrows / swipe / buttons).
+  function goPrev() {
+    if (idx <= 0) return;
+    stop();
+    setIdx(idx - 1);
+  }
+  function skipNext() {
+    if (idx + 1 >= questions.length) return;
+    stop();
+    setIdx(idx + 1);
+  }
+
+  useEffect(() => {
+    if (screen !== "quiz") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") skipNext();
+      else if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  });
+
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  function onTouchStart(e: React.TouchEvent) {
+    const t = e.touches[0];
+    touchStart.current = { x: t.clientX, y: t.clientY };
+  }
+  function onTouchEnd(e: React.TouchEvent) {
+    const s = touchStart.current;
+    touchStart.current = null;
+    if (!s) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - s.x;
+    const dy = t.clientY - s.y;
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy) * 1.5) return; // not a clear horizontal swipe
+    if (dx < 0) skipNext();
+    else goPrev();
   }
 
   // ── Menu ────────────────────────────────────────────────────────────
@@ -177,7 +217,12 @@ export default function DrivingTestPage() {
           if (items.length === 0) return null;
           return (
             <div key={stage} className="mb-4">
-              <h3 className="text-white/50 text-xs font-black mb-1.5">第{stage}段階</h3>
+              <h3 className="text-white/50 text-xs font-black mb-1.5">
+                第{stage}段階 · {stage}-р шат · Stage {stage}
+                <span className="font-bold text-white/30">
+                  {stage === 1 ? " — суурь мэдлэг, Basics" : " — гүнзгийрүүлсэн мэдлэг, Advanced"}
+                </span>
+              </h3>
               <div className="grid gap-2">
                 {items.map((it) => (
                   <button
@@ -190,7 +235,7 @@ export default function DrivingTestPage() {
                     </span>
                     <span className="flex-1">
                       <span className="block font-black">{it.ja}</span>
-                      <span className="block text-white/60 text-xs font-bold">{it.mn}</span>
+                      <span className="font-mn block text-white/60 text-xs font-bold">{it.mn}</span>
                       <span className="block text-white/40 text-xs font-bold">{it.en}</span>
                     </span>
                     <span className="text-white/60 text-sm font-bold">{itemCounts.get(it.id)} асуулт</span>
@@ -235,7 +280,7 @@ export default function DrivingTestPage() {
                     {itemLabel(w.item)} · {w.no}問
                   </div>
                   <p className="font-bold leading-relaxed">{w.ja}</p>
-                  <p className="text-sm text-slate-500 mt-1">{w.mn}</p>
+                  <p className="font-mn text-sm text-slate-500 mt-1">{w.mn}</p>
                   <p className="text-sm text-slate-400 mt-1">{w.en}</p>
                   <p className="mt-2 text-sm font-black">
                     Зөв хариулт: <span className={w.answer ? "text-green-600" : "text-red-600"}>{w.answer ? "○" : "×"}</span>
@@ -246,7 +291,7 @@ export default function DrivingTestPage() {
                   {w.explainJa && (
                     <p className="mt-2 text-sm bg-amber-50 rounded-xl p-3">
                       {w.explainJa}
-                      {w.explainMn && <span className="block text-slate-500 mt-1">{w.explainMn}</span>}
+                      {w.explainMn && <span className="font-mn block text-slate-500 mt-1">{w.explainMn}</span>}
                       {w.explainEn && <span className="block text-slate-400 mt-1">{w.explainEn}</span>}
                     </p>
                   )}
@@ -277,7 +322,11 @@ export default function DrivingTestPage() {
   // ── Quiz ────────────────────────────────────────────────────────────
   const isCorrect = answered && answers[q.id] === q.answer;
   return (
-    <div className="min-h-screen flex flex-col px-4 py-4 max-w-xl mx-auto text-white">
+    <div
+      className="min-h-screen flex flex-col px-4 py-4 max-w-xl mx-auto text-white"
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+    >
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => {
@@ -342,7 +391,7 @@ export default function DrivingTestPage() {
           />
         )}
         {showJa && <p className="text-lg font-bold leading-relaxed">{q.ja}</p>}
-        {showMn && <p className="text-sm text-slate-500 mt-3 leading-relaxed">{q.mn}</p>}
+        {showMn && <p className="font-mn text-sm text-slate-500 mt-3 leading-relaxed">{q.mn}</p>}
         {showEn && <p className="text-sm text-slate-400 mt-2 leading-relaxed">{q.en}</p>}
       </div>
 
@@ -361,7 +410,7 @@ export default function DrivingTestPage() {
             <button
               key={String(v)}
               onClick={() => choose(v)}
-              disabled={answered}
+              disabled={answered && instant}
               className={`rounded-3xl py-6 text-5xl font-black shadow-lg active:scale-95 transition-all ${cls}`}
             >
               {v ? "○" : "×"}
@@ -378,7 +427,7 @@ export default function DrivingTestPage() {
           {q.explainJa ? (
             <p className="text-sm leading-relaxed">
               {showJa && q.explainJa}
-              {showMn && q.explainMn && <span className="block text-white/60 mt-1">{q.explainMn}</span>}
+              {showMn && q.explainMn && <span className="font-mn block text-white/60 mt-1">{q.explainMn}</span>}
               {showEn && q.explainEn && <span className="block text-white/50 mt-1">{q.explainEn}</span>}
             </p>
           ) : (
@@ -387,14 +436,26 @@ export default function DrivingTestPage() {
         </div>
       )}
 
-      {showFeedback && (
+      <div className="mt-4 flex gap-2">
+        <button
+          onClick={goPrev}
+          disabled={idx === 0}
+          aria-label="Өмнөх асуулт"
+          className="rounded-2xl px-5 py-3.5 font-black bg-white/10 disabled:opacity-30 active:scale-95 transition-transform"
+        >
+          ← Өмнөх
+        </button>
         <button
           onClick={() => goNext()}
-          className="mt-4 rounded-2xl py-3.5 font-black bg-gradient-to-r from-orange-500 to-rose-500 active:scale-95 transition-transform"
+          className={`flex-1 rounded-2xl py-3.5 font-black active:scale-95 transition-transform ${
+            showFeedback || idx + 1 >= questions.length
+              ? "bg-gradient-to-r from-orange-500 to-rose-500"
+              : "bg-white/10"
+          }`}
         >
           {idx + 1 >= questions.length ? "Дүн харах" : "Дараагийн →"}
         </button>
-      )}
+      </div>
     </div>
   );
 }

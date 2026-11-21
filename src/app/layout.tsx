@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Noto_Sans_JP, Noto_Serif_JP } from "next/font/google";
 import "./globals.css";
 import { DevInspector } from "@/components/DevInspector";
@@ -34,6 +34,10 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     apple: "/icons/icon-192x192.png",
   },
+};
+
+// Next 14 wants themeColor in `viewport`, not `metadata`.
+export const viewport: Viewport = {
   themeColor: "#0f3460",
 };
 

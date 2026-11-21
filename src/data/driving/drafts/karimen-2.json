@@ -1,0 +1,460 @@
+{
+  "id": 302,
+  "kind": "仮免",
+  "setNo": 2,
+  "ja": "仮免学科試験練習問題 2",
+  "mn": "Түр жолооны үнэмлэхийн онолын шалгалтын дасгал 2",
+  "en": "Provisional licence practice test 2",
+  "questions": [
+    {
+      "no": 1,
+      "ja": "これから車を運転しようとする人に酒を出したり、勧めたりしてはならない。",
+      "mn": "Удахгүй машин жолоодох гэж буй хүнд архи согтууруулах ундаа өгөх эсвэл санал болгож болохгүй.",
+      "en": "You must not serve or offer alcohol to someone who is about to drive a vehicle.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 2,
+      "ja": "1図の標識は、二輪を含む自動車と一般原動機付自転車が通行できないことを表している。",
+      "mn": "1-р зургийн тэмдэг нь хоёр дугуйт тээврийн хэрэгслийг оролцуулан автомашин болон энгийн мопед зорчих хориотой болохыг илэрхийлж байна.",
+      "en": "The sign in Figure 1 indicates that motor vehicles (including motorcycles) and general mopeds are prohibited from passing.",
+      "figure": "1図",
+      "image": "302-2.jpeg",
+      "answer": null
+    },
+    {
+      "no": 3,
+      "ja": "黄色の灯火の点滅信号では、車は徐行して進行しなければならない。",
+      "mn": "Шар гэрэл анивчсан дохиотой үед тээврийн хэрэгсэл хурдаа хасаж удаан явах (удаашруулах) ёстой.",
+      "en": "At a flashing yellow traffic signal, vehicles must proceed slowly.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 4,
+      "ja": "横断歩道と、その手前30メートル以内の場所では、進路を変えずに他の車（軽車両を除く）の側方を通過して前方に出てはいけない。",
+      "mn": "Явган хүний гарц болон түүний өмнөх 30 метрийн доторх газарт эгнээгээ өөрчлөхгүйгээр бусад тээврийн хэрэгслийн (хөнгөн тээврийн хэрэгслээс бусад) хажуугаар өнгөрч урд нь гарч болохгүй.",
+      "en": "On a crosswalk and within 30 meters before it, you must not pass alongside and move ahead of another vehicle (excluding light vehicles) even without changing lanes.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 5,
+      "ja": "2図の標識は「車両通行止め」を表している。",
+      "mn": "2-р зургийн тэмдэг нь «Тээврийн хэрэгсэл зорчих хориотой» болохыг илэрхийлж байна.",
+      "en": "The sign in Figure 2 indicates \"Closed to Vehicles.\"",
+      "figure": "2図",
+      "image": "302-5.jpeg",
+      "answer": null
+    },
+    {
+      "no": 6,
+      "ja": "車は、道路に面した場所に出入りするため歩道を横切るとき、歩行者がいる場合は徐行しなければならない。",
+      "mn": "Тээврийн хэрэгсэл зам дагуух хашаа, байгууламж руу орж гарахын тулд явган хүний замыг хөндлөн гарахдаа явган зорчигч байвал удаашруулан явах ёстой.",
+      "en": "When a vehicle crosses a sidewalk to enter or exit a place facing the road, it must slow down if there are pedestrians.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 7,
+      "ja": "進路の前方に障害物があるときは、あらかじめ一時停止か減速して反対方向からの車に道を譲る。",
+      "mn": "Явах чиглэлийн урд саад байгаа үед урьдчилан түр зогсох эсвэл хурдаа сааруулан эсрэг чиглэлээс ирж буй тээврийн хэрэгсэлд зам тавьж өгнө.",
+      "en": "When there is an obstacle ahead in your path, stop temporarily or slow down in advance to yield to oncoming vehicles.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 8,
+      "ja": "3図の標識のある道路では、路面電車や車の通行は禁止されているが、歩行者の通行は禁止されていない。",
+      "mn": "3-р зургийн тэмдэгтэй замд трамвай болон тээврийн хэрэгсэл зорчихыг хориглосон боловч явган зорчигч явахыг хориглоогүй.",
+      "en": "On a road with the sign in Figure 3, streetcars and vehicles are prohibited, but pedestrians are not prohibited.",
+      "figure": "3図",
+      "image": "302-8.jpeg",
+      "answer": null
+    },
+    {
+      "no": 9,
+      "ja": "4図の標示は「立入り禁止部分」であることを示している。",
+      "mn": "4-р зургийн тэмдэглэгээ нь «Нэвтрэх хориотой хэсэг» болохыг зааж байна.",
+      "en": "The road marking in Figure 4 indicates a \"No Entry Zone\" (keep-out area).",
+      "figure": "4図",
+      "image": "302-9.jpeg",
+      "answer": null
+    },
+    {
+      "no": 10,
+      "ja": "停止距離とは、空走距離と制動距離を合わせた距離をいう。",
+      "mn": "Зогсох зай гэдэг нь сул явалтын зай болон тоормосны зайг нийлүүлсэн зайг хэлнэ.",
+      "en": "Stopping distance refers to the combined total of reaction distance and braking distance.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 11,
+      "ja": "オートマチック車でエンジンを始動するときは、ハンドブレーキを引き、ブレーキペダルを踏み、チェンジレバーが「P」の位置にあることを確認する。",
+      "mn": "Автомат хурдны хайрцагтай машины хөдөлгүүрийг асаахдаа гар тоормосыг татаж, тоормосны гишгүүрийг гишгэн, арааны хөшүүрэг «P» байрлалд байгаа эсэхийг шалгана.",
+      "en": "When starting the engine of an automatic transmission vehicle, pull the handbrake, press the brake pedal, and confirm that the shift lever is in the \"P\" position.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 12,
+      "ja": "道路上で、酒に酔ってふらついたり、立ち話をするなどして、交通の妨げとなることをしてはならない。",
+      "mn": "Зам дээр согтуугаар гуйвж дайвах, зогсож ярилцах зэргээр хөдөлгөөнд саад учруулах үйлдэл хийж болохгүй.",
+      "en": "You must not obstruct traffic on a road by staggering while drunk, standing around talking, or similar behavior.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 13,
+      "ja": "幼児を乗せて運転するときは、どのような場合でも必ずチャイルドシートを使用させなければならない。",
+      "mn": "Бага насны хүүхэд суулгаж жолоодохдоо ямар ч тохиолдолд заавал хүүхдийн суудал ашиглуулах ёстой.",
+      "en": "When driving with an infant or young child on board, you must always have them use a child safety seat under all circumstances.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 14,
+      "ja": "5図のような車両通行帯のある道路では、矢印のように進路を変更してはいけない。",
+      "mn": "5-р зурагт үзүүлсэнтэй адил эгнээтэй замд сумны дагуу чиглэлээ (эгнээгээ) өөрчилж болохгүй.",
+      "en": "On a road with lanes like those in Figure 5, you must not change lanes as shown by the arrow.",
+      "figure": "5図",
+      "image": "302-14.jpeg",
+      "answer": null
+    },
+    {
+      "no": 15,
+      "ja": "運転免許の停止期間中に自動車を運転した場合は、無免許運転となる。",
+      "mn": "Жолоодох эрхийг түр хассан хугацаанд автомашин жолоодсон тохиолдолд эрхгүйгээр жолоодсон (үнэмлэхгүй жолоодлого) хэрэг болно.",
+      "en": "Driving a motor vehicle during a driver's license suspension period constitutes driving without a license.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 16,
+      "ja": "仮運転免許は、大型仮免許・中型仮免許・準中型仮免許・普通仮免許・大型特殊仮免許の5つに区分される。",
+      "mn": "Түр жолооны үнэмлэх нь том, дунд, хагас дунд, энгийн, том тусгай гэсэн 5 ангилалд хуваагддаг.",
+      "en": "Provisional driver's licenses are divided into 5 categories: large, medium, semi-medium, ordinary, and large special provisional licenses.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 17,
+      "ja": "6図の標識は「指定方向外進行禁止」を表している。",
+      "mn": "6-р зургийн тэмдэг нь «Заасан чиглэлээс бусад чиглэлд явах хориотой» болохыг илэрхийлж байна.",
+      "en": "The sign in Figure 6 indicates \"No Proceeding Except in Designated Directions.\"",
+      "figure": "6図",
+      "image": "302-17.jpeg",
+      "answer": null
+    },
+    {
+      "no": 18,
+      "ja": "7図の標識のある道路を通行するときは、こどもが飛び出してくることがあるので、特に注意する。",
+      "mn": "7-р зургийн тэмдэгтэй замаар зорчихдоо хүүхэд гэнэт гүйж гарч ирэх магадлалтай тул онцгой анхаарна.",
+      "en": "When driving on a road with the sign in Figure 7, be especially careful as children may dart out into the road.",
+      "figure": "7図",
+      "image": "302-18.jpeg",
+      "answer": null
+    },
+    {
+      "no": 19,
+      "ja": "普通免許では、普通自動車のほか小型特殊自動車と一般原動機付自転車が運転できる。",
+      "mn": "Энгийн жолооны үнэмлэхээр суудлын автомашинаас гадна жижиг тусгай зориулалтын автомашин болон энгийн мопед жолоодож болно.",
+      "en": "With an ordinary driver's license, you can drive ordinary motor vehicles as well as small special motor vehicles and general mopeds.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 20,
+      "ja": "歩道と車道の区別のある道路では、植木鉢などを歩道上に置くことはできる。",
+      "mn": "Явган хүний зам болон авто зам нь тусгаарлагдсан замд цэцгийн сав зэргийг явган хүний зам дээр тавьж болно.",
+      "en": "On roads where the sidewalk and roadway are separated, you may place potted plants and similar items on the sidewalk.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 21,
+      "ja": "同一方向に3つ以上の車両通行帯があるときは、最も右側の車両通行帯は追い越しなどのためにあけておき、それ以外の車両通行帯はどこを通行してもよい。",
+      "mn": "Нэг чиглэлд 3 ба түүнээс дээш эгнээ байвал хамгийн баруун талын эгнээг гүйцэж түрүүлэх зэрэгт зориулан чөлөөтэй үлдээж, бусад эгнээний алинаар нь ч зорчиж болно.",
+      "en": "When there are 3 or more vehicular lanes in the same direction, keep the rightmost lane open for overtaking, etc., and you may drive in any of the other lanes.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 22,
+      "ja": "安全地帯のそばを通るときは、歩行者のいる、いないに関係なく徐行しなければならない。",
+      "mn": "Аюулгүй бүсийн хажуугаар өнгөрөхдөө явган зорчигч байгаа эсэхээс үл хамааран хурдаа хасаж удаан явах ёстой.",
+      "en": "When passing by a safety zone, you must slow down regardless of whether pedestrians are present.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 23,
+      "ja": "右折の合図は、右折しようとする地点の30メートル手前に達したときから右折が終わるまで行う。",
+      "mn": "Баруун эргэх дохиог баруун эргэх цэгээс 30 метрийн өмнө хүрсэн үеэс эхлэн эргэж дуусах хүртэл өгнө.",
+      "en": "Signal for a right turn from the point 30 meters before the turning spot until the right turn is completed.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 24,
+      "ja": "交通整理をしている警察官が腕を横に水平に上げているとき、警察官のからだの正面に平行する交通に対しては、青色の灯火の信号と同じ意味である。",
+      "mn": "Хөдөлгөөн зохицуулж буй цагдаа гараа хажуу тийш хэвтээ өргөсөн үед цагдаагийн биеийн нүүрэн талтай зэрэгцээ чиглэлийн хөдөлгөөний хувьд ногоон гэрлэн дохиотой адил утгатай.",
+      "en": "When a police officer directing traffic raises their arms horizontally to the sides, it has the same meaning as a green traffic light for traffic moving parallel to the front of the officer's body.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 25,
+      "ja": "指示標識とは、特定の交通方法を禁止したり、特定の方法に従って通行するよう指定したりするものである。",
+      "mn": "Заах тэмдэг (指示標識) гэдэг нь замын хөдөлгөөний тодорхой аргыг хориглох эсвэл тодорхой аргын дагуу зорчихыг заасан тэмдэг юм.",
+      "en": "Instruction signs prohibit specific traffic methods or designate that traffic must follow a specific method.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 26,
+      "ja": "歩行者専用道路でも、自動車は徐行すれば通行することができる。",
+      "mn": "Зөвхөн явган зорчигчийн замд ч автомашин удаашруулан явбал зорчиж болно.",
+      "en": "Even on a pedestrian-only road, motor vehicles may drive through if they proceed slowly.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 27,
+      "ja": "前方の交通が混雑しているため、横断歩道上で動きがとれなくなるおそれがあるときは、その横断歩道に入ってはならない。",
+      "mn": "Урд талын хөдөлгөөн түгжрэлтэй байгаагаас явган хүний гарц дээр гацаж зогсох эрсдэлтэй үед тухайн гарц руу орж болохгүй.",
+      "en": "When traffic ahead is congested and there is a risk of getting stuck on a crosswalk, you must not enter that crosswalk.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 28,
+      "ja": "交差点に先に入っていれば、対向の直進車や左折車に優先して右折することができる。",
+      "mn": "Уулзварт түрүүлж орсон бол эсрэг чиглэлийн чигээрээ явах болон зүүн эргэх тээврийн хэрэгслээс түрүүлж баруун эргэж болно.",
+      "en": "If you entered the intersection first, you may turn right ahead of oncoming vehicles going straight or turning left.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 29,
+      "ja": "交通整理の行われていない道幅が同じような道路の交差点では、右方から交差点に入ろうとしている車の進行を妨げてはならない。",
+      "mn": "Хөдөлгөөн зохицуулдаггүй, ижил өргөнтэй замуудын уулзварт баруун гар талаас уулзвар руу орох гэж буй тээврийн хэрэгслийн хөдөлгөөнд саад учруулж болохгүй.",
+      "en": "At an uncontrolled intersection of roads of similar width, you must not obstruct vehicles entering the intersection from the right.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 30,
+      "ja": "交差点とその手前から30メートル以内は、追い越し禁止場所である。",
+      "mn": "Уулзвар болон түүний өмнөх 30 метрийн доторх хэсэг нь гүйцэж түрүүлэхийг хориглосон газар юм.",
+      "en": "Intersections and the area within 30 meters before them are no-overtaking zones.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 31,
+      "ja": "内輪差とは、車がまがるとき前輪が後輪より内側を通ることによる、前輪と後輪の軌跡の差をいう。",
+      "mn": "Дотор дугуйн зөрүү гэдэг нь тээврийн хэрэгсэл эргэх үед урд дугуй нь хойд дугуйнаасаа дотоггуур явснаас үүсэх урд болон хойд дугуйн мөрийн зөрүүг хэлнэ.",
+      "en": "Inner-wheel off-tracking refers to the difference in path between the front and rear wheels caused by the front wheels passing closer to the inside of a turn than the rear wheels.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 32,
+      "ja": "路線バスの専用通行帯は、右左折するため道路の右端、中央や左端に寄る場合は通行することができる。",
+      "mn": "Нийтийн тээврийн автобусны тусгай эгнээгээр баруун эсвэл зүүн эргэхийн тулд замын баруун зах, төв эсвэл зүүн зах руу шахах тохиолдолд зорчиж болно.",
+      "en": "You may drive in a dedicated route-bus lane when moving toward the right edge, center, or left edge of the road in order to turn right or left.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 33,
+      "ja": "一般道路での大型自動二輪車や普通自動二輪車の法定最高速度は、エンジンの総排気量にかかわらずすべて時速60キロメートルである。",
+      "mn": "Энгийн зам дээрх том болон энгийн мотоциклийн хуулиар тогтоосон дээд хурд нь хөдөлгүүрийн багтаамжаас үл хамааран бүгд цагт 60 километр байдаг.",
+      "en": "The legal maximum speed limit on general roads for large and ordinary motorcycles is 60 km/h regardless of total engine displacement.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 34,
+      "ja": "標識や標示によって横断や転回が禁止されている道路では、後退も禁止されている。",
+      "mn": "Тэмдэг эсвэл тэмдэглэгээгээр зам хөндлөн гарах, буцаж эргэхийг хориглосон замд ухрахыг ч мөн хориглосон байдаг.",
+      "en": "On roads where crossing or making a U-turn is prohibited by signs or markings, reversing is also prohibited.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 35,
+      "ja": "オートマチック車は、停止しているときブレーキペダルをしっかり踏んでいないと、アクセルペダルを踏まなくても車がゆっくり動き出し、追突などの思わぬ事故を起こすことがある。",
+      "mn": "Автомат хурдны хайрцагтай машин зогсож байхдаа тоормосны гишгүүрийг сайтар гишгэхгүй бол хааз гишгээгүй байсан ч аажмаар хөдөлж, араас мөргөх зэрэг санамсаргүй осол гаргах тохиолдол бий.",
+      "en": "In an automatic transmission vehicle, if you do not press the brake pedal firmly while stopped, the car may slowly creep forward even without pressing the accelerator, causing unexpected accidents such as rear-end collisions.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 36,
+      "ja": "オートマチック車は、クラッチ操作がいらない分、操作の負担が軽減され、運転が楽になるが、安易な気持ちで取り扱ってはいけない。",
+      "mn": "Автомат хурдны хайрцагтай машин нь авцуулах холбоо (конс) ажиллуулах шаардлагагүй тул жолоодлогын ачаалал багасаж амар болдог ч хайнга хандаж болохгүй.",
+      "en": "Because automatic transmission vehicles do not require clutch operation, the operational burden is reduced and driving is easier, but you must not handle them carelessly.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 37,
+      "ja": "交差点やその付近以外の場所を通行中、後方から緊急自動車が近づいてきたときは、道路の左側に寄り、一時停止して進路を譲らなければならない。",
+      "mn": "Уулзвар болон түүний орчмоос бусад газарт явж байхад араас яаралтай тусламжийн тээврийн хэрэгсэл ойртож ирвэл замын зүүн талд шахаж, түр зогсоод зам тавьж өгөх ёстой.",
+      "en": "When driving in a place other than an intersection or its vicinity and an emergency vehicle approaches from behind, you must pull over to the left side of the road and come to a temporary stop to yield.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 38,
+      "ja": "横断歩道の直前で止まっている車の側方を通って前方に出るときは、歩行者がいなければ徐行して通過することができる。",
+      "mn": "Явган хүний гарцын яг өмнө зогсож буй тээврийн хэрэгслийн хажуугаар өнгөрч урд нь гарахдаа явган зорчигч байхгүй бол удаашруулан өнгөрч болно.",
+      "en": "When passing alongside and moving ahead of a vehicle stopped right before a crosswalk, you may proceed slowly if there are no pedestrians.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 39,
+      "ja": "肢体不自由であることを理由に、条件の付された普通自動車対応免許を受けている人は、普通自動車を運転するとき、その車の前後に身体障害者標識をつけるとよい。",
+      "mn": "Хөдөлгөөний бэрхшээлтэй гэх шалтгаанаар нөхцөл тавигдсан суудлын автомашин жолоодох эрхийн үнэмлэхтэй хүн суудлын автомашин жолоодохдоо машины урд болон ард хөгжлийн бэрхшээлтэй жолоочийн тэмдэг байрлуулбал зохино.",
+      "en": "A person holding an ordinary-vehicle-eligible license with conditions due to a physical disability should display the Physically Disabled Driver Mark on the front and rear of the car when driving an ordinary motor vehicle.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 40,
+      "ja": "車に乗ってからドアを閉めるときは、少し手前で一度止めてから力を入れて閉めるようにする。",
+      "mn": "Машинд суусны дараа хаалгаа хаахдаа бүрэн хаагдахын өмнөхөн нэг удаа түр зогсоож байгаад хүч гарган хаах хэрэгтэй.",
+      "en": "When closing the door after getting into a car, pause briefly just before it closes and then shut it firmly.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 41,
+      "ja": "赤色の灯火の点滅信号は、車と歩行者は停止位置で一時停止しなければならない。",
+      "mn": "Улаан гэрэл анивчсан дохиотой үед тээврийн хэрэгсэл болон явган зорчигч зогсох шугам дээр түр зогсох ёстой.",
+      "en": "At a flashing red traffic signal, both vehicles and pedestrians must come to a temporary stop at the stop line.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 42,
+      "ja": "前の車が原動機付自転車を追い越しているときは、その車を追い越してよい。",
+      "mn": "Урд яваа тээврийн хэрэгсэл мопедыг гүйцэж түрүүлж байгаа үед тэр тээврийн хэрэгслийг гүйцэж түрүүлж болно.",
+      "en": "When the vehicle ahead is overtaking a moped, you may overtake that vehicle.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 43,
+      "ja": "歩行者の多い場所は、警音器を鳴らしながら通行するとよい。",
+      "mn": "Явган зорчигч олонтой газраар дуут дохио дуугаргаж зорчвол зохино.",
+      "en": "In areas with many pedestrians, it is good practice to drive while sounding your horn.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 44,
+      "ja": "車両通行帯が黄の線で区画されているところでも、右折や左折をする場合は、その線を越えて進路を変えることができる。",
+      "mn": "Тээврийн хэрэгслийн эгнээг шар шугамаар тусгаарласан газарт ч баруун эсвэл зүүн эргэх тохиолдолд тэр шугамыг давж чиглэлээ өөрчилж болно.",
+      "en": "Even where vehicular lanes are divided by a yellow line, you may cross that line to change lanes when turning right or left.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 45,
+      "ja": "中央線が黄の線で区画されている道路は、追い越しのための右側部分はみ出し通行禁止である。",
+      "mn": "Төв шугамыг шар шугамаар тэмдэглэсэн замд гүйцэж түрүүлэхийн тулд баруун хэсэг рүү гарч зорчихыг хориглоно.",
+      "en": "On a road where the center line is marked with a yellow line, crossing into the right half of the road to overtake is prohibited.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 46,
+      "ja": "交差点を左折するときは、内輪差を小さくするため、交差点の直前でいったんハンドルを右に切ってまがるとよい。",
+      "mn": "Уулзвараар зүүн эргэхдээ дотор дугуйн зөрүүг багасгахын тулд уулзварын яг өмнө жолооны хүрдийг эхлээд баруун тийш мушгиж байгаад эргэвэл зохино.",
+      "en": "When turning left at an intersection, to reduce inner-wheel off-tracking, it is good practice to steer slightly right just before the intersection before making the turn.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 47,
+      "ja": "仮免許は、交通違反をしたり交通事故を起こしても、取消処分にはならない。",
+      "mn": "Түр жолооны үнэмлэхтэй үед замын хөдөлгөөний зөрчил гаргах эсвэл зам тээврийн осол гаргасан ч үнэмлэхийг хүчингүй болгох арга хэмжээ авахгүй.",
+      "en": "A provisional license will not be revoked even if you commit a traffic violation or cause a traffic accident.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 48,
+      "ja": "近所に買い物に行く程度の距離であれば、シートベルトは着用しなくてもよい。",
+      "mn": "Ойролцоо дэлгүүр орох төдий богино зайд явах бол суудлын бүс зүүхгүй байж болно.",
+      "en": "If you are only driving a short distance such as going to a nearby store, you do not need to wear a seat belt.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 49,
+      "ja": "見通しの悪い道路のまがり角では、「警笛鳴らせ」の標識がなくても警音器を鳴らさなければならない。",
+      "mn": "Үзэгдэх орчин муутай замын эргэлт дээр «Дуут дохио өг» гэсэн тэмдэг байхгүй байсан ч дуут дохио дуугаргах ёстой.",
+      "en": "At a road corner/bend with poor visibility, you must sound your horn even if there is no \"Sound Horn\" sign.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    },
+    {
+      "no": 50,
+      "ja": "つえをついて歩いている通行に支障のある高齢者のそばを通るとき、一時停止して安全に通れるようにした。",
+      "mn": "Таяг тулан явж буй хөдөлгөөний бэрхшээлтэй өндөр настны хажуугаар өнгөрөхдөө түр зогсож аюулгүй өнгөрөх нөхцөлийг бүрдүүлсэн.",
+      "en": "When passing near an elderly person with mobility difficulties walking with a cane, I came to a temporary stop so they could pass safely.",
+      "figure": null,
+      "image": null,
+      "answer": null
+    }
+  ]
+}

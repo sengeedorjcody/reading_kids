@@ -133,7 +133,7 @@ export default function HazardPage() {
                 <div key={w.no} className="rounded-2xl bg-white text-slate-800 p-4">
                   <div className="text-xs font-black text-slate-400 mb-1">{w.no}問</div>
                   <p className="font-bold leading-relaxed">{w.ja}</p>
-                  <p className="text-sm text-slate-500 mt-1">{w.mn}</p>
+                  <p className="font-mn text-sm text-slate-500 mt-1">{w.mn}</p>
                 </div>
               ))}
             </div>
@@ -218,7 +218,7 @@ export default function HazardPage() {
           />
         )}
         {showJa && <p className="text-lg font-bold leading-relaxed">{q.ja}</p>}
-        {showMn && <p className="text-sm text-slate-500 mt-2 leading-relaxed">{q.mn}</p>}
+        {showMn && <p className="font-mn text-sm text-slate-500 mt-2 leading-relaxed">{q.mn}</p>}
         {showEn && <p className="text-sm text-slate-400 mt-1 leading-relaxed">{q.en}</p>}
       </div>
 
@@ -236,7 +236,7 @@ export default function HazardPage() {
                 <span className="font-black text-lg leading-snug">{MARKS[i]}</span>
                 <div className="flex-1 text-sm leading-relaxed">
                   {showJa && <p className="font-bold">{s.ja}</p>}
-                  {showMn && <p className="text-white/70 mt-1">{s.mn}</p>}
+                  {showMn && <p className="font-mn text-white/70 mt-1">{s.mn}</p>}
                   {showEn && <p className="text-white/50 mt-1">{s.en}</p>}
                 </div>
               </div>
@@ -274,7 +274,7 @@ export default function HazardPage() {
           {q.explainJa ? (
             <p className="text-sm leading-relaxed">
               {showJa && q.explainJa}
-              {showMn && q.explainMn && <span className="block text-white/60 mt-1">{q.explainMn}</span>}
+              {showMn && q.explainMn && <span className="font-mn block text-white/60 mt-1">{q.explainMn}</span>}
               {showEn && q.explainEn && <span className="block text-white/50 mt-1">{q.explainEn}</span>}
             </p>
           ) : (
