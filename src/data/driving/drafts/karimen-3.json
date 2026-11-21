@@ -13,7 +13,7 @@
       "en": "Drivers should pay attention to the movements of other vehicles and pedestrians and drive on the road with consideration for others.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 2,
@@ -22,7 +22,7 @@
       "en": "With an ordinary driver's license, you can drive a general moped, but you cannot drive a small special motor vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 3,
@@ -31,7 +31,7 @@
       "en": "When driving an ordinary motor vehicle, as long as the driver wears a seat belt, there is no need to have the front-seat passenger wear one.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 4,
@@ -40,7 +40,7 @@
       "en": "A general moped was slowing down before a railroad crossing, so I cut in front of it.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 5,
@@ -49,7 +49,7 @@
       "en": "On a road with the sign in Figure 1, large trucks, specified medium-sized trucks, and large special motor vehicles are prohibited from passing.",
       "figure": "1図",
       "image": "303-5.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 6,
@@ -58,7 +58,7 @@
       "en": "When passing through a road corner/bend with poor visibility, you must sound your horn.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 7,
@@ -67,7 +67,7 @@
       "en": "Large passenger vehicles cannot drive on a road with the sign in Figure 2, but all medium-sized passenger vehicles may pass regardless of gross vehicle weight or other factors.",
       "figure": "2図",
       "image": "303-7.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 8,
@@ -76,7 +76,7 @@
       "en": "You must not play catch, roller-skate, or engage in similar activities on roads with heavy traffic.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 9,
@@ -85,7 +85,7 @@
       "en": "The sign in Figure 3 indicates that motorcycles and general mopeds are prohibited from passing.",
       "figure": "3図",
       "image": "303-9.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 10,
@@ -94,7 +94,7 @@
       "en": "When you unavoidably need to use a mobile phone for a call, stop your vehicle in a safe place.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 11,
@@ -103,7 +103,7 @@
       "en": "A general moped turning right at an intersection with the sign in Figure 4 must use the two-stage right turn method.",
       "figure": "4図",
       "image": "303-11.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 12,
@@ -112,7 +112,7 @@
       "en": "When driving a motor vehicle, you must carry emergency signal equipment, warning triangles, and similar items in the vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 13,
@@ -121,7 +121,7 @@
       "en": "When driving a motor vehicle on the road, you must hold the appropriate license for that type of vehicle and carry the driver's license with you.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 14,
@@ -130,7 +130,7 @@
       "en": "There are 6 types of Class 1 licenses: large, medium, semi-medium, ordinary, large special, and ordinary motorcycle licenses.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 15,
@@ -139,7 +139,7 @@
       "en": "Except when properly using an automated driving system in an autonomous vehicle, you must not use a mobile phone for calls while driving, but you may look closely at the screen to send or receive emails.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 16,
@@ -148,7 +148,7 @@
       "en": "You cannot take the medium-sized vehicle license exam unless you are 20 or older and have held a semi-medium, ordinary, or large special vehicle license for a combined total of at least 2 years.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 17,
@@ -157,7 +157,7 @@
       "en": "Overtaking is prohibited near a road corner/bend even when visibility is good.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 18,
@@ -166,7 +166,7 @@
       "en": "With an ordinary driver's license, you can drive a truck with a maximum load capacity of 2,000 kg.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 19,
@@ -175,7 +175,7 @@
       "en": "You must slow down when passing through an intersection with poor visibility to the left and right, except when the road you are on is a priority road.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 20,
@@ -184,7 +184,7 @@
       "en": "When stopping an automatic transmission vehicle, do not shift the lever into \"P\" before the car has come to a complete stop.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 21,
@@ -193,7 +193,7 @@
       "en": "When approaching a crosswalk by car, because it was not clear that there were no pedestrians crossing, I reduced speed enough to stop before the crosswalk and proceeded.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 22,
@@ -202,7 +202,7 @@
       "en": "Although the traffic light was red, a security guard gave a hand signal to proceed, so I went ahead.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 23,
@@ -211,7 +211,7 @@
       "en": "You must not install neon signs with colors similar to traffic lights near a traffic signal, but you may install advertising billboards near road signs.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 24,
@@ -220,7 +220,7 @@
       "en": "When a route bus stopped at a bus stop signals to pull out using its turn signal or similar, vehicles behind it must come to a temporary stop behind the bus.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 25,
@@ -229,7 +229,7 @@
       "en": "It is best to adjust the driver's seat position so that your elbows are fully extended straight when holding the steering wheel with both hands.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 26,
@@ -238,7 +238,7 @@
       "en": "When turning right at an intersection, you must move as close to the center of the road as possible in advance and proceed slowly just inside the center of the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 27,
@@ -247,7 +247,7 @@
       "en": "The sign in Figure 5 indicates that traffic regulations are in effect on the road ahead.",
       "figure": "5図",
       "image": "303-27.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 28,
@@ -256,7 +256,7 @@
       "en": "On a one-way road, in order to enter a gas station facing the right side of the road, I moved as close as possible to the right edge of the road in advance and drove slowly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 29,
@@ -265,7 +265,7 @@
       "en": "A person who holds a medium-sized vehicle license can drive a truck with a maximum load capacity of 6,500 kg.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 30,
@@ -274,7 +274,7 @@
       "en": "When overtaking another vehicle, you must always pass on its right side under all circumstances.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 31,
@@ -283,7 +283,7 @@
       "en": "When the intersecting road is a priority road, vehicles must always come to a temporary stop right before the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 32,
@@ -292,7 +292,7 @@
       "en": "When the vehicle ahead signals a lane change in order to turn right or left, you must not obstruct that lane change.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 33,
@@ -301,7 +301,7 @@
       "en": "At a railroad crossing, pay attention to pedestrians and oncoming vehicles and pass while keeping close to the left edge.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 34,
@@ -310,7 +310,7 @@
       "en": "Braking distance refers to the distance a vehicle travels from when the driver senses danger and applies the brakes until the brakes begin to take effect.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 35,
@@ -319,7 +319,7 @@
       "en": "Whenever carrying an infant or young child in a motor vehicle, you must use a child safety seat under all circumstances.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 36,
@@ -328,7 +328,7 @@
       "en": "The sign in Figure 6 indicates that large trucks, large special motor vehicles, and medium-sized trucks with a gross vehicle weight of 8,000 kg or more, maximum load capacity of 5,000 kg or more, or passenger capacity of 11 or more must drive in the leftmost vehicular lane.",
       "figure": "6図",
       "image": "303-36.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 37,
@@ -337,7 +337,7 @@
       "en": "When the road surface is wet from rain and the tires are worn, the stopping distance can extend to about twice as long compared to a dry road with tires in good condition.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 38,
@@ -346,7 +346,7 @@
       "en": "When a pedestrian is crossing at or near an intersection without a crosswalk, vehicles must not obstruct their passage.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 39,
@@ -355,7 +355,7 @@
       "en": "People aged 70 or older who hold a license valid for ordinary motor vehicles must display the Elderly Driver Mark in the designated positions at the front and rear of the car when driving an ordinary motor vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 40,
@@ -364,7 +364,7 @@
       "en": "When driving in a group, you must not engage in zigzag driving or other behavior that creates traffic hazards or causes a nuisance to others.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 41,
@@ -373,7 +373,7 @@
       "en": "When changing lanes to the right while continuing in the same direction, you must signal at a point 30 meters beforehand.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 42,
@@ -382,7 +382,7 @@
       "en": "Auxiliary signs explain the reason for the traffic regulation shown by the main sign, or specify the hours, days of the week, vehicle types, etc., to which the regulation applies.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 43,
@@ -391,7 +391,7 @@
       "en": "The timing to signal for slowing down or stopping is when you are about to slow down or stop.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 44,
@@ -400,7 +400,7 @@
       "en": "Even when vehicular lanes are divided by a yellow line, you may cross that line to change lanes when turning right or left at an intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 45,
@@ -409,7 +409,7 @@
       "en": "Small special motor vehicles and general mopeds traveling in a priority lane for route buses, etc., must promptly move out of that lane when a route bus approaches.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 46,
@@ -418,7 +418,7 @@
       "en": "When the vehicle ahead is trying to overtake a moped, you must not overtake it.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 47,
@@ -427,7 +427,7 @@
       "en": "As long as you drive within the designated speed limit, there is no need to consider traffic conditions, weather, or similar factors.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 48,
@@ -436,7 +436,7 @@
       "en": "Light vehicles turning right at an intersection and general mopeds making a two-stage right turn must go straight on a green light to the turning point, change direction, and wait for the traffic light in the direction they will proceed to turn green.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 49,
@@ -445,7 +445,7 @@
       "en": "Overtaking is prohibited at intersections and within 30 meters before and after them, except when driving on a priority road.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 50,
@@ -454,7 +454,7 @@
       "en": "When you catch up to a streetcar stopped for passengers to get on or off, you may proceed as is if there are no passengers getting on or off.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     }
   ]
 }

@@ -58,6 +58,12 @@ export const ITEMS: DrivingItem[] = [
   { id: 201, stage: 1, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
   { id: 202, stage: 2, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
   { id: 203, stage: 2, num: 0, ja: "二輪車に関する問題", mn: "Хоёр дугуйт тээврийн хэрэгсэлтэй холбоотой асуултууд", en: "Motorcycle questions" },
+  { id: 301, stage: 1, num: 0, ja: "仮免学科試験練習問題 1", mn: "Түр жолооны үнэмлэхийн онолын шалгалтын дасгал 1", en: "Provisional licence practice test 1" },
+  { id: 302, stage: 1, num: 0, ja: "仮免学科試験練習問題 2", mn: "Түр жолооны үнэмлэхийн онолын шалгалтын дасгал 2", en: "Provisional licence practice test 2" },
+  { id: 303, stage: 1, num: 0, ja: "仮免学科試験練習問題 3", mn: "Түр жолооны үнэмлэхийн онолын шалгалтын дасгал 3", en: "Provisional licence practice test 3" },
+  { id: 401, stage: 2, num: 0, ja: "本免学科試験練習問題 1", mn: "Үндсэн жолооны үнэмлэхийн онолын шалгалтын дасгал 1", en: "Full licence practice test 1" },
+  { id: 402, stage: 2, num: 0, ja: "本免学科試験練習問題 2", mn: "Үндсэн жолооны үнэмлэхийн онолын шалгалтын дасгал 2", en: "Full licence practice test 2" },
+  { id: 403, stage: 2, num: 0, ja: "本免学科試験練習問題 3", mn: "Үндсэн жолооны үнэмлэхийн онолын шалгалтын дасгал 3", en: "Full licence practice test 3" },
 ];
 
 // Illustrations live in S3 under `driving-test/<item>-<no>.jpeg`. Set
@@ -70,7 +76,8 @@ const IMAGE_NOS: Record<number, number[]> = {
   1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
   2: Array.from({ length: 30 }, (_, i) => i + 1),
   3: Array.from({ length: 30 }, (_, i) => i + 1),
-  5: [18, 19, 20, 25, 26, 27],
+  // 5-1, 5-5, 5-8, 5-11, 5-12 are on S3 but unlinked: generated images have errors, regenerate first.
+  5: [2, 3, 4, 6, 7, 9, 10, 13, 14, 15, 16, 17, 18, 19, 20, 21, 23, 24, 25, 26, 27],
   6: [9, 10, 11, 15, 17, 18, 22, 24],
   7: [3, 4, 16],
   8: [6],
@@ -78,9 +85,15 @@ const IMAGE_NOS: Record<number, number[]> = {
   10: [13, 15, 16, 17, 24, 25, 26, 27],
   11: [27, 28],
   13: [15],
-  111: [11, 24],
+  111: [1, 2, 11, 24],
   117: Array.from({ length: 30 }, (_, i) => i + 1),
   203: [21, 22, 23, 24, 25, 26],
+  301: [8, 17, 28, 47, 48],
+  302: [2, 5, 8, 9, 14, 17, 18],
+  303: [5, 7, 9, 11, 27, 36],
+  401: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  402: [10, 11, 12, 13, 14, 15, 16, 17, 18],
+  403: [12, 13, 14, 15, 16, 17, 18, 19],
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
@@ -315,6 +328,12 @@ import * as item117 from "./driving/item117";
 import * as item201 from "./driving/item201";
 import * as item202 from "./driving/item202";
 import * as item203 from "./driving/item203";
+import * as item301 from "./driving/item301";
+import * as item302 from "./driving/item302";
+import * as item303 from "./driving/item303";
+import * as item401 from "./driving/item401";
+import * as item402 from "./driving/item402";
+import * as item403 from "./driving/item403";
 
 export function itemLabel(id: number): string {
   const it = ITEMS.find((x) => x.id === id);
@@ -352,4 +371,10 @@ export const QUESTIONS: DrivingQuestion[] = [
   ...build(201, item201.ROWS, item201.NOTES, item201.EN, item201.NOTES_EN, item201.FIGURE_NOS),
   ...build(202, item202.ROWS, item202.NOTES, item202.EN, item202.NOTES_EN, item202.FIGURE_NOS),
   ...build(203, item203.ROWS, item203.NOTES, item203.EN, item203.NOTES_EN, item203.FIGURE_NOS),
+  ...build(301, item301.ROWS, item301.NOTES, item301.EN, item301.NOTES_EN, item301.FIGURE_NOS),
+  ...build(302, item302.ROWS, item302.NOTES, item302.EN, item302.NOTES_EN, item302.FIGURE_NOS),
+  ...build(303, item303.ROWS, item303.NOTES, item303.EN, item303.NOTES_EN, item303.FIGURE_NOS),
+  ...build(401, item401.ROWS, item401.NOTES, item401.EN, item401.NOTES_EN, item401.FIGURE_NOS),
+  ...build(402, item402.ROWS, item402.NOTES, item402.EN, item402.NOTES_EN, item402.FIGURE_NOS),
+  ...build(403, item403.ROWS, item403.NOTES, item403.EN, item403.NOTES_EN, item403.FIGURE_NOS),
 ];

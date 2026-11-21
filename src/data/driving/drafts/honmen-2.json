@@ -13,7 +13,7 @@
       "en": "Road markings are lines, symbols, and characters shown on the road surface with paint or road studs, and consist of two types: regulatory markings and instructional markings.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 2,
@@ -22,7 +22,7 @@
       "en": "If an emergency vehicle approaches while you are driving in a lane designated by direction of travel, you should yield the right of way after the designated lane ends.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 3,
@@ -31,7 +31,7 @@
       "en": "When riding a motorcycle around a curve, disengaging the clutch or shifting the gear into neutral is dangerous.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 4,
@@ -40,7 +40,7 @@
       "en": "When riding a motorcycle, you should place the arches of your feet on the footrests, with your left toes under the gear shift pedal and your right toes under the brake pedal.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 5,
@@ -49,7 +49,7 @@
       "en": "At an uncontrolled intersection of roads of similar width, a vehicle must not obstruct the passage of vehicles approaching from the left.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 6,
@@ -58,7 +58,7 @@
       "en": "When the traffic light ahead was green, a police officer was facing me with arms raised horizontally to the sides, so I turned left at the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 7,
@@ -67,7 +67,7 @@
       "en": "You must not overtake or pass a vehicle displaying a beginner driver mark, elderly driver mark, hearing-impaired driver mark, or physically disabled driver mark.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 8,
@@ -76,7 +76,7 @@
       "en": "A main traffic lane refers to the portion of a national expressway normally used for driving (excluding acceleration lanes, deceleration lanes, climbing lanes, roadside strips, and shoulders).",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 9,
@@ -85,7 +85,7 @@
       "en": "Because automatic motorcycles do not require clutch operation, the operational burden is reduced and riding is easier, so you can ride them casually.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 10,
@@ -94,7 +94,7 @@
       "en": "The sign in Figure 1 indicates that even if the traffic light ahead is red or yellow, you may turn left while paying attention to surrounding traffic.",
       "figure": "1図",
       "image": "402-10.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 11,
@@ -103,7 +103,7 @@
       "en": "The sign in Figure 2 indicates \"One-way traffic.\"",
       "figure": "2図",
       "image": "402-11.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 12,
@@ -112,7 +112,7 @@
       "en": "The marking in Figure 3 indicates a \"No-stopping area.\"",
       "figure": "3図",
       "image": "402-12.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 13,
@@ -121,7 +121,7 @@
       "en": "The sign in Figure 4 indicates that the road widens ahead.",
       "figure": "4図",
       "image": "402-13.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 14,
@@ -130,7 +130,7 @@
       "en": "The sign in Figure 5 indicates \"Road narrows.\"",
       "figure": "5図",
       "image": "402-14.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 15,
@@ -139,7 +139,7 @@
       "en": "In a place with a marking like Figure 6, parking is prohibited, but stopping is permitted.",
       "figure": "6図",
       "image": "402-15.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 16,
@@ -148,7 +148,7 @@
       "en": "In a roadside strip like Figure 7, parking and stopping of vehicles as well as passage of light vehicles are prohibited.",
       "figure": "7図",
       "image": "402-16.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 17,
@@ -157,7 +157,7 @@
       "en": "The sign in Figure 8 indicates that to ride two-up on a standard motorcycle, the rider must be at least 20 years old and have held a standard motorcycle licence for a total of at least 3 years.",
       "figure": "8図",
       "image": "402-17.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 18,
@@ -166,7 +166,7 @@
       "en": "The sign in Figure 8 indicates that riding two-up on large or standard motorcycles is prohibited.",
       "figure": "8図",
       "image": "402-18.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 19,
@@ -175,7 +175,7 @@
       "en": "When towing a broken-down vehicle with a rope or crane, a towing licence is not required even if the gross vehicle weight exceeds 750 kilograms.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 20,
@@ -184,7 +184,7 @@
       "en": "When driving a vehicle, it is important to obey traffic rules and have a spirit of mutual courtesy.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 21,
@@ -193,7 +193,7 @@
       "en": "When driving a motor vehicle, you must carry a valid vehicle inspection certificate and compulsory automobile liability insurance certificate.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 22,
@@ -202,7 +202,7 @@
       "en": "Stopping distance is the combined total of reaction distance and braking distance.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 23,
@@ -211,7 +211,7 @@
       "en": "Mopeds do not need to be enrolled in compulsory automobile liability insurance or mutual liability insurance.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 24,
@@ -220,7 +220,7 @@
       "en": "When a person holding a licence valid for standard vehicles who has licence conditions due to physical disability drives a standard vehicle, they must display the physically disabled driver mark in the designated positions at the front and rear of the vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 25,
@@ -229,7 +229,7 @@
       "en": "When driving on an expressway, rear-seat passengers must also wear seat belts, but this is not necessary when driving on ordinary roads.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 26,
@@ -238,7 +238,7 @@
       "en": "When crossing a sidewalk or roadside strip to enter or exit a property facing the road, you do not need to make a temporary stop if there are no pedestrians.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 27,
@@ -247,7 +247,7 @@
       "en": "When there is an obstacle ahead in your path, stop temporarily or slow down in advance to yield to oncoming vehicles.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 28,
@@ -256,7 +256,7 @@
       "en": "I stopped within 5 meters of the edge of a road construction zone to pick up or drop off passengers.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 29,
@@ -265,7 +265,7 @@
       "en": "The height limit for cargo on a standard cargo vehicle is 3.8 meters from the cargo bed.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 30,
@@ -274,7 +274,7 @@
       "en": "Because the traffic light at the intersection ahead turned yellow, I accelerated and passed through the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 31,
@@ -283,7 +283,7 @@
       "en": "When turning right and an oncoming vehicle going straight approaches, you must not obstruct its progress even if your vehicle entered the intersection first.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 32,
@@ -292,7 +292,7 @@
       "en": "Although more than one year has passed since obtaining a standard motorcycle licence, it has been less than one year since obtaining a large motorcycle licence, so the large motorcycle licence is still in the beginner driver period.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 33,
@@ -301,7 +301,7 @@
       "en": "If your speed doubles, both braking distance and centrifugal force also double.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 34,
@@ -310,7 +310,7 @@
       "en": "When a driver is tired, it takes longer to judge after recognizing danger, so the reaction distance becomes longer.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 35,
@@ -319,7 +319,7 @@
       "en": "Within 1 meter of a fire alarm, you must not park to wait for someone, but you may stop to pick up or drop off passengers.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 36,
@@ -328,7 +328,7 @@
       "en": "Small motorcycles cannot travel on national expressways, but they can travel on motorways.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 37,
@@ -337,7 +337,7 @@
       "en": "When braking on a motorcycle, it is best to apply the rear brake slightly harder on dry roads and the front brake slightly harder on slippery roads.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 38,
@@ -346,7 +346,7 @@
       "en": "Both parking and stopping are prohibited on railroad crossings and within 10 meters before and after their edges.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 39,
@@ -355,7 +355,7 @@
       "en": "You cannot enter a safety zone, except when unavoidable to avoid danger.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 40,
@@ -364,7 +364,7 @@
       "en": "When the facing traffic light at an intersection is flashing red, pedestrians may proceed while paying attention to other traffic.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 41,
@@ -373,7 +373,7 @@
       "en": "Except when properly using an automated driving system in an autonomous vehicle, you must not use a mobile phone while driving a motor vehicle, moped, or bicycle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 42,
@@ -382,7 +382,7 @@
       "en": "Even where there is a \"No vehicle crossing\" sign, you may turn left to enter a parking lot or similar place.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 43,
@@ -391,7 +391,7 @@
       "en": "When renewing a driver's licence, you must complete the procedure between 2 months before the expiration date and the expiration date itself.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 44,
@@ -400,7 +400,7 @@
       "en": "When going around a corner on a road, you must sound your horn even if there is no \"Sound horn\" sign.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 45,
@@ -409,7 +409,7 @@
       "en": "Riding two-up is prohibited on standard motorcycles without a passenger seat and on general mopeds.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 46,
@@ -418,7 +418,7 @@
       "en": "Because a bicycle was crossing a bicycle crossing zone, I slowed down to a speed at which I could stop immediately and passed through.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 47,
@@ -427,7 +427,7 @@
       "en": "When cooperating to prevent secondary accidents at the scene of a traffic accident, smoking alone is permitted even if hazardous materials have leaked.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 48,
@@ -436,7 +436,7 @@
       "en": "At a railroad crossing with a traffic light, when the light is green, you may cross without stopping if you check for safety.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 49,
@@ -445,7 +445,7 @@
       "en": "At night, when the headlights of an oncoming vehicle are dazzling, it is best to shift your gaze slightly to the front left.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 50,
@@ -454,7 +454,7 @@
       "en": "With a standard licence, you cannot drive small special vehicles, but you can ride small motorcycles and general mopeds.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 51,
@@ -463,7 +463,7 @@
       "en": "As a rule, vehicles other than designated vehicles, small special vehicles, mopeds, and light vehicles must not travel in a dedicated route bus lane.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 52,
@@ -472,7 +472,7 @@
       "en": "On a road where the left side is less than 8 meters wide, you may cross into the right side of the road to overtake.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 53,
@@ -481,7 +481,7 @@
       "en": "When overtaking, it is best to signal first and then check the surrounding safety.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 54,
@@ -490,7 +490,7 @@
       "en": "When parking or stopping in a wide roadside strip, you must pull the vehicle into the strip and leave at least 0.75 meters of space on the left side of the vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 55,
@@ -499,7 +499,7 @@
       "en": "The seating capacity of a general moped is 1 person, but an infant may be carried if a child seat is attached.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 56,
@@ -508,7 +508,7 @@
       "en": "When a traffic accident occurs, you must stop driving, aid any injured persons, and take measures to prevent secondary accidents.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 57,
@@ -517,7 +517,7 @@
       "en": "When decelerating while riding two-up on a motorcycle, the passenger's weight presses against the rider's back, so the rider should keep their elbows tucked in and hold the handlebars firmly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 58,
@@ -526,7 +526,7 @@
       "en": "When leaving your vehicle for a short time to buy a drink from a vending machine, you do not need to turn off the engine.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 59,
@@ -535,7 +535,7 @@
       "en": "On a national expressway, the legal maximum speed limit is 80 km/h for standard motorcycles, whereas it is 100 km/h for large motorcycles.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 60,
@@ -544,7 +544,7 @@
       "en": "Modified/deformed handlebars on motorcycles are dangerous for riding, so such modifications must not be made.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 61,
@@ -553,7 +553,7 @@
       "en": "When overtaking another vehicle on a large or standard motorcycle, you may pass on either the left or right side.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 62,
@@ -562,7 +562,7 @@
       "en": "If you hold a standard motorcycle licence, you can also drive small special vehicles and general mopeds.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 63,
@@ -571,7 +571,7 @@
       "en": "The cargo weight limit is 30 kilograms for general mopeds and 60 kilograms for large and standard motorcycles.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 64,
@@ -580,7 +580,7 @@
       "en": "If you are enrolled in voluntary automobile insurance, you do not need to enroll in compulsory automobile liability insurance.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 65,
@@ -589,7 +589,7 @@
       "en": "When pushing a large or standard motorcycle with the engine off, you are treated as a pedestrian and may walk on sidewalks and roadside strips.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 66,
@@ -598,7 +598,7 @@
       "en": "When passing an elderly person who has difficulty walking, such as someone using a cane, you must stop temporarily or slow down to let them pass safely.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 67,
@@ -607,7 +607,7 @@
       "en": "When turning right at an intersection, even on a one-way street, you must move to the center of the road and proceed slowly just outside the center of the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 68,
@@ -616,7 +616,7 @@
       "en": "To ensure smooth traffic flow, it is best to drive at the full legal maximum speed limit regardless of road or traffic conditions.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 69,
@@ -625,7 +625,7 @@
       "en": "When passing through an intersection with poor visibility to the left and right, you must slow down regardless of the type of intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 70,
@@ -634,7 +634,7 @@
       "en": "In a no-parking area, you may stop to pick up or drop off passengers, or to load or unload cargo within 5 minutes.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 71,
@@ -643,7 +643,7 @@
       "en": "A place where the center line is marked with a yellow line indicates \"No overtaking.\"",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 72,
@@ -652,7 +652,7 @@
       "en": "The center line is not necessarily located in the exact middle of the road.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 73,
@@ -661,7 +661,7 @@
       "en": "The maximum width of cargo that can be loaded on a standard cargo vehicle is up to 1.1 times the width of the vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 74,
@@ -670,7 +670,7 @@
       "en": "At night, when you must park or stop on the shoulder/roadside strip of an expressway due to a breakdown, you must place a breakdown warning device and turn on lights such as hazard flashers.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 75,
@@ -679,7 +679,7 @@
       "en": "As a rule, vehicles must not travel on streetcar tracks.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 76,
@@ -688,7 +688,7 @@
       "en": "I drank a small amount of alcohol, but since I was not drunk, I drove carefully.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 77,
@@ -697,7 +697,7 @@
       "en": "When driving on an expressway, it is good to keep tire air pressure slightly higher to prevent the standing wave phenomenon.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 78,
@@ -706,7 +706,7 @@
       "en": "On a road with vehicular lanes, you must not straddle two lanes except when unavoidable, such as when overtaking.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 79,
@@ -715,7 +715,7 @@
       "en": "If you hold a standard licence, you can drive a cargo vehicle with a maximum loading capacity of less than 2,000 kilograms.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 80,
@@ -724,7 +724,7 @@
       "en": "Even during the daytime, when driving in places such as tunnels where visibility is less than 50 meters (200 meters on expressways), you must turn on your headlights and other lights.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 81,
@@ -733,7 +733,7 @@
       "en": "At night, because there is less traffic than during the day, it is better to drive faster.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 82,
@@ -742,7 +742,7 @@
       "en": "While driving on a one-way street, an emergency vehicle approached, and since pulling to the left would obstruct it, I pulled to the right to yield the way.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 83,
@@ -751,7 +751,7 @@
       "en": "Even if the facing traffic light at an intersection is green, you must not enter the intersection if traffic ahead is congested and proceeding might cause you to stop inside the intersection.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 84,
@@ -760,7 +760,7 @@
       "en": "When turning left at an intersection, move as close to the left edge of the road as possible in advance, and just before turning, directly check the left side visually to watch out for general mopeds and bicycles.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 85,
@@ -769,7 +769,7 @@
       "en": "On a national expressway, you cannot tow a broken-down vehicle using a rope or crane.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 86,
@@ -778,7 +778,7 @@
       "en": "In an automatic vehicle, engine RPM is higher immediately after starting the engine or when the air conditioner is running, creating a risk of sudden acceleration, so keep the brake pedal firmly depressed while stopped.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 87,
@@ -787,7 +787,7 @@
       "en": "When shifting an automatic vehicle from forward to reverse or from reverse to forward, bring the vehicle to a complete stop and keep the brake pedal firmly depressed.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 88,
@@ -796,7 +796,7 @@
       "en": "In a standard passenger vehicle with a seating capacity of 5, you may carry up to 6 children under 12 years old in addition to the driver.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 89,
@@ -805,7 +805,7 @@
       "en": "When passing near the crest of an uphill slope, you do not need to slow down if there is no \"Slow down\" sign.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 90,
@@ -814,7 +814,7 @@
       "en": "An oncoming vehicle was approaching, but since it was a general moped, I hurried and made a right turn.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     }
   ],
   "hazard": [
@@ -829,19 +829,19 @@
           "ja": "対向のバスは左折するため速度を落としているので、バスより先に右折するため速度を上げる。",
           "mn": "Өөдөөс ирж буй автобус зүүн эргэхийн тулд хурдаа хасаж байгаа тул автобуснаас түрүүлж баруун эргэхийн тулд хурдаа нэмнэ.",
           "en": "Because the oncoming bus is slowing down to turn left, speed up to turn right ahead of the bus.",
-          "answer": null
+          "answer": false
         },
         {
           "ja": "左折車の妨害をしてはいけないので、バスが左折するまで止まって待つ。",
           "mn": "Зүүн эргэх тээврийн хэрэгсэлд саад болж болохгүй тул автобус зүүн эргэж дуустал зогсож хүлээнэ.",
           "en": "Because you must not obstruct a left-turning vehicle, stop and wait until the bus completes its left turn.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "バスの後ろからバスを追い越す車が出てくるかもしれないので、注意しながら進行する。",
           "mn": "Автобусны араас автобусыг гүйцэж түрүүлэх машин гарч ирж магадгүй тул анхааралтай явна.",
           "en": "A vehicle overtaking the bus may emerge from behind it, so proceed with caution.",
-          "answer": null
+          "answer": true
         }
       ]
     },
@@ -856,19 +856,19 @@
           "ja": "後ろの車が追い越しを始めると危ないので、右に寄って追い越されないようにする。",
           "mn": "Арын машин гүйцэж түрүүлж эхэлбэл аюултай тул баруун тийш шахаж гүйцүүлэхгүй байх арга хэмжээ авна.",
           "en": "Because it would be dangerous if the vehicle behind starts to overtake, move to the right to prevent it from overtaking.",
-          "answer": null
+          "answer": false
         },
         {
           "ja": "歩行者が横断を始めたため、前の車が止まるかもしれないので、注意して進行する。",
           "mn": "Явган зорчигч зам хөндлөн гарч эхэлсэн тул урд яваа машин зогсож магадгүй учир анхааралтай явна.",
           "en": "Because a pedestrian has started crossing, the vehicle ahead may stop, so proceed with caution.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "二輪車がミラーの死角にいるかもしれないので、左側に顔を向けて確認する。",
           "mn": "Мотоцикл толины сохор бүсэд байж магадгүй тул зүүн тийш толгойгоо эргүүлж шалгана.",
           "en": "A motorcycle may be in your mirror's blind spot, so turn your head to the left to check.",
-          "answer": null
+          "answer": true
         }
       ]
     },
@@ -883,19 +883,19 @@
           "ja": "自転車に乗っている人が横断し始めているので、停止線の手前で一時停止する。",
           "mn": "Унадаг дугуйтай хүн зам хөндлөн гарч эхэлж байгаа тул зогс шугамын өмнө түр зогсоно.",
           "en": "A cyclist is starting to cross, so make a temporary stop before the stop line.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "急に止まると後ろの車に追突されるかもしれないので、速度を下げずに通過する。",
           "mn": "Гэнэт зогсвол арын машинд мөргүүлж магадгүй тул хурдаа хасалгүйгээр өнгөрнө.",
           "en": "Because stopping suddenly might cause the vehicle behind to rear-end you, pass through without slowing down.",
-          "answer": null
+          "answer": false
         },
         {
           "ja": "自転車が横断をし始めたので、警音器を鳴らし、中央に寄って進行する。",
           "mn": "Унадаг дугуй зам хөндлөн гарч эхэлсэн тул дуут дохио өгч, замын гол руу шахан явна.",
           "en": "Because the bicycle has started to cross, sound your horn and move toward the center of the road as you proceed.",
-          "answer": null
+          "answer": false
         }
       ]
     },
@@ -910,19 +910,19 @@
           "ja": "踏切の向こう側に自車の入るスペースができるまで待つ。",
           "mn": "Төмөр замын гармын цаад талд өөрийн машин багтах зай гартал хүлээнэ.",
           "en": "Wait until there is enough space for your vehicle on the far side of the railroad crossing.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "歩行者が自車の前に出てくるかもしれないので、歩行者がいなくなるまで待つ。",
           "mn": "Явган зорчигч машины урд гарч ирж магадгүй тул явган зорчигчгүй болтол хүлээнэ.",
           "en": "Pedestrians may step out in front of your vehicle, so wait until there are no pedestrians.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "対向車と踏切内ですれ違わないように、急いで踏切を通過する。",
           "mn": "Өөдөөс ирж буй машинтай гарам дотор зөрөхгүйн тулд яаран гармыг давна.",
           "en": "Hurry across the railroad crossing so you do not pass an oncoming vehicle inside the crossing.",
-          "answer": null
+          "answer": false
         }
       ]
     },
@@ -937,19 +937,19 @@
           "ja": "対向車がはみ出してくるかもしれないので、速度を落として左寄りを進行する。",
           "mn": "Өөдөөс ирж буй машин эгнээнээсээ гарч ирж магадгүй тул хурдаа хасаж зүүн тал руу шахан явна.",
           "en": "An oncoming vehicle may drift over the center line, so slow down and keep to the left.",
-          "answer": null
+          "answer": true
         },
         {
           "ja": "遠心力により外側にふくらむので、中央に寄って走行する。",
           "mn": "Төвөөс зугтах хүчнээс болж гадна тал руу шидэгддэг тул замын гол руу шахаж явна.",
           "en": "Because centrifugal force pushes you outward, ride close to the center of the road.",
-          "answer": null
+          "answer": false
         },
         {
           "ja": "対向車に自車の存在を知らせるため、警音器を鳴らし続ける。",
           "mn": "Өөдөөс ирж буй машинд өөрийн байгааг мэдэгдэхийн тулд дуут дохиог тасралтгүй дуугаргана.",
           "en": "Keep sounding your horn to alert oncoming vehicles of your presence.",
-          "answer": null
+          "answer": false
         }
       ]
     }

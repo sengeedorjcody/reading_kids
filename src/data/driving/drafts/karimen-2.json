@@ -13,7 +13,7 @@
       "en": "You must not serve or offer alcohol to someone who is about to drive a vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 2,
@@ -22,7 +22,7 @@
       "en": "The sign in Figure 1 indicates that motor vehicles (including motorcycles) and general mopeds are prohibited from passing.",
       "figure": "1図",
       "image": "302-2.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 3,
@@ -31,7 +31,7 @@
       "en": "At a flashing yellow traffic signal, vehicles must proceed slowly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 4,
@@ -40,7 +40,7 @@
       "en": "On a crosswalk and within 30 meters before it, you must not pass alongside and move ahead of another vehicle (excluding light vehicles) even without changing lanes.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 5,
@@ -49,7 +49,7 @@
       "en": "The sign in Figure 2 indicates \"Closed to Vehicles.\"",
       "figure": "2図",
       "image": "302-5.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 6,
@@ -58,7 +58,7 @@
       "en": "When a vehicle crosses a sidewalk to enter or exit a place facing the road, it must slow down if there are pedestrians.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 7,
@@ -67,7 +67,7 @@
       "en": "When there is an obstacle ahead in your path, stop temporarily or slow down in advance to yield to oncoming vehicles.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 8,
@@ -76,7 +76,7 @@
       "en": "On a road with the sign in Figure 3, streetcars and vehicles are prohibited, but pedestrians are not prohibited.",
       "figure": "3図",
       "image": "302-8.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 9,
@@ -85,7 +85,7 @@
       "en": "The road marking in Figure 4 indicates a \"No Entry Zone\" (keep-out area).",
       "figure": "4図",
       "image": "302-9.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 10,
@@ -94,7 +94,7 @@
       "en": "Stopping distance refers to the combined total of reaction distance and braking distance.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 11,
@@ -103,7 +103,7 @@
       "en": "When starting the engine of an automatic transmission vehicle, pull the handbrake, press the brake pedal, and confirm that the shift lever is in the \"P\" position.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 12,
@@ -112,7 +112,7 @@
       "en": "You must not obstruct traffic on a road by staggering while drunk, standing around talking, or similar behavior.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 13,
@@ -121,7 +121,7 @@
       "en": "When driving with an infant or young child on board, you must always have them use a child safety seat under all circumstances.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 14,
@@ -130,7 +130,7 @@
       "en": "On a road with lanes like those in Figure 5, you must not change lanes as shown by the arrow.",
       "figure": "5図",
       "image": "302-14.jpeg",
-      "answer": null
+      "answer": false
     },
     {
       "no": 15,
@@ -139,7 +139,7 @@
       "en": "Driving a motor vehicle during a driver's license suspension period constitutes driving without a license.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 16,
@@ -148,7 +148,7 @@
       "en": "Provisional driver's licenses are divided into 5 categories: large, medium, semi-medium, ordinary, and large special provisional licenses.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 17,
@@ -157,7 +157,7 @@
       "en": "The sign in Figure 6 indicates \"No Proceeding Except in Designated Directions.\"",
       "figure": "6図",
       "image": "302-17.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 18,
@@ -166,7 +166,7 @@
       "en": "When driving on a road with the sign in Figure 7, be especially careful as children may dart out into the road.",
       "figure": "7図",
       "image": "302-18.jpeg",
-      "answer": null
+      "answer": true
     },
     {
       "no": 19,
@@ -175,7 +175,7 @@
       "en": "With an ordinary driver's license, you can drive ordinary motor vehicles as well as small special motor vehicles and general mopeds.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 20,
@@ -184,7 +184,7 @@
       "en": "On roads where the sidewalk and roadway are separated, you may place potted plants and similar items on the sidewalk.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 21,
@@ -193,7 +193,7 @@
       "en": "When there are 3 or more vehicular lanes in the same direction, keep the rightmost lane open for overtaking, etc., and you may drive in any of the other lanes.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 22,
@@ -202,7 +202,7 @@
       "en": "When passing by a safety zone, you must slow down regardless of whether pedestrians are present.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 23,
@@ -211,7 +211,7 @@
       "en": "Signal for a right turn from the point 30 meters before the turning spot until the right turn is completed.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 24,
@@ -220,7 +220,7 @@
       "en": "When a police officer directing traffic raises their arms horizontally to the sides, it has the same meaning as a green traffic light for traffic moving parallel to the front of the officer's body.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 25,
@@ -229,7 +229,7 @@
       "en": "Instruction signs prohibit specific traffic methods or designate that traffic must follow a specific method.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 26,
@@ -238,7 +238,7 @@
       "en": "Even on a pedestrian-only road, motor vehicles may drive through if they proceed slowly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 27,
@@ -247,7 +247,7 @@
       "en": "When traffic ahead is congested and there is a risk of getting stuck on a crosswalk, you must not enter that crosswalk.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 28,
@@ -256,7 +256,7 @@
       "en": "If you entered the intersection first, you may turn right ahead of oncoming vehicles going straight or turning left.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 29,
@@ -265,7 +265,7 @@
       "en": "At an uncontrolled intersection of roads of similar width, you must not obstruct vehicles entering the intersection from the right.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 30,
@@ -274,7 +274,7 @@
       "en": "Intersections and the area within 30 meters before them are no-overtaking zones.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 31,
@@ -283,7 +283,7 @@
       "en": "Inner-wheel off-tracking refers to the difference in path between the front and rear wheels caused by the front wheels passing closer to the inside of a turn than the rear wheels.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 32,
@@ -292,7 +292,7 @@
       "en": "You may drive in a dedicated route-bus lane when moving toward the right edge, center, or left edge of the road in order to turn right or left.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 33,
@@ -301,7 +301,7 @@
       "en": "The legal maximum speed limit on general roads for large and ordinary motorcycles is 60 km/h regardless of total engine displacement.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 34,
@@ -310,7 +310,7 @@
       "en": "On roads where crossing or making a U-turn is prohibited by signs or markings, reversing is also prohibited.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 35,
@@ -319,7 +319,7 @@
       "en": "In an automatic transmission vehicle, if you do not press the brake pedal firmly while stopped, the car may slowly creep forward even without pressing the accelerator, causing unexpected accidents such as rear-end collisions.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 36,
@@ -328,7 +328,7 @@
       "en": "Because automatic transmission vehicles do not require clutch operation, the operational burden is reduced and driving is easier, but you must not handle them carelessly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 37,
@@ -337,7 +337,7 @@
       "en": "When driving in a place other than an intersection or its vicinity and an emergency vehicle approaches from behind, you must pull over to the left side of the road and come to a temporary stop to yield.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 38,
@@ -346,7 +346,7 @@
       "en": "When passing alongside and moving ahead of a vehicle stopped right before a crosswalk, you may proceed slowly if there are no pedestrians.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 39,
@@ -355,7 +355,7 @@
       "en": "A person holding an ordinary-vehicle-eligible license with conditions due to a physical disability should display the Physically Disabled Driver Mark on the front and rear of the car when driving an ordinary motor vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 40,
@@ -364,7 +364,7 @@
       "en": "When closing the door after getting into a car, pause briefly just before it closes and then shut it firmly.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 41,
@@ -373,7 +373,7 @@
       "en": "At a flashing red traffic signal, both vehicles and pedestrians must come to a temporary stop at the stop line.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 42,
@@ -382,7 +382,7 @@
       "en": "When the vehicle ahead is overtaking a moped, you may overtake that vehicle.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 43,
@@ -391,7 +391,7 @@
       "en": "In areas with many pedestrians, it is good practice to drive while sounding your horn.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 44,
@@ -400,7 +400,7 @@
       "en": "Even where vehicular lanes are divided by a yellow line, you may cross that line to change lanes when turning right or left.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 45,
@@ -409,7 +409,7 @@
       "en": "On a road where the center line is marked with a yellow line, crossing into the right half of the road to overtake is prohibited.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     },
     {
       "no": 46,
@@ -418,7 +418,7 @@
       "en": "When turning left at an intersection, to reduce inner-wheel off-tracking, it is good practice to steer slightly right just before the intersection before making the turn.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 47,
@@ -427,7 +427,7 @@
       "en": "A provisional license will not be revoked even if you commit a traffic violation or cause a traffic accident.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 48,
@@ -436,7 +436,7 @@
       "en": "If you are only driving a short distance such as going to a nearby store, you do not need to wear a seat belt.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 49,
@@ -445,7 +445,7 @@
       "en": "At a road corner/bend with poor visibility, you must sound your horn even if there is no \"Sound Horn\" sign.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": false
     },
     {
       "no": 50,
@@ -454,7 +454,7 @@
       "en": "When passing near an elderly person with mobility difficulties walking with a cane, I came to a temporary stop so they could pass safely.",
       "figure": null,
       "image": null,
-      "answer": null
+      "answer": true
     }
   ]
 }
