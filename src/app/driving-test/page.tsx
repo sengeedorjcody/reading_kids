@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
 import { ITEMS, QUESTIONS, itemLabel, type DrivingQuestion } from "@/data/drivingTest";
 import { HAZARD } from "@/data/driving/hazard";
+import QuitDialog, { useBackGuard } from "@/components/QuitDialog";
 
 const MOCK_SIZE = 50;
 const PASS_RATE = 0.9;
@@ -58,6 +59,7 @@ export default function DrivingTestPage() {
   const [wrongIds, setWrongIds] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const startedAt = useRef(0);
+  const [quitOpen, setQuitOpen] = useState(false);
   const { speak, stop } = useSpeech();
 
   useEffect(() => {
@@ -70,6 +72,11 @@ export default function DrivingTestPage() {
       setElapsed(Math.floor((Date.now() - startedAt.current) / 1000));
     }, 1000);
     return () => clearInterval(t);
+  }, [screen]);
+
+  useBackGuard(screen === "quiz", () => setQuitOpen(true));
+  useEffect(() => {
+    if (screen !== "quiz") setQuitOpen(false);
   }, [screen]);
 
   const itemCounts = useMemo(() => {
@@ -327,6 +334,21 @@ export default function DrivingTestPage() {
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
+      {quitOpen && (
+        <QuitDialog
+          onContinue={() => setQuitOpen(false)}
+          onQuit={() => {
+            stop();
+            setQuitOpen(false);
+            setScreen("menu");
+          }}
+          onRestart={() => {
+            stop();
+            setQuitOpen(false);
+            start(mode, mode === "mock" ? shuffle(QUESTIONS).slice(0, MOCK_SIZE) : questions);
+          }}
+        />
+      )}
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => {

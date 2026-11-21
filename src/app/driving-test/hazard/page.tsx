@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
 import { hazardImageUrl } from "@/data/drivingTest";
 import { HAZARD, type HazardQuestion } from "@/data/driving/hazard";
+import QuitDialog, { useBackGuard } from "@/components/QuitDialog";
 
 type Screen = "intro" | "quiz" | "result";
 // A question's three picks: undefined = not answered yet.
@@ -38,6 +39,12 @@ export default function HazardPage() {
   const [imgFailed, setImgFailed] = useState(false);
   const { speak, stop } = useSpeech();
   const topRef = useRef<HTMLDivElement>(null);
+  const [quitOpen, setQuitOpen] = useState(false);
+
+  useBackGuard(screen === "quiz", () => setQuitOpen(true));
+  useEffect(() => {
+    if (screen !== "quiz") setQuitOpen(false);
+  }, [screen]);
 
   useEffect(() => {
     setImgFailed(false);
@@ -167,6 +174,21 @@ export default function HazardPage() {
   return (
     <div className="min-h-screen flex flex-col px-4 py-4 max-w-xl mx-auto text-white">
       <div ref={topRef} />
+      {quitOpen && (
+        <QuitDialog
+          onContinue={() => setQuitOpen(false)}
+          onQuit={() => {
+            stop();
+            setQuitOpen(false);
+            setScreen("intro");
+          }}
+          onRestart={() => {
+            stop();
+            setQuitOpen(false);
+            start(questions);
+          }}
+        />
+      )}
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={() => {
