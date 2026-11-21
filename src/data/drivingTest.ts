@@ -57,6 +57,7 @@ export const ITEMS: DrivingItem[] = [
   { id: 117, stage: 2, num: 17, ja: "高速道路での運転", mn: "Хурдны зам дээрх жолоодлого", en: "Driving on expressways" },
   { id: 201, stage: 1, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
   { id: 202, stage: 2, num: 0, ja: "まぎらわしい問題特集", mn: "Эргэлзээтэй асуултуудын тусгай эмхэтгэл", en: "Tricky questions special" },
+  { id: 203, stage: 2, num: 0, ja: "二輪車に関する問題", mn: "Хоёр дугуйт тээврийн хэрэгсэлтэй холбоотой асуултууд", en: "Motorcycle questions" },
 ];
 
 // Illustrations live in S3 under `driving-test/<item>-<no>.jpeg`. Set
@@ -67,8 +68,8 @@ const IMAGE_BASE = (process.env.NEXT_PUBLIC_DRIVING_IMAGE_BASE ?? "").replace(/\
 const IMAGE_NOS: Record<number, number[]> = {
   // Items 2+ mix generated pictures and crops of the book's own figures.
   1: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
-  2: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 16, 17, 19, 20, 21],
-  3: [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+  2: Array.from({ length: 30 }, (_, i) => i + 1),
+  3: Array.from({ length: 30 }, (_, i) => i + 1),
   5: [18, 19, 20, 25, 26, 27],
   6: [9, 10, 11, 15, 17, 18, 22, 24],
   7: [3, 4, 16],
@@ -78,7 +79,8 @@ const IMAGE_NOS: Record<number, number[]> = {
   11: [27, 28],
   13: [15],
   111: [11, 24],
-  117: [3, 6, 8, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30],
+  117: Array.from({ length: 30 }, (_, i) => i + 1),
+  203: [21, 22, 23, 24, 25, 26],
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
@@ -312,6 +314,7 @@ import * as item116 from "./driving/item116";
 import * as item117 from "./driving/item117";
 import * as item201 from "./driving/item201";
 import * as item202 from "./driving/item202";
+import * as item203 from "./driving/item203";
 
 export function itemLabel(id: number): string {
   const it = ITEMS.find((x) => x.id === id);
@@ -348,4 +351,5 @@ export const QUESTIONS: DrivingQuestion[] = [
   ...build(117, item117.ROWS, item117.NOTES, item117.EN, item117.NOTES_EN, item117.FIGURE_NOS),
   ...build(201, item201.ROWS, item201.NOTES, item201.EN, item201.NOTES_EN, item201.FIGURE_NOS),
   ...build(202, item202.ROWS, item202.NOTES, item202.EN, item202.NOTES_EN, item202.FIGURE_NOS),
+  ...build(203, item203.ROWS, item203.NOTES, item203.EN, item203.NOTES_EN, item203.FIGURE_NOS),
 ];
