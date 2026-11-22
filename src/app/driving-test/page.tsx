@@ -277,6 +277,21 @@ export default function DrivingTestPage() {
           <div className="text-white/40 text-xs font-bold mt-1">⏱ {fmtTime(elapsed)}</div>
         </div>
 
+        <div className="flex gap-2 mb-5">
+          <button
+            onClick={() => setScreen("menu")}
+            className="font-mn flex-1 rounded-2xl py-3 font-black bg-white/10 active:scale-95 transition-transform"
+          >
+            Цэс
+          </button>
+          <button
+            onClick={() => (mode === "mock" ? startMock() : mode === "wrong" ? startWrong() : start(mode, shuffle(questions)))}
+            className="font-mn flex-1 rounded-2xl py-3 font-black bg-gradient-to-r from-orange-500 to-rose-500 active:scale-95 transition-transform"
+          >
+            Дахин бодох
+          </button>
+        </div>
+
         {wrong.length > 0 && (
           <>
             <h2 className="font-mn font-black mb-2">Алдсан асуултууд ({wrong.length})</h2>
@@ -307,21 +322,6 @@ export default function DrivingTestPage() {
             </div>
           </>
         )}
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => setScreen("menu")}
-            className="font-mn flex-1 rounded-2xl py-3 font-black bg-white/10 active:scale-95 transition-transform"
-          >
-            Цэс
-          </button>
-          <button
-            onClick={() => (mode === "mock" ? startMock() : mode === "wrong" ? startWrong() : start(mode, shuffle(questions)))}
-            className="font-mn flex-1 rounded-2xl py-3 font-black bg-gradient-to-r from-orange-500 to-rose-500 active:scale-95 transition-transform"
-          >
-            Дахин бодох
-          </button>
-        </div>
       </div>
     );
   }
