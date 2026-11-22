@@ -194,7 +194,7 @@ export default function DrivingTestPage() {
           className="w-full text-left rounded-3xl p-5 mb-3 bg-gradient-to-r from-orange-500 to-rose-500 active:scale-[0.98] transition-transform"
         >
           <div className="font-black text-lg">📝 Mock test</div>
-          <div className="text-white/90 text-sm font-bold">
+          <div className="font-mn text-white/90 text-sm font-bold">
             {Math.min(MOCK_SIZE, QUESTIONS.length)} санамсаргүй асуулт · {Math.round(PASS_RATE * 100)}% зөв бол тэнцнэ
           </div>
         </button>
@@ -204,7 +204,7 @@ export default function DrivingTestPage() {
           className="block w-full text-left rounded-3xl p-5 mb-3 bg-gradient-to-r from-amber-500 to-orange-600 active:scale-[0.98] transition-transform"
         >
           <div className="font-black text-lg">⚠️ 危険予測</div>
-          <div className="text-white/90 text-sm font-bold">Зурагтай аюул таамаглах асуулт · {HAZARD.length} асуулт</div>
+          <div className="font-mn text-white/90 text-sm font-bold">Зурагтай аюул таамаглах асуулт · {HAZARD.length} асуулт</div>
         </Link>
 
         <button
@@ -212,19 +212,19 @@ export default function DrivingTestPage() {
           disabled={wrongIds.length === 0}
           className="w-full text-left rounded-3xl p-5 mb-5 bg-white/10 disabled:opacity-40 active:scale-[0.98] transition-transform"
         >
-          <div className="font-black text-lg">🔁 Алдсан асуултууд</div>
-          <div className="text-white/70 text-sm font-bold">
+          <div className="font-mn font-black text-lg">🔁 Алдсан асуултууд</div>
+          <div className="font-mn text-white/70 text-sm font-bold">
             {wrongIds.length > 0 ? `${wrongIds.length} асуулт давтах` : "Одоогоор алдсан асуулт алга"}
           </div>
         </button>
 
-        <h2 className="font-black text-white/80 mb-2">Сэдвээр бодох</h2>
+        <h2 className="font-mn font-black text-white/80 mb-2">Сэдвээр бодох</h2>
         {([1, 2] as const).map((stage) => {
           const items = ITEMS.filter((it) => it.stage === stage && itemCounts.has(it.id));
           if (items.length === 0) return null;
           return (
             <div key={stage} className="mb-4">
-              <h3 className="text-white/50 text-xs font-black mb-1.5">
+              <h3 className="font-mn text-white/50 text-xs font-black mb-1.5">
                 第{stage}段階 · {stage}-р шат · Stage {stage}
                 <span className="font-bold text-white/30">
                   {stage === 1 ? " — суурь мэдлэг, Basics" : " — гүнзгийрүүлсэн мэдлэг, Advanced"}
@@ -245,14 +245,14 @@ export default function DrivingTestPage() {
                       <span className="font-mn block text-white/60 text-xs font-bold">{it.mn}</span>
                       <span className="block text-white/40 text-xs font-bold">{it.en}</span>
                     </span>
-                    <span className="text-white/60 text-sm font-bold">{itemCounts.get(it.id)} асуулт</span>
+                    <span className="font-mn text-white/60 text-sm font-bold">{itemCounts.get(it.id)} асуулт</span>
                   </button>
                 ))}
               </div>
             </div>
           );
         })}
-        <p className="text-white/40 text-xs font-bold mt-5">
+        <p className="font-mn text-white/40 text-xs font-bold mt-5">
           Нийт {QUESTIONS.length} асуулт нэмэгдсэн. Дараагийн хуудсуудыг нэмсээр байна.
         </p>
       </div>
@@ -271,7 +271,7 @@ export default function DrivingTestPage() {
         <div className="text-center mb-5">
           <div className="text-5xl mb-2">{passed ? "🎉" : "💪"}</div>
           <div className="text-4xl font-black">{correct} / {total}</div>
-          <div className="text-white/70 font-bold">
+          <div className="font-mn text-white/70 font-bold">
             {Math.round(pct * 100)}% · {passed ? "Тэнцлээ!" : `Тэнцэхийн тулд ${Math.round(PASS_RATE * 100)}% хэрэгтэй`}
           </div>
           <div className="text-white/40 text-xs font-bold mt-1">⏱ {fmtTime(elapsed)}</div>
@@ -279,7 +279,7 @@ export default function DrivingTestPage() {
 
         {wrong.length > 0 && (
           <>
-            <h2 className="font-black mb-2">Алдсан асуултууд ({wrong.length})</h2>
+            <h2 className="font-mn font-black mb-2">Алдсан асуултууд ({wrong.length})</h2>
             <div className="grid gap-3 mb-5">
               {wrong.map((w) => (
                 <div key={w.id} className="rounded-2xl bg-white text-slate-800 p-4">
@@ -289,7 +289,7 @@ export default function DrivingTestPage() {
                   <p className="font-bold leading-relaxed">{w.ja}</p>
                   <p className="font-mn text-sm text-slate-500 mt-1">{w.mn}</p>
                   <p className="text-sm text-slate-400 mt-1">{w.en}</p>
-                  <p className="mt-2 text-sm font-black">
+                  <p className="font-mn mt-2 text-sm font-black">
                     Зөв хариулт: <span className={w.answer ? "text-green-600" : "text-red-600"}>{w.answer ? "○" : "×"}</span>
                     {w.id in answers && (
                       <span className="text-slate-400 font-bold"> · Таны хариулт: {answers[w.id] ? "○" : "×"}</span>
@@ -311,13 +311,13 @@ export default function DrivingTestPage() {
         <div className="flex gap-2">
           <button
             onClick={() => setScreen("menu")}
-            className="flex-1 rounded-2xl py-3 font-black bg-white/10 active:scale-95 transition-transform"
+            className="font-mn flex-1 rounded-2xl py-3 font-black bg-white/10 active:scale-95 transition-transform"
           >
             Цэс
           </button>
           <button
             onClick={() => (mode === "mock" ? startMock() : mode === "wrong" ? startWrong() : start(mode, shuffle(questions)))}
-            className="flex-1 rounded-2xl py-3 font-black bg-gradient-to-r from-orange-500 to-rose-500 active:scale-95 transition-transform"
+            className="font-mn flex-1 rounded-2xl py-3 font-black bg-gradient-to-r from-orange-500 to-rose-500 active:scale-95 transition-transform"
           >
             Дахин бодох
           </button>

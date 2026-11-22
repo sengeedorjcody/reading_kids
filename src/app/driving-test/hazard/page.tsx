@@ -73,15 +73,26 @@ export default function HazardPage() {
     setChecked(true);
   }
 
+  // Jump to question `i`, restoring its picks if it was already answered.
+  function goTo(i: number) {
+    stop();
+    const r = results[questions[i].no];
+    setIdx(i);
+    setPicks(r ?? [undefined, undefined, undefined]);
+    setChecked(!!r);
+  }
+
   function next() {
     stop();
     if (idx + 1 >= questions.length) {
       setScreen("result");
       return;
     }
-    setIdx(idx + 1);
-    setPicks([undefined, undefined, undefined]);
-    setChecked(false);
+    goTo(idx + 1);
+  }
+
+  function prev() {
+    if (idx > 0) goTo(idx - 1);
   }
 
   // ── Intro ───────────────────────────────────────────────────────────
@@ -195,7 +206,7 @@ export default function HazardPage() {
             stop();
             setScreen("intro");
           }}
-          className="text-white/60 text-sm font-bold"
+          className="font-mn text-white/60 text-sm font-bold"
         >
           ✕ Гарах
         </button>
@@ -217,6 +228,23 @@ export default function HazardPage() {
           className="h-full bg-gradient-to-r from-orange-400 to-rose-500 transition-all"
           style={{ width: `${((idx + (checked ? 1 : 0)) / questions.length) * 100}%` }}
         />
+      </div>
+
+      <div className="mb-3 flex gap-2">
+        <button
+          onClick={prev}
+          disabled={idx === 0}
+          aria-label="Өмнөх асуулт"
+          className="font-mn rounded-2xl px-5 py-3 font-black bg-white/10 disabled:opacity-30 active:scale-95 transition-transform"
+        >
+          ← Өмнөх
+        </button>
+        <button
+          onClick={next}
+          className={`font-mn flex-1 rounded-2xl py-3 font-black active:scale-95 transition-transform ${checked || idx + 1 >= questions.length ? "bg-gradient-to-r from-orange-500 to-rose-500" : "bg-white/10"}`}
+        >
+          {idx + 1 >= questions.length ? "Дүн харах" : "Дараагийн →"}
+        </button>
       </div>
 
       <div className="rounded-3xl bg-white text-slate-800 p-5 shadow-xl">
@@ -276,9 +304,10 @@ export default function HazardPage() {
                       key={String(v)}
                       onClick={() => pick(i, v)}
                       disabled={checked}
-                      className={`rounded-xl py-2.5 font-black text-lg active:scale-95 transition-all ${cls}`}
+                      className={`rounded-xl py-2 font-black text-lg active:scale-95 transition-all ${cls}`}
                     >
-                      {v ? "正 ○" : "誤 ×"}
+                      <span className="block leading-tight">{v ? "正 ○" : "誤 ×"}</span>
+                      <span className="block text-xs font-bold opacity-70">{v ? "True" : "False"}</span>
                     </button>
                   );
                 })}
