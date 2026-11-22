@@ -14,6 +14,23 @@ const WRONG_KEY = "drivingTestWrongIds.v2"; // v2: item ids changed (stage 2 →
 type Mode = "mock" | "item" | "wrong";
 type Screen = "menu" | "quiz" | "result";
 
+// Circle shown next to a topic. Specials and mock sets have no 項目 number (num 0).
+function itemBadge(it: { id: number; num: number }): string {
+  if (it.num > 0) return String(it.num);
+  if (it.id >= 400) return `本${it.id % 100}`;
+  if (it.id >= 300) return `仮${it.id % 100}`;
+  if (it.id === 203) return "🏍";
+  return "★";
+}
+
+// How likely a topic is to matter for the 外免切替 test: 1 = core, 2 = useful, 3 = low.
+function itemPriority(id: number): 1 | 2 | 3 {
+  if (id === 203) return 3; // motorcycles
+  if (id >= 104 && id <= 117) return 2; // stage-2 driving-school topics
+  if (id >= 301 && id <= 303) return 2; // 仮免 mock (easier, overlaps items 1–14)
+  return 1; // items 1–14, 201/202, 本免 mock
+}
+
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -219,6 +236,9 @@ export default function DrivingTestPage() {
         </button>
 
         <h2 className="font-mn font-black text-white/80 mb-2">Сэдвээр бодох</h2>
+        <p className="font-mn text-white/50 text-xs font-bold mb-3">
+          <span className="text-amber-300">■</span> Чухал · <span className="text-white/70">■</span> Хэрэгтэй · <span className="text-white/30">■</span> Бага хамааралтай
+        </p>
         {([1, 2] as const).map((stage) => {
           const items = ITEMS.filter((it) => it.stage === stage && itemCounts.has(it.id));
           if (items.length === 0) return null;
@@ -235,10 +255,12 @@ export default function DrivingTestPage() {
                   <button
                     key={it.id}
                     onClick={() => startItem(it.id)}
-                    className="flex items-center gap-3 text-left rounded-2xl p-4 bg-white/10 active:scale-[0.98] transition-transform"
+                    className={`flex items-center gap-3 text-left rounded-2xl p-4 active:scale-[0.98] transition-all ${
+                      { 1: "bg-white/15 ring-1 ring-amber-300/40", 2: "bg-white/10 opacity-75", 3: "bg-white/5 opacity-45" }[itemPriority(it.id)]
+                    }`}
                   >
                     <span className="w-9 h-9 rounded-full bg-white text-slate-800 font-black flex items-center justify-center shrink-0">
-                      {it.num}
+                      {itemBadge(it)}
                     </span>
                     <span className="flex-1">
                       <span className="block font-black">{it.ja}</span>
