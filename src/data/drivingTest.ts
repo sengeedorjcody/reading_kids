@@ -103,12 +103,12 @@ const IMAGE_NOS: Record<number, number[]> = {
   201: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   202: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
   203: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
-  301: [8, 17, 28, 47, 48],
-  302: [2, 5, 8, 9, 14, 17, 18],
-  303: [5, 7, 9, 11, 27, 36],
-  401: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
-  402: [10, 11, 12, 13, 14, 15, 16, 17, 18],
-  403: [12, 13, 14, 15, 16, 17, 18, 19],
+  301: Array.from({ length: 50 }, (_, i) => i + 1),
+  302: Array.from({ length: 50 }, (_, i) => i + 1),
+  303: Array.from({ length: 50 }, (_, i) => i + 1),
+  401: Array.from({ length: 90 }, (_, i) => i + 1),
+  402: Array.from({ length: 90 }, (_, i) => i + 1),
+  403: Array.from({ length: 90 }, (_, i) => i + 1),
 };
 function imageUrl(item: number, no: number): string | undefined {
   if (!IMAGE_BASE || !IMAGE_NOS[item]?.includes(no)) return undefined;
