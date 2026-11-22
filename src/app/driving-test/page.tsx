@@ -355,7 +355,7 @@ export default function DrivingTestPage() {
             stop();
             setScreen("menu");
           }}
-          className="text-white/60 text-sm font-bold"
+          className="font-mn text-white/60 text-sm font-bold"
         >
           ✕ Гарах
         </button>
