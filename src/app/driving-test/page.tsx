@@ -237,7 +237,7 @@ export default function DrivingTestPage() {
 
         <h2 className="font-mn font-black text-white/80 mb-2">Сэдвээр бодох</h2>
         <p className="font-mn text-white/50 text-xs font-bold mb-3">
-          <span className="text-amber-300">■</span> Чухал · <span className="text-white/70">■</span> Хэрэгтэй · <span className="text-white/30">■</span> Бага хамааралтай
+          <span className="text-amber-400">●</span> Чухал · <span className="text-white">●</span> Хэрэгтэй · <span className="text-slate-500">●</span> Бага хамааралтай
         </p>
         {([1, 2] as const).map((stage) => {
           const items = ITEMS.filter((it) => it.stage === stage && itemCounts.has(it.id));
@@ -256,10 +256,12 @@ export default function DrivingTestPage() {
                     key={it.id}
                     onClick={() => startItem(it.id)}
                     className={`flex items-center gap-3 text-left rounded-2xl p-4 active:scale-[0.98] transition-all ${
-                      { 1: "bg-white/15 ring-1 ring-amber-300/40", 2: "bg-white/10 opacity-75", 3: "bg-white/5 opacity-45" }[itemPriority(it.id)]
+                      { 1: "bg-white/10", 2: "bg-white/10", 3: "bg-white/10" }[itemPriority(it.id)]
                     }`}
                   >
-                    <span className="w-9 h-9 rounded-full bg-white text-slate-800 font-black flex items-center justify-center shrink-0">
+                    <span className={`w-9 h-9 rounded-full font-black flex items-center justify-center shrink-0 ${
+                      { 1: "bg-amber-400 text-slate-900", 2: "bg-white text-slate-800", 3: "bg-slate-500 text-white/80" }[itemPriority(it.id)]
+                    }`}>
                       {itemBadge(it)}
                     </span>
                     <span className="flex-1">
