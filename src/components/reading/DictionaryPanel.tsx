@@ -50,8 +50,13 @@ export default function DictionaryPanel() {
   }, [selectedSurface, selectedWord, setSelectedWord]);
 
   // ── Fetch Mongolian via Google Translate ─────────────────────────────────
-  // Runs for both: words in dictionary (uses japanese_word) and not-found words (uses selectedSurface)
+  // Only needed when dictionary entry has no curated mongolian_meaning (or word not found)
   useEffect(() => {
+    if (selectedWord?.mongolian_meaning) {
+      setLiveMn("");
+      setMnLoading(false);
+      return;
+    }
     const wordToTranslate =
       selectedWord?.japanese_word || (notFound ? selectedSurface : null);
     if (!wordToTranslate) {
@@ -159,7 +164,7 @@ export default function DictionaryPanel() {
 
   if (!selectedWord) return null;
 
-  const mongolian = liveMn || selectedWord.mongolian_meaning;
+  const mongolian = selectedWord.mongolian_meaning || liveMn;
 
   return (
     <div className="flex flex-col gap-4 p-4 animate-fade-in overflow-y-auto h-full reading-scroll">

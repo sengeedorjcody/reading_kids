@@ -36,6 +36,7 @@ export const SECTION_CATALOG: SectionMeta[] = [
   { href: "/math",       icon: "🧮", label: "Math",        color: "#14b8a6", bg: "from-teal-400 to-cyan-500" },
   // Row 4 — themes & library
   { href: "/themes",     icon: "🗂️", label: "Themes",      color: "#f97316", bg: "from-orange-400 to-red-400" },
+  { href: "/bella-reading", icon: "🌸", label: "Bella Reading", keywords: ["bella", "reading", "унших", "текст", "асуулт"], color: "#ec4899", bg: "from-pink-500 to-rose-500" },
   { href: "/books",      icon: "📖", label: "Books",       color: "#0ea5e9", bg: "from-sky-400 to-blue-500" },
   { href: "/picture-books", icon: "🖼️", label: "Picture Books", color: "#f59e0b", bg: "from-amber-400 to-orange-500" },
   { href: "/conversations",icon:"💬", label: "Conversations", keywords: ["conversation", "kaiwa", "яриа", "харилцан яриа"], color: "#8b5cf6", bg: "from-violet-400 to-purple-500" },

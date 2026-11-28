@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
 import { ITEMS, QUESTIONS, itemLabel, type DrivingQuestion } from "@/data/drivingTest";
 import { HAZARD } from "@/data/driving/hazard";
+import { useLangPrefs } from "@/hooks/useLangPrefs";
 import QuitDialog, { useBackGuard } from "@/components/QuitDialog";
 
 const MOCK_SIZE = 50;
@@ -70,9 +71,7 @@ export default function DrivingTestPage() {
   const [questions, setQuestions] = useState<DrivingQuestion[]>([]);
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
-  const [showJa, setShowJa] = useState(true);
-  const [showMn, setShowMn] = useState(true);
-  const [showEn, setShowEn] = useState(false);
+  const { showJa, setShowJa, showMn, setShowMn, showEn, setShowEn } = useLangPrefs();
   const [wrongIds, setWrongIds] = useState<string[]>([]);
   const [elapsed, setElapsed] = useState(0);
   const startedAt = useRef(0);

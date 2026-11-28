@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSpeech } from "@/hooks/useSpeech";
 import { hazardImageUrl } from "@/data/drivingTest";
 import { HAZARD, type HazardQuestion } from "@/data/driving/hazard";
+import { useLangPrefs } from "@/hooks/useLangPrefs";
 import QuitDialog, { useBackGuard } from "@/components/QuitDialog";
 
 type Screen = "intro" | "quiz" | "result";
@@ -33,9 +34,7 @@ export default function HazardPage() {
   const [picks, setPicks] = useState<Picks>([undefined, undefined, undefined]);
   const [checked, setChecked] = useState(false);
   const [results, setResults] = useState<Record<number, Picks>>({});
-  const [showJa, setShowJa] = useState(true);
-  const [showMn, setShowMn] = useState(true);
-  const [showEn, setShowEn] = useState(false);
+  const { showJa, setShowJa, showMn, setShowMn, showEn, setShowEn } = useLangPrefs();
   const [imgFailed, setImgFailed] = useState(false);
   const { speak, stop } = useSpeech();
   const topRef = useRef<HTMLDivElement>(null);

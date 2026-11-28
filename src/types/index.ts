@@ -238,3 +238,28 @@ export interface IWeeklyWords {
   updatedAt: string;
 }
 
+export interface IBellaQuestion {
+  _id?: string;
+  question: string;
+  questionTranslation?: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+}
+
+export interface IBellaReading {
+  _id: string;
+  title: string;
+  titleJapanese?: string;
+  level: BookLevel;
+  description?: string;
+  coverImageUrl?: string;
+  rawText: string;
+  sentences: ISentence[];
+  questions: IBellaQuestion[];
+  order: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
