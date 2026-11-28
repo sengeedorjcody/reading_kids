@@ -43,7 +43,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <nav className="flex-1 p-4 space-y-1">
           <NavLink href="/admin" icon="🏠" label="Dashboard" />
           <NavLink href="/admin/bella-reading" icon="🌸" label="Bella Reading" />
-          <NavLink href="/admin/bella-reading/create" icon="✍️" label="New Bella Reading" />
           <NavLink href="/admin/books" icon="📚" label="Books" />
           <NavLink href="/admin/books/upload" icon="📤" label="Upload Book" />
           <NavLink href="/admin/dictionary" icon="📝" label="Dictionary" />
